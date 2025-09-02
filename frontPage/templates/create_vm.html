@@ -1,0 +1,170 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crear VM - RIZU</title>
+    <!-- CSS Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <!-- CSS RIZU -->
+    <style>
+        :root {
+            --royal-blue: #305dde;
+            --dove-gray: #707070;
+            --melrose: #c4b6fd;
+            --bg-light: #f4f7f9;
+            --text-dark: #343a40;
+            --border-light: #e9ecef;
+            --white-bg: #ffffff;
+            --create-btn-color: #b6c3f9; 
+            --create-btn-hover-color: #6db3fa;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-light);
+            color: var(--text-dark);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 1000px;
+            padding: 1.5rem; 
+            background-color: var(--white-bg);
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .form-section {
+            padding: 1rem; 
+            border-left: 4px solid var(--royal-blue);
+            margin-bottom: 1rem; 
+        }
+        .form-section h3 {
+            font-size: 1.25rem; 
+            font-weight: 600;
+            margin-bottom: 0rem; 
+        }
+        .form-section .fa-icon {
+            color: var(--royal-blue);
+            margin-right: 0.75rem; 
+        }
+        .btn-create-vm {
+            background-color: var(--create-btn-color);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 10px 20px; 
+            font-size: 1rem; 
+            width: 200px;
+        }
+        .btn-create-vm:hover {
+            background-color: var(--create-btn-hover-color);
+        }
+
+        .btn-return-dash {
+            background-color: var(--create-btn-color);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 10px 20px; 
+            font-size: 1rem; 
+            width: 200px;
+        }
+        .btn-return-dash:hover {
+            background-color: var(--create-btn-hover-color);
+        }
+        .logo-section {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            margin-bottom: 1rem; 
+        }
+        .logo-section img {
+            width: 60px; 
+            height: 60px;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+            .form-section {
+                padding: 0.75rem;
+            }
+            .btn-create-vm {
+                font-size: 0.9rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo-section">
+            <h1 class="mb-3" style="font-size: 1.5rem;">Create your own private cloud</h1>
+            <div class="ms-auto"></div>
+            <img src="{% static 'images/rizusinfondo.png' %}" alt="Rizu Logo" class="me-2">
+            <span style="font-size: 1.5rem; font-weight: 600; color: var(--text-dark);">Rizu</span>
+        </div>
+        
+        <form id="vm-form">
+            <!-- general seccion -->
+            <div class="form-section">
+                <h3 class="d-flex align-items-center">
+                    <i class="fa-solid fa-cloud fa-icon"></i>General
+                </h3>
+                <div class="mb-2">
+                    <label for="privateCloudName" class="form-label">Name of your private cloud</label>
+                    <input type="text" class="form-control form-control-sm" id="privateCloudName" required>
+                </div>
+            </div>
+            <!-- Instances -->
+            <div class="form-section">
+                <h3 class="d-flex align-items-center">
+                    <i class="fa-solid fa-terminal fa-icon"></i>Instances
+                </h3>
+                <div class="row g-2">
+                    <div class="col-md-6">
+                        <label for="numVms" class="form-label">Number of virtual machines</label>
+                        <input type="number" class="form-control form-control-sm" id="numVms" min="1" value="1" required>
+                    </div>
+                    <div class="col-md-6 d-flex align-items-center">
+                        <div class="form-check ms-3">
+                            <input class="form-check-input" type="checkbox" value="" id="loadBalancerCheck">
+                            <label class="form-check-label" for="loadBalancerCheck">
+                                Load balancer?
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- network seccion -->
+            <div class="form-section">
+                <h3 class="d-flex align-items-center">
+                    <i class="fa-solid fa-network-wired fa-icon"></i>Network
+                </h3>
+                <div class="row g-2">
+                    <div class="col-md-6">
+                        <label for="ipAddress" class="form-label">Private network IP address</label>
+                        <input type="text" class="form-control form-control-sm" id="ipAddress" placeholder="e.g., 10.0.0.0/24" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="openPorts" class="form-label">Open ports</label>
+                        <input type="text" class="form-control form-control-sm" id="openPorts" placeholder="e.g., 80, 443, 22">
+                    </div>
+                </div>
+            </div>
+            <!-- creation btn -->
+            <div class="d-flex justify-content-between align-items-center mt-3">
+                <a href="{% url 'dashboard' %}" class="btn btn-return-dash">Return to dashboard</a>
+                <button type="submit" class="btn btn-create-vm">
+                    <i class="fa-solid me-2"></i>Create 
+                </button>
+            </div>
+        </form>
+    </div>
+</body>
+</html>
