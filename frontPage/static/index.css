@@ -1,0 +1,162 @@
+:root {
+    --royal-blue: #305dde;
+    --dove-gray: #707070;
+    --melrose: #c4b6fd;
+    --bg-light: #f4f7f9;
+    --text-dark: #343a40;
+    --border-light: #e9ecef;
+    --white-bg: #ffffff;
+    /* specific colors cards */
+    --vm-icon-color: #61b3d6;
+    --vm-badge-color: #007bff;
+    --lb-icon-color: #ffc107;
+    --db-icon-color: #28a745;
+    --status-badge-color: #0d6efd;
+    --create-btn-color: #b6c3f9;
+    --create-btn-hover-color: #6db3fa;
+}
+
+.main-container {
+    display: flex;
+    min-height: 100vh;
+}
+
+.dashboard-content {
+    flex-grow: 1;
+    padding: 2rem 3rem;
+}
+
+.sidebar {
+    width: 350px;
+    min-height: 100vh;
+    background-color: var(--white-bg);
+    padding: 2rem;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.resource-card {
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s ease-in-out;
+    background-color: var(--white-bg);
+    border: 1px solid var(--border-light);
+}
+
+.resource-card:hover {
+    transform: translateY(-1px);
+}
+
+.card-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+}
+
+.card-subtitle {
+    font-size: 1rem;
+    color: var(--dove-gray);
+}
+
+.btn-create {
+    background-color: var(--royal-blue);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 12px 24px;
+    font-size: 1.1rem;
+    transition: background-color 0.3s;
+}
+
+.btn-create:hover {
+    background-color: #2446a8;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: var(--bg-light);
+    color: var(--text-dark);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+
+.container {
+    max-width: 1000px;
+    padding: 1.5rem;
+    background-color: var(--white-bg);
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.form-section {
+    padding: 1rem;
+    border-left: 4px solid var(--royal-blue);
+    margin-bottom: 1rem;
+}
+
+.form-section h3 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 0rem;
+}
+
+.form-section .fa-icon {
+    color: var(--royal-blue);
+    margin-right: 0.75rem;
+}
+
+.btn-create-vm {
+    background-color: var(--create-btn-color);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 10px 20px;
+    font-size: 1rem;
+    width: 200px;
+}
+
+.btn-create-vm:hover {
+    background-color: var(--create-btn-hover-color);
+}
+
+.btn-return-dash {
+    background-color: var(--create-btn-color);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 10px 20px;
+    font-size: 1rem;
+    width: 200px;
+}
+
+.btn-return-dash:hover {
+    background-color: var(--create-btn-hover-color);
+}
+
+.logo-section {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    margin-bottom: 1rem;
+}
+
+.logo-section img {
+    width: 60px;
+    height: 60px;
+}
+
+@media (max-width: 768px) {
+    .container {
+        padding: 1rem;
+    }
+
+    .form-section {
+        padding: 0.75rem;
+    }
+
+    .btn-create-vm {
+        font-size: 0.9rem;
+    }
+}
