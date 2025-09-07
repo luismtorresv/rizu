@@ -1,4 +1,5 @@
 from django.shortcuts import render
+from Rizu import openStackCommunication
 
 def dashboard(request):
 
@@ -32,3 +33,10 @@ def dashboard(request):
 
 def create_vm(request):
     return render(request, 'create_vm.html') 
+
+def create_project(request):
+
+    conn = openStackCommunication()
+    conn.create_openstack_project()
+    
+    return render(request,'successfully created project')
