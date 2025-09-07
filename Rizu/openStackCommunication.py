@@ -1,13 +1,13 @@
 import openstack
 import os
 
-class openStackCommunication:
+class OpenStackCommunication:
 
     os.environ['OS_CLIENT_CONFIG_FILE'] = os.path.expanduser('/etc/kolla/clouds.yaml')
     conn = openstack.connect(cloud='kolla-admin-system')
     
 
-    def create_Openstack_Project(self, project_name, project_description):
+    def create_openstack_project(self, project_name, project_description):
         try: 
 
             new_project = self.conn.identity.create_project(
@@ -17,8 +17,8 @@ class openStackCommunication:
                 enabled = True,
             )
 
-            return 0
+            return True
         except:
 
-            return 1
+            return False
             print('Something went wrong with the project creation')
