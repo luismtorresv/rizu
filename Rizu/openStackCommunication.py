@@ -21,7 +21,7 @@ class OpenStackCommunication:
             )
 
             # assign myself to the project
-            self.assign_openstack_role(project_name, project_description, username)
+            self.assign_openstack_role(project_name, username)
 
             return True
         except Exception as e:
