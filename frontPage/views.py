@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from django.http import HttpResponse
 
-from Rizu import openStackCommunication
+from Rizu.openStackCommunication import OpenStackCommunication
 
 
 def dashboard(request):
@@ -44,7 +44,7 @@ def create_project(request):
     test_name = "project 1"
     test_description = "this is the first test project for Rizu. Let's pray it works"
 
-    conn = openStackCommunication()
+    conn = OpenStackCommunication()
     conn.create_openstack_project(test_name, test_description)
 
     return HttpResponse(
