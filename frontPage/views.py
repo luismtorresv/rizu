@@ -43,9 +43,12 @@ def create_project(request):
 
     test_name = "project 1"
     test_description = "this is the first test project for Rizu. Let's pray it works"
+    test_username = "admin"
 
     conn = OpenStackCommunication()
-    conn.create_openstack_project(test_name, test_description)
+    response = conn.create_openstack_project(test_name, test_description, test_username)
+
+    print(response)
 
     return HttpResponse(
         "this is the first test project for Rizu. Let's pray it works",
