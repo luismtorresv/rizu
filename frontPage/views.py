@@ -109,16 +109,22 @@ def create_vm(request):
 
 
 def create_project(request):
-    test_name = "project 1"
-    test_description = "this is the first test project for Rizu. Let's pray it works"
-    test_username = "admin"
+    if request.method == "POST":
+        name = request.POST.get("name")
+        description = request.POST.get("description")
+        username = "admin"  # puedes cambiarlo luego según autenticación real
 
-    conn = OpenStackCommunication()
-    response = conn.create_openstack_project(test_name, test_description, test_username)
+        conn = OpenStackCommunication()
+        response = conn.create_openstack_project(name, description, username)
 
-    print(response)
+        # Muestras respuesta o rediriges al dashboard
+        if response is False:
+            return HttpResponse("Error")   # fallo
+        
+        return HttpResponse("Funciono") # éxito
 
-    return HttpResponse(
-        "this is the first test project for Rizu. Let's pray it works",
-        content_type="text/plain",
-    )
+        
+    
+
+    # Si es GET, solo renderizas el formulario
+    return render(request, "create_project.html")
