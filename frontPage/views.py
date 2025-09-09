@@ -17,22 +17,21 @@ def get_connection(project_id=None, system=False):
 
     return openstack.connect(cloud="kolla-admin")
 
+
 def dashboard(request):
     project_id = request.GET.get("project_id")
-    
+
     sys_conn = get_connection(system=True)
     proyectos = [
         {"id": proj.id, "nombre": proj.name, "descripcion": proj.description}
         for proj in sys_conn.identity.projects()
         if proj.name.lower() not in ["service", "services"]
-]
+    ]
 
     proyecto_seleccionado = None
     recursos = {"instancias": [], "routers": [], "redes": []}
 
-
     if project_id:
-        
         conn = get_connection(project_id=project_id)
         proyecto_seleccionado = conn.identity.get_project(project_id)
 
@@ -42,12 +41,18 @@ def dashboard(request):
             print(f"Error al listar instancias: {e}")
 
         try:
-            recursos["routers"] = [router.to_dict() for router in conn.network.routers()]
+            recursos["routers"] = [
+                router.to_dict() for router in conn.network.routers()
+            ]
         except Exception as e:
             print(f"Error al listar routers: {e}")
 
         try:
-            recursos["redes"] = [net.to_dict() for net in conn.network.networks() if net.project_id == project_id]
+            recursos["redes"] = [
+                net.to_dict()
+                for net in conn.network.networks()
+                if net.project_id == project_id
+            ]
         except Exception as e:
             print(f"Error al listar redes: {e}")
 
@@ -62,8 +67,7 @@ def dashboard(request):
             roles = [
                 role.name
                 for role in conn.identity.roles(
-                    user=conn.current_user_id,
-                    project=project_id
+                    user=conn.current_user_id, project=project_id
                 )
             ]
         except Exception as e:
@@ -87,13 +91,18 @@ def dashboard(request):
         "proyecto_seleccionado": {
             "id": proyecto_seleccionado.id if proyecto_seleccionado else None,
             "nombre": proyecto_seleccionado.name if proyecto_seleccionado else None,
-            "descripcion": proyecto_seleccionado.description if proyecto_seleccionado else None,
+            "descripcion": proyecto_seleccionado.description
+            if proyecto_seleccionado
+            else None,
             "recursos": recursos,
-        } if proyecto_seleccionado else None,
-        "user_info": user_info,  
+        }
+        if proyecto_seleccionado
+        else None,
+        "user_info": user_info,
     }
 
     return render(request, "dashboard.html", context)
+
 
 def create_vm(request):
     return render(request, "create_vm.html")
@@ -113,5 +122,3 @@ def create_project(request):
         "this is the first test project for Rizu. Let's pray it works",
         content_type="text/plain",
     )
-
-
