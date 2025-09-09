@@ -35,3 +35,6 @@ class OpenStackCommunication:
             raise ValueError("Project, user, or role not found!")
 
         self.conn.identity.assign_project_role_to_user(project, user, role)
+
+
+
