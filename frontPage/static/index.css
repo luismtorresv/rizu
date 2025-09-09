@@ -38,16 +38,18 @@ body {
 .main-container {display: flex;}
 
 .dashboard-content {
+    margin-left: 220px;
     flex-grow: 1;
     padding: 2rem 3rem;
 }
 
 .sidebar {
-    width: 350px;
-    min-height: 100vh;
-    background-color: var(--white-bg);
-    padding: 2rem;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 220px;
+    overflow-y: auto;
 }
 
 .resource-card {
