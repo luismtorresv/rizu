@@ -4,6 +4,8 @@ from django.http import HttpResponse
 import openstack
 import os
 
+osc = OpenStackCommunication()
+
 from Rizu.openStackCommunication import OpenStackCommunication
 
 
@@ -89,16 +91,18 @@ def dashboard(request):
 
     context = {
         "proyectos": proyectos,
-        "proyecto_seleccionado": {
-            "id": proyecto_seleccionado.id if proyecto_seleccionado else None,
-            "nombre": proyecto_seleccionado.name if proyecto_seleccionado else None,
-            "descripcion": proyecto_seleccionado.description
+        "proyecto_seleccionado": (
+            {
+                "id": proyecto_seleccionado.id if proyecto_seleccionado else None,
+                "nombre": proyecto_seleccionado.name if proyecto_seleccionado else None,
+                "descripcion": (
+                    proyecto_seleccionado.description if proyecto_seleccionado else None
+                ),
+                "recursos": recursos,
+            }
             if proyecto_seleccionado
-            else None,
-            "recursos": recursos,
-        }
-        if proyecto_seleccionado
-        else None,
+            else None
+        ),
         "user_info": user_info,
     }
 
@@ -120,15 +124,13 @@ def create_project(request):
 
         # Muestras respuesta o rediriges al dashboard
         if response is False:
-            return HttpResponse("Error")   # fallo
-        
-        return HttpResponse("Funciono") # éxito
+            return HttpResponse("Error")  # fallo
 
-        
-    
+        return HttpResponse("Funciono")  # éxito
 
     # Si es GET, solo renderizas el formulario
     return render(request, "create_project.html")
+
 
 def create_network(request):
     if request.method == "POST":
@@ -141,6 +143,7 @@ def create_network(request):
             messages.error(request, "Failed to create network")
         return redirect("dashboard")
     return render(request, "create_network.html")
+
 
 def create_router(request):
     if request.method == "POST":
