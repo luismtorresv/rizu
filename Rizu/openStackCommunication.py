@@ -36,11 +36,11 @@ class OpenStackCommunication:
 
         self.conn.identity.assign_project_role_to_user(project, user, role)
 
-    def create_openstack_network(self, network_name, project_name):
+    def create_openstack_network(self, network_name, project_id):
         try:
-            project = self.conn.identity.find_project(project_name)
+            project = self.conn.identity.get_project(project_id)
             if not project:
-                raise ValueError(f"Project {project_name} not found")
+                raise ValueError(f"Project {project_id} not found")
 
             # create network
             network = self.conn.network.create_network(
