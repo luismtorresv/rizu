@@ -38,17 +38,12 @@ class OpenStackCommunication:
 
     def create_openstack_network(self, network_name, project_id):
         try:
-            project = self.conn.identity.get_project(project_id)
-            if not project:
-                raise ValueError(f"Project {project_id} not found")
+            # Connect directly with project scope
+            conn = openstack.connect(cloud="kolla-admin", project_id=project_id)
 
-            #Change the token to the necesary scope. 
-            self.conn = openstack.connect(cloud="kolla-admin", project_id=project_id)
-
-            # create network
-            network = self.conn.network.create_network(
+            network = conn.network.create_network(
                 name=network_name,
-                project_id=project.id,
+                project_id=project_id,
                 is_router_external=False,
                 admin_state_up=True,
             )
@@ -57,35 +52,26 @@ class OpenStackCommunication:
             print(f"Failed to create network {network_name}: {e}")
             return None
 
-    def create_openstack_router(
-        self, router_name, project_id, external_network_name=None
-    ):
+    def create_openstack_router(self, router_name, project_id, external_network_name=None):
         try:
-            project = self.conn.identity.get_project(project_id)
-            if not project:
-                raise ValueError(f"Project {project_id} not found")
-
-            #Change the token to the necesary scope. 
-            self.conn = openstack.connect(cloud="kolla-admin", project_id=project_id)
+            # Connect directly with project scope
+            conn = openstack.connect(cloud="kolla-admin", project_id=project_id)
 
             kwargs = {
                 "name": router_name,
-                "project_id": project.id,
+                "project_id": project_id,
                 "admin_state_up": True,
             }
 
-            # optionally set gateway if you pass an external network
             if external_network_name:
-                ext_net = self.conn.network.find_network(
+                ext_net = conn.network.find_network(
                     external_network_name, external=True
                 )
                 if not ext_net:
-                    raise ValueError(
-                        f"External network {external_network_name} not found"
-                    )
+                    raise ValueError(f"External network {external_network_name} not found")
                 kwargs["external_gateway_info"] = {"network_id": ext_net.id}
 
-            router = self.conn.network.create_router(**kwargs)
+            router = conn.network.create_router(**kwargs)
             return router
         except Exception as e:
             print(f"Failed to create router {router_name}: {e}")
