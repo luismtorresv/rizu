@@ -40,8 +40,7 @@
         <form method="get">
           <select name="project_id" class="form-select" onchange="this.form.submit()">
             {% for proyecto in proyectos %}
-            <option value="{{ proyecto.id }}" {% if proyecto_seleccionado and proyecto.id==proyecto_seleccionado.id
-              %}selected{% endif %}>
+            <option value="{{ proyecto.id }}" {% if proyecto_seleccionado and proyecto.id==proyecto_seleccionado.id %}selected{% endif %}>
               {{ proyecto.nombre }}
             </option>
             {% endfor %}
