@@ -4,9 +4,10 @@ from django.http import HttpResponse
 import openstack
 import os
 
-osc = OpenStackCommunication()
 
 from Rizu.openStackCommunication import OpenStackCommunication
+
+osc = OpenStackCommunication()
 
 
 def get_connection(project_id=None, system=False):
