@@ -37,6 +37,7 @@ def dashboard(request):
 
     if project_id:
         conn = get_connection(project_id=project_id)
+        request.session["project_id"] = project_id
         proyecto_seleccionado = conn.identity.get_project(project_id)
 
         try:
@@ -136,7 +137,7 @@ def create_project(request):
 def create_network(request):
     if request.method == "POST":
         name = request.POST.get("network_name")
-        project_id = request.POST.get("project_id")
+        project_id = request.session.get("project_id")
         net = osc.create_openstack_network(name, project_id)
         if net:
             messages.success(request, f"Network {name} created")
@@ -149,7 +150,7 @@ def create_network(request):
 def create_router(request):
     if request.method == "POST":
         name = request.POST.get("router_name")
-        project_id = request.POST.get("project_id")
+        project_id = request.session.get("project_id")
         external_net = request.POST.get("external_network_name") or None
         router = osc.create_openstack_router(name, project_id, external_net)
         if router:
