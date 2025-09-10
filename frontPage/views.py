@@ -128,7 +128,7 @@ def create_project(request):
         if response is False:
             return HttpResponse("Error")  # fallo
 
-        return HttpResponse("Funciono")  # éxito
+        return HttpResponse("Success")  # éxito
 
     # Si es GET, solo renderizas el formulario
     return render(request, "create_project.html")
@@ -138,6 +138,7 @@ def create_network(request):
     if request.method == "POST":
         name = request.POST.get("network_name")
         project_id = request.session.get("project_id")
+        print(project_id)
         net = osc.create_openstack_network(name, project_id)
         if net:
             messages.success(request, f"Network {name} created")
