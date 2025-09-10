@@ -58,15 +58,15 @@ class OpenStackCommunication:
             return None
 
     def create_openstack_router(
-        self, router_name, project_name, external_network_name=None
+        self, router_name, project_id, external_network_name=None
     ):
         try:
-            project = self.conn.identity.find_project(project_name)
+            project = self.conn.identity.get_project(project_id)
             if not project:
-                raise ValueError(f"Project {project_name} not found")
+                raise ValueError(f"Project {project_id} not found")
 
             #Change the token to the necesary scope. 
-            #self.conn = openstack.connect(cloud="kolla-admin", project_id=project_id)
+            self.conn = openstack.connect(cloud="kolla-admin", project_id=project_id)
 
             kwargs = {
                 "name": router_name,
