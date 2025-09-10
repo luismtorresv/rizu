@@ -41,7 +41,7 @@
           <select name="project_id" class="form-select" onchange="this.form.submit()">
             {% for proyecto in proyectos %}
             <option value="{{ proyecto.id }}">
-            {% if proyecto_seleccionado and proyecto.id == proyecto_seleccionado.id %}selected{% endif %}
+              {% if proyecto_seleccionado and proyecto.id == proyecto_seleccionado.id %}selected{% endif %}
               {{ proyecto.nombre }}
             </option>
             {% endfor %}
@@ -103,8 +103,8 @@
       {% endif %}
 
       <div class="d-grid gap-2 col-6 mx-auto justify-content-center mt-5">
-        <a href="{% url 'create_vm' %}" class="btn btn-create btn-lg">
-          <i class="fa-solid fa-plus me-2"></i>Create New VM
+        <a href="{% url 'create_project' %}" class="btn btn-create btn-lg">
+          <i class="fa-solid fa-plus me-2"></i>Create New Project
         </a>
         <a href="{% url 'create_network' %}" class="btn btn-warning btn-lg">
           <i class="fa-solid fa-network-wired me-2"></i>Create Network
