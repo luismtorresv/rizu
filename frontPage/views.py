@@ -1,4 +1,5 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
+from django.contrib import messages
 from django.http import HttpResponse
 import openstack
 import os
@@ -128,3 +129,28 @@ def create_project(request):
 
     # Si es GET, solo renderizas el formulario
     return render(request, "create_project.html")
+
+def create_network(request):
+    if request.method == "POST":
+        name = request.POST.get("network_name")
+        project_id = request.POST.get("project_id")
+        net = osc.create_openstack_network(name, project_id)
+        if net:
+            messages.success(request, f"Network {name} created")
+        else:
+            messages.error(request, "Failed to create network")
+        return redirect("dashboard")
+    return render(request, "create_network.html")
+
+def create_router(request):
+    if request.method == "POST":
+        name = request.POST.get("router_name")
+        project_id = request.POST.get("project_id")
+        external_net = request.POST.get("external_network_name") or None
+        router = osc.create_openstack_router(name, project_id, external_net)
+        if router:
+            messages.success(request, f"Router {name} created")
+        else:
+            messages.error(request, "Failed to create router")
+        return redirect("dashboard")
+    return render(request, "create_router.html")
