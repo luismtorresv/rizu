@@ -42,6 +42,9 @@ class OpenStackCommunication:
             if not project:
                 raise ValueError(f"Project {project_id} not found")
 
+            #Change the token to the necesary scope. 
+            self.conn = openstack.connect(cloud="kolla-admin", project_id=project_id)
+
             # create network
             network = self.conn.network.create_network(
                 name=network_name,
@@ -61,6 +64,9 @@ class OpenStackCommunication:
             project = self.conn.identity.find_project(project_name)
             if not project:
                 raise ValueError(f"Project {project_name} not found")
+
+            #Change the token to the necesary scope. 
+            #self.conn = openstack.connect(cloud="kolla-admin", project_id=project_id)
 
             kwargs = {
                 "name": router_name,

@@ -7,6 +7,8 @@ import os
 
 from Rizu.openStackCommunication import OpenStackCommunication
 
+osc = OpenStackCommunication()
+
 
 def get_connection(project_id=None, system=False):
     os.environ["OS_CLIENT_CONFIG_FILE"] = os.path.expanduser("/etc/kolla/clouds.yaml")
@@ -136,8 +138,7 @@ def create_network(request):
     if request.method == "POST":
         name = request.POST.get("network_name")
         project_id = request.session.get("project_id")
-        conn = get_connection(project_id=project_id)
-        net = conn.create_openstack_network(name, project_id)
+        net = osc.create_openstack_network(name, project_id)
         if net:
             messages.success(request, f"Network {name} created")
         else:
@@ -151,8 +152,7 @@ def create_router(request):
         name = request.POST.get("router_name")
         project_id = request.session.get("project_id")
         external_net = request.POST.get("external_network_name") or None
-        conn = get_connection(project_id=project_id)
-        router = conn.create_openstack_router(name, project_id, external_net)
+        router = osc.create_openstack_router(name, project_id, external_net)
         if router:
             messages.success(request, f"Router {name} created")
         else:
