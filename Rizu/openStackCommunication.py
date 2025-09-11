@@ -52,7 +52,9 @@ class OpenStackCommunication:
             print(f"Failed to create network {network_name}: {e}")
             return None
 
-    def create_openstack_router(self, router_name, project_id, external_network_name=None):
+    def create_openstack_router(
+        self, router_name, project_id, external_network_name=None
+    ):
         try:
             # Connect directly with project scope
             conn = openstack.connect(cloud="kolla-admin", project_id=project_id)
@@ -68,7 +70,9 @@ class OpenStackCommunication:
                     external_network_name, external=True
                 )
                 if not ext_net:
-                    raise ValueError(f"External network {external_network_name} not found")
+                    raise ValueError(
+                        f"External network {external_network_name} not found"
+                    )
                 kwargs["external_gateway_info"] = {"network_id": ext_net.id}
 
             router = conn.network.create_router(**kwargs)
