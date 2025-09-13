@@ -1,9 +1,13 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
+from django.contrib import messages
 from django.http import HttpResponse
 import openstack
 import os
 
+
 from Rizu.openStackCommunication import OpenStackCommunication
+
+osc = OpenStackCommunication()
 
 
 def get_connection(project_id=None, system=False):
@@ -33,6 +37,7 @@ def dashboard(request):
 
     if project_id:
         conn = get_connection(project_id=project_id)
+        request.session["project_id"] = project_id
         proyecto_seleccionado = conn.identity.get_project(project_id)
 
         try:
@@ -88,16 +93,18 @@ def dashboard(request):
 
     context = {
         "proyectos": proyectos,
-        "proyecto_seleccionado": {
-            "id": proyecto_seleccionado.id if proyecto_seleccionado else None,
-            "nombre": proyecto_seleccionado.name if proyecto_seleccionado else None,
-            "descripcion": proyecto_seleccionado.description
+        "proyecto_seleccionado": (
+            {
+                "id": proyecto_seleccionado.id if proyecto_seleccionado else None,
+                "nombre": proyecto_seleccionado.name if proyecto_seleccionado else None,
+                "descripcion": (
+                    proyecto_seleccionado.description if proyecto_seleccionado else None
+                ),
+                "recursos": recursos,
+            }
             if proyecto_seleccionado
-            else None,
-            "recursos": recursos,
-        }
-        if proyecto_seleccionado
-        else None,
+            else None
+        ),
         "user_info": user_info,
     }
 
@@ -119,12 +126,36 @@ def create_project(request):
 
         # Muestras respuesta o rediriges al dashboard
         if response is False:
-            return HttpResponse("Error")   # fallo
-        
-        return HttpResponse("Funciono") # éxito
+            return HttpResponse("Error")  # fallo
 
-        
-    
+        return HttpResponse("Success")  # éxito
 
     # Si es GET, solo renderizas el formulario
     return render(request, "create_project.html")
+
+
+def create_network(request):
+    if request.method == "POST":
+        name = request.POST.get("network_name")
+        project_id = request.session.get("project_id")
+        net = osc.create_openstack_network(name, project_id)
+        if net:
+            messages.success(request, f"Network {name} created")
+        else:
+            messages.error(request, "Failed to create network")
+        return redirect("dashboard")
+    return render(request, "create_network.html")
+
+
+def create_router(request):
+    if request.method == "POST":
+        name = request.POST.get("router_name")
+        project_id = request.session.get("project_id")
+        external_net = request.POST.get("external_network_name") or None
+        router = osc.create_openstack_router(name, project_id, external_net)
+        if router:
+            messages.success(request, f"Router {name} created")
+        else:
+            messages.error(request, "Failed to create router")
+        return redirect("dashboard")
+    return render(request, "create_router.html")

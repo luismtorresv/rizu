@@ -35,3 +35,48 @@ class OpenStackCommunication:
             raise ValueError("Project, user, or role not found!")
 
         self.conn.identity.assign_project_role_to_user(project, user, role)
+
+    def create_openstack_network(self, network_name, project_id):
+        try:
+            # Connect directly with project scope
+            conn = openstack.connect(cloud="kolla-admin", project_id=project_id)
+
+            network = conn.network.create_network(
+                name=network_name,
+                project_id=project_id,
+                is_router_external=False,
+                admin_state_up=True,
+            )
+            return network
+        except Exception as e:
+            print(f"Failed to create network {network_name}: {e}")
+            return None
+
+    def create_openstack_router(
+        self, router_name, project_id, external_network_name=None
+    ):
+        try:
+            # Connect directly with project scope
+            conn = openstack.connect(cloud="kolla-admin", project_id=project_id)
+
+            kwargs = {
+                "name": router_name,
+                "project_id": project_id,
+                "admin_state_up": True,
+            }
+
+            if external_network_name:
+                ext_net = conn.network.find_network(
+                    external_network_name, external=True
+                )
+                if not ext_net:
+                    raise ValueError(
+                        f"External network {external_network_name} not found"
+                    )
+                kwargs["external_gateway_info"] = {"network_id": ext_net.id}
+
+            router = conn.network.create_router(**kwargs)
+            return router
+        except Exception as e:
+            print(f"Failed to create router {router_name}: {e}")
+            return None
