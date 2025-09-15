@@ -1,21 +1,25 @@
-from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login as auth_login
+from django.contrib.auth.forms import AuthenticationForm
 from .forms import OpenStackUserRegistrationForm
+from django.shortcuts import render, redirect
+from django.contrib import messages
 
 
 def login_view(request):
     if request.method == "POST":
-        username = request.POST.get("username")
-        password = request.POST.get("password")
-        user = authenticate(request, username=username, password=password)
+        form = AuthenticationForm(request, data=request.POST)
 
-        if user is not None:
+        if form.is_valid():
+            user = form.get_user()
             auth_login(request, user)
+
             return redirect("front_page_index")
         else:
-            return render(request, "login.html", {"error": "Invalid credentials"})
+            messages.error(request, "Invalid username or password")
+    else:
+        form = AuthenticationForm()
 
-    return render(request, "login.html")
+    return render(request, "login.html", {"form": form})
 
 
 def register_view(request):
