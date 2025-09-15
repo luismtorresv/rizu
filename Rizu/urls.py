@@ -24,10 +24,12 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     path("", include("frontPage.urls")),
     path("dashboard/", include("dashboard.urls")),
-
-    #authentication routes
+    # authentication routes
     path("login/", auth_views.login_view, name="login"),
     path("register/", auth_views.register_view, name="register"),
-    path( "logout/", auth.LogoutView.as_view(template_name="frontPage/index.html"), name="logout"),
-
+    path(
+        "logout/",
+        auth.LogoutView.as_view(template_name="frontPage/index.html"),
+        name="logout",
+    ),
 ]

@@ -3,6 +3,7 @@ from django.contrib.auth.models import AbstractUser
 
 # Create your models here.
 
+
 # Abstract user already comes with the username, email,first_name and last_name, password,
 # and a status (is_active, is_staff, is_superuser) attributes.
 class OpenStackUser(AbstractUser):

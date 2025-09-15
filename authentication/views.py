@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login as auth_login
-from .forms import OpenStackUserRegistrationForm 
+from .forms import OpenStackUserRegistrationForm
 
 
 def login_view(request):
