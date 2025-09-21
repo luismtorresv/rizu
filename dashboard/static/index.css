@@ -480,18 +480,3 @@ body {
   color: var(--text-dark);
   text-decoration: none;
 }
-
-/* ===============================================
-   WELCOME PAGE STYLES
-   =============================================== */
-.welcome-content {
-  padding: 1rem 0;
-}
-
-.welcome-description {
-  font-size: 1rem;
-  line-height: 1.6;
-  color: var(--text-dark);
-  margin-bottom: 1.5rem;
-  text-align: justify;
-}
