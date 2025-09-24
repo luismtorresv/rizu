@@ -26,47 +26,47 @@ def dashboard(request):
     project_id = request.GET.get("project_id")
 
     sys_conn = get_connection(system=True)
-    proyectos = [
-        {"id": proj.id, "nombre": proj.name, "descripcion": proj.description}
+    projects = [
+        {"id": proj.id, "name": proj.name, "description": proj.description}
         for proj in sys_conn.identity.projects()
         if proj.name.lower() not in ["service", "services"]
     ]
 
-    proyecto_seleccionado = None
-    recursos = {"instancias": [], "routers": [], "redes": []}
+    selected_project = None
+    resources = {"instances": [], "routers": [], "networks": []}
 
     if project_id:
         conn = get_connection(project_id=project_id)
         request.session["project_id"] = project_id
-        proyecto_seleccionado = conn.identity.get_project(project_id)
+        selected_project = conn.identity.get_project(project_id)
 
         try:
-            recursos["instancias"] = [vm.to_dict() for vm in conn.compute.servers()]
+            resources["instances"] = [vm.to_dict() for vm in conn.compute.servers()]
         except Exception as e:
-            print(f"Error al listar instancias: {e}")
+            print(f"Error listing instances: {e}")
 
         try:
-            recursos["routers"] = [
+            resources["routers"] = [
                 router.to_dict() for router in conn.network.routers()
             ]
         except Exception as e:
-            print(f"Error al listar routers: {e}")
+            print(f"Error listing routers: {e}")
 
         try:
-            recursos["redes"] = [
+            resources["networks"] = [
                 net.to_dict()
                 for net in conn.network.networks()
                 if net.project_id == project_id
             ]
         except Exception as e:
-            print(f"Error al listar redes: {e}")
+            print(f"Error listing networks: {e}")
 
         try:
             current_account = conn.current_user.name
         except Exception:
             current_account = "N/A"
 
-        # Roles en el proyecto
+        # Roles in the project
         roles = []
         try:
             roles = [
@@ -76,33 +76,33 @@ def dashboard(request):
                 )
             ]
         except Exception as e:
-            print(f"Error al obtener roles: {e}")
+            print(f"Error getting roles: {e}")
         role_info = ", ".join(roles) if roles else "N/A"
 
     user_info = None
-    if proyecto_seleccionado:
+    if selected_project:
         user_info = {
-            "project_id": proyecto_seleccionado.id,
-            "project_name": proyecto_seleccionado.name,
-            "status": "Enabled" if proyecto_seleccionado.is_enabled else "Disabled",
-            "instances": len(recursos["instancias"]),
-            "routers": len(recursos["routers"]),
-            "networks": len(recursos["redes"]),
+            "project_id": selected_project.id,
+            "project_name": selected_project.name,
+            "status": "Enabled" if selected_project.is_enabled else "Disabled",
+            "instances": len(resources["instances"]),
+            "routers": len(resources["routers"]),
+            "networks": len(resources["networks"]),
             "role": role_info,
         }
 
     context = {
-        "proyectos": proyectos,
-        "proyecto_seleccionado": (
+        "projects": projects,
+        "selected_project": (
             {
-                "id": proyecto_seleccionado.id if proyecto_seleccionado else None,
-                "nombre": proyecto_seleccionado.name if proyecto_seleccionado else None,
-                "descripcion": (
-                    proyecto_seleccionado.description if proyecto_seleccionado else None
+                "id": selected_project.id if selected_project else None,
+                "name": selected_project.name if selected_project else None,
+                "description": (
+                    selected_project.description if selected_project else None
                 ),
-                "recursos": recursos,
+                "resources": resources,
             }
-            if proyecto_seleccionado
+            if selected_project
             else None
         ),
         "user_info": user_info,
@@ -119,18 +119,18 @@ def create_project(request):
     if request.method == "POST":
         name = request.POST.get("name")
         description = request.POST.get("description")
-        username = "admin"  # puedes cambiarlo luego según autenticación real
+        username = "admin"  # you can change this later based on real authentication
 
         conn = OpenStackCommunication()
         response = conn.create_openstack_project(name, description, username)
 
-        # Muestras respuesta o rediriges al dashboard
+        # Show response or redirect to dashboard
         if response is False:
-            return HttpResponse("Error")  # fallo
+            return HttpResponse("Error")  # failure
 
-        return HttpResponse("Success")  # éxito
+        return HttpResponse("Success")  # success
 
-    # Si es GET, solo renderizas el formulario
+    # If it's GET, just render the form
     return render(request, "create_project.html")
 
 
