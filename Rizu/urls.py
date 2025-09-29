@@ -29,7 +29,7 @@ urlpatterns = [
     path("register/", auth_views.register_view, name="register"),
     path(
         "logout/",
-        auth.LogoutView.as_view(template_name="frontPage/index.html"),
+        auth.LogoutView.as_view(next_page="front_page_index"),
         name="logout",
     ),
 ]

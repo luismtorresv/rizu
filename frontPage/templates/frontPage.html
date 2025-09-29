@@ -10,8 +10,24 @@
     <link rel="stylesheet" href="{% static 'index.css' %}">
 </head>
 <body>
-    hello world
-    <a href="{% url 'register' %}" class="btn btn-primary">Register</a>
-    <a href="{% url 'login' %}" class="btn btn-secondary">Login</a>
+    <h1>Rizu is an alternative dashboard to OpenStack's Horizon targeted at developers 
+        with little to no cloud computing experience that want to set up a private cloud on-premise.
+    </h1>
+    {% if user.is_authenticated %}
+        <form method="POST" action="{% url 'logout' %}">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-primary">Logout</button>
+        </form>
+        <p>Your Role is: {{ user_role }}</p>
+    {% else %}
+        <a href="{% url 'register' %}" class="btn btn-primary">Register</a>
+        <a href="{% url 'login' %}" class="btn btn-secondary">Login</a>
+    {% endif %}
+
+     {% if user.role == "project_manager" %}
+        <p>You are a project Manager!</p>
+    {% elif user.role == "user" %}
+         <p>You are a user!</p>
+    {% endif %}
 </body>
 </html>
