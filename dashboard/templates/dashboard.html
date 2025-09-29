@@ -5,22 +5,25 @@
 
 {% block body_class %}page-dashboard{% endblock %}
 
-{% block header %}
-<div class="d-flex main-container vh-100">
-  <div class="sidebar d-flex flex-column align-items-center p-4">
-    <h3 class="mb-4 d-flex align-items-center">
-      <img src="{% static 'images/rizusinfondo.png' %}" alt="Rizu Logo" class="me-2 sidebar-logo">
-      <span style="color: var(--text-dark);">Rizu</span>
-    </h3>
-    <hr class="w-100">
-    <div class="text-start w-100">
-      <h4 class="mb-3">Details</h4>
-      <p><strong>Project ID:</strong> {{ user_info.project_id }}</p>
-      <p><strong>Status:</strong> {{ user_info.status }}</p>
-      <p><strong>Instances:</strong> {{ user_info.instances }}</p>
-      <p><strong>Volumes:</strong> {{ user_info.volumes }}</p>
-      <p><strong>Networks:</strong> {{ user_info.networks }}</p>
-      <p><strong>Role:</strong> {{ user_info.role }}</p>
+  <div class="dashboard-main-container">
+    <div class="sidebar">
+      <h3 class="sidebar-title">
+        <img src="{% static 'images/rizusinfondo.png' %}" alt="Rizu Logo" class="sidebar-logo">
+        <span class="sidebar-brand-text">Rizu</span>
+      </h3>
+      <hr class="sidebar-divider">
+      <div class="sidebar-details">
+        <h4 class="sidebar-details-title">Details</h4>
+        <p class="sidebar-detail-item"><strong>Project ID:</strong> {{ user_info.project_id }}</p>
+        <p class="sidebar-detail-item"><strong>Status:</strong> {{ user_info.status }}</p>
+        <p class="sidebar-detail-item"><strong>Instances:</strong> {{ user_info.instances }}</p>
+        <p class="sidebar-detail-item"><strong>Volumes:</strong> {{ user_info.volumes }}</p>
+        <p class="sidebar-detail-item"><strong>Networks:</strong> {{ user_info.networks }}</p>
+        <p class="sidebar-detail-item"><strong>Role:</strong> {{ user_info.role }}</p>
+      </div>
+      <div class="sidebar-footer">
+        <button type="button" class="btn-signout">Sign out</button>
+      </div>
     </div>
     <div class="mt-auto w-100">
       <button type="button" class="btn btn-danger w-100">Sign out</button>
@@ -28,54 +31,95 @@
   </div>
 {% endblock %}
 
-{% block content %}
-  <div class="dashboard-content w-75 p-5 overflow-auto">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-      <h1>Dashboard</h1>
-      <form method="get">
-        <select name="project_id" class="form-select" onchange="this.form.submit()">
-          {% for project in projects %}
-          <option value="{{ project.id }}" {% if selected_project and project.id == selected_project.id %}selected{% endif %}>
-            {{ project.name }}
-          </option>
-          {% endfor %}
-        </select>
-      </form>
-    </div>
-
-    {% if selected_project %}
-    <div class="card shadow-sm mb-4">
-      <div class="card-header bg-primary text-white">
-        <h4 class="mb-0">
-          <i class="fa-solid fa-diagram-project me-2"></i>
-          {{ selected_project.name }}
-          <small class="ms-2 text-white-50">{{ selected_project.description }}</small>
-        </h4>
+    <div class="dashboard-content">
+      <div class="dashboard-header">
+          <h1>Dashboard</h1>
+          <form method="get">
+              <select name="project_id" class="project-selector" onchange="this.form.submit()">
+                <option value="" {% if not proyecto_seleccionado %}selected{% endif %}>
+                    Choose a project...
+                </option>
+                  {% for proyecto in proyectos %}
+                      {% if proyecto_seleccionado and proyecto.id == proyecto_seleccionado.id %}
+                          <option value="{{ proyecto.id }}" selected>{{ proyecto.nombre }}</option>
+                      {% else %}
+                          <option value="{{ proyecto.id }}">{{ proyecto.nombre }}</option>
+                      {% endif %}
+                  {% endfor %}
+              </select>
+          </form>
       </div>
-      <div class="card-body">
-        <h5 class="card-title"><i class="fa-solid fa-server me-2 text-primary"></i>Instances</h5>
-        <ul class="list-group list-group-flush mb-4">
-          {% for vm in selected_project.resources.instances %}
-          <li class="list-group-item d-flex justify-content-between align-items-center">
-            <span>{{ vm.name }}</span>
-            <span class="badge bg-success rounded-pill">{{ vm.status }}</span>
-          </li>
-          {% empty %}
-          <li class="list-group-item text-muted">No instances yet</li>
-          {% endfor %}
-        </ul>
 
-        <h5 class="card-title"><i class="fa-solid fa-route me-2 text-info"></i>Routers</h5>
-        <ul class="list-group list-group-flush mb-4">
-          {% for router in selected_project.resources.routers %}
-          <li class="list-group-item d-flex justify-content-between align-items-center">
-            <span>{{ router.name }}</span>
-            <span class="text-muted small">ID: {{ router.id }}</span>
-          </li>
-          {% empty %}
-          <li class="list-group-item text-muted">No routers yet</li>
-          {% endfor %}
-        </ul>
+      {% if proyecto_seleccionado %}
+      <div class="project-card">
+        <div class="project-card-header">
+          <h4 class="project-card-title">
+            <i class="fa-solid fa-diagram-project project-icon"></i>
+            {{ proyecto_seleccionado.nombre }}
+            <small class="project-description">{{ proyecto_seleccionado.descripcion }}</small>
+          </h4>
+        </div>
+        <div class="project-card-body">
+          <h5 class="resource-section-title">
+            <i class="fa-solid fa-server resource-icon resource-icon-instances"></i>Instances
+          </h5>
+          <ul class="resource-list">
+            {% for vm in proyecto_seleccionado.recursos.instancias %}
+            <li class="resource-item">
+              <span>{{ vm.name }}</span>
+              <span class="resource-status-badge">{{ vm.status }}</span>
+            </li>
+            {% empty %}
+            <li class="resource-item-empty">No instances yet</li>
+            {% endfor %}
+          </ul>
+
+          <h5 class="resource-section-title">
+            <i class="fa-solid fa-route resource-icon resource-icon-routers"></i>Routers
+          </h5>
+          <ul class="resource-list">
+            {% for router in proyecto_seleccionado.recursos.routers %}
+            <li class="resource-item">
+              <span>{{ router.name }}</span>
+              <span class="resource-id">ID: {{ router.id }}</span>
+            </li>
+            {% empty %}
+            <li class="resource-item-empty">No routers yet</li>
+            {% endfor %}
+          </ul>
+
+          <h5 class="resource-section-title">
+            <i class="fa-solid fa-network-wired resource-icon resource-icon-networks"></i>Network
+          </h5>
+          <ul class="resource-list">
+            {% for net in proyecto_seleccionado.recursos.redes %}
+            <li class="resource-item">
+              <span>{{ net.name }}</span>
+              <span class="resource-id">ID: {{ net.id }}</span>
+            </li>
+            {% empty %}
+            <li class="resource-item-empty">No networks yet</li>
+            {% endfor %}
+          </ul>
+        </div>
+      </div>
+      {% else %}
+      <div class="no-project-alert">
+        <p>Select a proyect</p>
+      </div>
+      {% endif %}
+
+      <div class="dashboard-actions">
+        <a href="{% url 'create_project' %}" class="btn-dashboard-action btn-create-project">
+          <i class="fa-solid fa-plus action-icon"></i>Create New Project
+        </a>
+        <a href="{% url 'create_network' %}" class="btn-dashboard-action btn-create-network">
+          <i class="fa-solid fa-network-wired action-icon"></i>Create Network
+        </a>
+        <a href="{% url 'create_router' %}" class="btn-dashboard-action btn-create-router">
+          <i class="fa-solid fa-route action-icon"></i>Create Router
+        </a>
+      </div>
 
         <h5 class="card-title"><i class="fa-solid fa-network-wired me-2 text-warning"></i>Networks</h5>
         <ul class="list-group list-group-flush mb-4">
