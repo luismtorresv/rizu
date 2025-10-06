@@ -1,0 +1,96 @@
+site_name: Rizu Wiki
+site_url: https://luismtorresv.github.io/rizu
+site_description: Wiki for the Rizu project.
+site_author: Rizu team
+
+theme:
+  name: material
+
+  features:
+    - navigation.footer
+    - navigation.instant
+    - navigation.instant.progress
+    - navigation.sections
+    - navigation.expand
+
+    - content.action.edit
+    - content.action.view
+
+    - search.suggest
+    - search.highlight
+
+  icon:
+    repo: fontawesome/brands/github
+  logo: assets/logo/rizu-squirrel.jpg
+  favicon: assets/logo/rizu-squirrel.jpg
+
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: amber
+      accent: indigo
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: amber
+      accent: indigo
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+
+repo_url: https://github.com/luismtorresv/rizu
+repo_name: rizu
+edit_uri: edit/wiki/docs
+
+plugins:
+  - git-revision-date-localized:
+      enabled: true
+      enable_creation_date: true
+      type: iso_datetime
+  - social:
+      enabled: true
+  - git-authors:
+      enabled: true
+  - search
+  - glightbox:
+      enabled: true
+      touchNavigation: true
+      loop: false
+      effect: none
+      slide_effect: none
+      width: auto
+      height: auto
+      zoomable: true
+      draggable: true
+      auto_caption: false
+      caption_position: bottom
+      background: white
+      shadow: true
+      manual: false
+  - enumerate-headings:
+      enabled: false
+      increment_across_pages: false
+      strict: false
+      exclude:
+        - index.md
+
+markdown_extensions:
+  # Code blocks
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.superfences
+
+  # Admonitions
+  - admonition
+  - pymdownx.details
+
+  # Images
+  - attr_list
+  - md_in_html
+  - pymdownx.blocks.caption
