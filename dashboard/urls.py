@@ -10,4 +10,10 @@ urlpatterns = [
     path(
         "create-project/", views.create_project, name="create_project"
     ),  # ruta de crear project
+    path(
+        "projects/join/", views.join_projects_view, name="join_projects"
+    ),  # ruta de join projects
+    path(
+        "projects/<str:project_id>/", views.project_detail_view, name="project_detail"
+    ),
 ]

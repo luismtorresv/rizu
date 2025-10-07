@@ -173,3 +173,83 @@ def create_router(request):
             messages.error(request, "Failed to create router")
         return redirect("dashboard")
     return render(request, "create_router.html")
+
+
+# -------- JOIN PROJECTS AND PROJECT DETAIL VIEWS (no terminado..)--------
+def _initials(name: str) -> str:
+    if not name:
+        return "PR"
+    parts = [p for p in name.strip().split() if p]
+    return (parts[0][0] + (parts[1][0] if len(parts) > 1 else "")).upper()
+
+
+def join_projects_view(request):
+    q = (request.GET.get("q") or "").strip().lower()
+
+    try:
+        sys_conn = get_connection(system=True)
+        projects_raw = [
+            {"id": p.id, "name": p.name, "description": p.description or ""}
+            for p in sys_conn.identity.projects()
+            if p.name and p.name.lower() not in ["service", "services"]
+        ]
+    except Exception:
+        projects_raw = []
+
+    projects = []
+    for p in projects_raw:
+        if q and q not in f"{p['name']} {p['description']}".lower():
+            continue
+        p["initials"] = _initials(p["name"])
+        projects.append(p)
+
+    projects.sort(key=lambda x: x["name"].lower())
+
+    username = (
+        request.user.get_full_name() or request.user.get_username()
+        if request.user.is_authenticated
+        else "Guest"
+    )
+
+    return render(
+        request,
+        "join_projects.html",
+        {
+            "projects": projects,
+            "request": request,
+            "username": username,
+        },
+    )
+
+
+def project_detail_view(request, project_id: str):
+    conn = get_connection(project_id=project_id)
+    project = conn.identity.get_project(project_id)
+
+    resources = {"instances": [], "routers": [], "networks": []}
+    try:
+        resources["instances"] = [vm.to_dict() for vm in conn.compute.servers()]
+    except Exception:
+        pass
+    try:
+        resources["routers"] = [r.to_dict() for r in conn.network.routers()]
+    except Exception:
+        pass
+    try:
+        resources["networks"] = [
+            n.to_dict()
+            for n in conn.network.networks()
+            if getattr(n, "project_id", None) == project_id
+        ]
+    except Exception:
+        pass
+
+    context = {
+        "project": {
+            "id": project.id,
+            "name": project.name,
+            "description": project.description or "",
+        },
+        "resources": resources,
+    }
+    return render(request, "project_detail.html", context)

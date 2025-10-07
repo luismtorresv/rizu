@@ -1,0 +1,76 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Join a project RIZU</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+  <link rel="stylesheet" href="{% static 'index.css' %}">
+</head>
+<body class="page-dashboard">
+  <div class="dashboard-main-container">
+
+    <div class="sidebar">
+      <h3 class="sidebar-title">
+        <img src="{% static 'images/rizusinfondo.png' %}" alt="Rizu Logo" class="sidebar-logo">
+        <span class="sidebar-brand-text">Rizu</span>
+      </h3>
+      <hr class="sidebar-divider">
+      <div class="sidebar-details">
+        <h4 class="sidebar-details-title">User Details</h4>
+        <p class="sidebar-detail-item"><strong>Username:</strong> {{ username|default:"Guest" }}</p>
+      </div>
+      <div class="sidebar-footer">
+        <button type="button" class="btn-signout">Sign out</button>
+      </div>
+    </div>
+
+    <main class="dashboard-content">
+      <div class="jp-header-bar">
+        <div>
+          <h1> Join a project</h1>
+          <p class="text-muted m-0">Pick a project to browse its details.</p>
+        </div>
+
+        <form method="get" class="jp-form-inline-gap">
+          <div class="jp-search position-relative">
+            <span class="jp-search-icon"><i class="fa-solid fa-magnifying-glass"></i></span>
+            <input type="search" name="q" value="{{ request.GET.q }}" placeholder="Search projects..." class="jp-search-input" aria-label="Search projects">
+          </div>
+        </form>
+      </div>
+
+      <section class="jp-grid" aria-live="polite">
+        {% if projects %}
+          {% for p in projects %}
+            <article class="jp-card">
+              <div class="jp-avatar" aria-hidden="true">{{ p.initials }}</div>
+
+              <div class="jp-body">
+                <h3 class="jp-name">{{ p.name }}</h3>
+                <p class="jp-desc">{{ p.description|default:"No description" }}</p>
+                <div class="jp-chips">
+                  <span class="jp-chip">Private Cloud</span>
+                  <span class="jp-badge jp-badge-available">Available</span>
+                </div>
+              </div>
+
+              <div class="jp-actions">
+                <a class="jp-btn" href="{% url 'project_detail' p.id %}">View</a>
+                <!-- Join deshabilitado -->
+                <button class="jp-btn-primary" type="button">Join</button>
+              </div>
+            </article>
+          {% endfor %}
+        {% else %}
+          <div class="jp-empty">No projects found.</div>
+        {% endif %}
+      </section>
+
+    </main>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

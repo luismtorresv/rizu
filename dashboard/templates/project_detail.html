@@ -1,0 +1,95 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>{{ project.name }} • Details</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+  <link rel="stylesheet" href="{% static 'index.css' %}">
+</head>
+<body class="page-dashboard">
+  <div class="dashboard-main-container">
+    <div class="sidebar">
+      <h3 class="sidebar-title">
+        <img src="{% static 'images/rizusinfondo.png' %}" alt="Rizu Logo" class="sidebar-logo">
+        <span class="sidebar-brand-text">Rizu</span>
+      </h3>
+      <hr class="sidebar-divider">
+      <div class="sidebar-details">
+        <h4 class="sidebar-details-title">Project</h4>
+        <p class="sidebar-detail-item"><strong>ID:</strong> {{ project.id }}</p>
+        <p class="sidebar-detail-item"><strong>Name:</strong> {{ project.name }}</p>
+      </div>
+      <div class="sidebar-footer">
+        <button type="button" class="btn-signout">Sign out</button>
+      </div>
+    </div>
+
+    <main class="dashboard-content">
+      <div class="dashboard-header">
+        <h1>{{ project.name }}</h1>
+        <a class="btn-dashboard-action btn-create-project" href="{% url 'join_projects' %}">&larr; Back to projects</a>
+      </div>
+
+      {% if project.description %}
+        <div class="alert alert-info">{{ project.description }}</div>
+      {% endif %}
+
+      <div class="project-card">
+        <div class="project-card-header">
+          <h4 class="project-card-title">
+            <i class="fa-solid fa-diagram-project project-icon"></i>
+            Resources
+          </h4>
+        </div>
+        <div class="project-card-body">
+          <h5 class="resource-section-title">
+            <i class="fa-solid fa-server resource-icon resource-icon-instances"></i>Instances
+          </h5>
+          <ul class="resource-list">
+            {% for vm in resources.instances %}
+              <li class="resource-item">
+                <span>{{ vm.name|default:vm.id }}</span>
+                <span class="resource-status-badge">{{ vm.status|default:"N/A" }}</span>
+              </li>
+            {% empty %}
+              <li class="resource-item-empty">No instances found</li>
+            {% endfor %}
+          </ul>
+
+          <h5 class="resource-section-title">
+            <i class="fa-solid fa-route resource-icon resource-icon-routers"></i>Routers
+          </h5>
+          <ul class="resource-list">
+            {% for r in resources.routers %}
+              <li class="resource-item">
+                <span>{{ r.name|default:r.id }}</span>
+                <span class="resource-id">ID: {{ r.id }}</span>
+              </li>
+            {% empty %}
+              <li class="resource-item-empty">No routers found</li>
+            {% endfor %}
+          </ul>
+
+          <h5 class="resource-section-title">
+            <i class="fa-solid fa-network-wired resource-icon resource-icon-networks"></i>Networks
+          </h5>
+          <ul class="resource-list">
+            {% for n in resources.networks %}
+              <li class="resource-item">
+                <span>{{ n.name|default:n.id }}</span>
+                <span class="resource-id">ID: {{ n.id }}</span>
+              </li>
+            {% empty %}
+              <li class="resource-item-empty">No networks found</li>
+            {% endfor %}
+          </ul>
+        </div>
+      </div>
+    </main>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
