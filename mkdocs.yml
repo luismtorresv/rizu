@@ -5,6 +5,7 @@ site_author: Rizu team
 
 theme:
   name: material
+  custom_dir: overrides
 
   features:
     - navigation.footer
