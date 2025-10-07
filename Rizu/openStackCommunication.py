@@ -4,9 +4,6 @@ import os
 
 class OpenStackCommunication:
     def __init__(self, cloud="kolla-admin-system"):
-        os.environ["OS_CLIENT_CONFIG_FILE"] = os.path.expanduser(
-            "/etc/kolla/clouds.yaml"
-        )
         self.conn = openstack.connect(cloud=cloud)
 
     def create_openstack_project(self, project_name, project_description, username):

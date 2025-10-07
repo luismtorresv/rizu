@@ -11,8 +11,6 @@ osc = OpenStackCommunication()
 
 
 def get_connection(project_id=None, system=False):
-    os.environ["OS_CLIENT_CONFIG_FILE"] = os.path.expanduser("/etc/kolla/clouds.yaml")
-
     if system:
         return openstack.connect(cloud="kolla-admin-system")
 
