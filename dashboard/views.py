@@ -26,47 +26,61 @@ def dashboard(request):
     project_id = request.GET.get("project_id")
 
     sys_conn = get_connection(system=True)
-    proyectos = [
-        {"id": proj.id, "nombre": proj.name, "descripcion": proj.description}
+    projects = [
+        {"id": proj.id, "name": proj.name, "description": proj.description}
         for proj in sys_conn.identity.projects()
         if proj.name.lower() not in ["service", "services"]
     ]
 
-    proyecto_seleccionado = None
-    recursos = {"instancias": [], "routers": [], "redes": []}
+    selected_project_obj = None
+    resources = {"instances": [], "routers": [], "networks": [], "volumes": []}
+    role_info = "N/A"
 
     if project_id:
         conn = get_connection(project_id=project_id)
         request.session["project_id"] = project_id
-        proyecto_seleccionado = conn.identity.get_project(project_id)
+        selected_project_obj = conn.identity.get_project(project_id)
 
+        # Instances
         try:
-            recursos["instancias"] = [vm.to_dict() for vm in conn.compute.servers()]
+            resources["instances"] = [vm.to_dict() for vm in conn.compute.servers()]
         except Exception as e:
-            print(f"Error al listar instancias: {e}")
+            print(f"Error listing instances: {e}")
 
+        # Routers
         try:
-            recursos["routers"] = [
-                router.to_dict() for router in conn.network.routers()
+            resources["routers"] = [r.to_dict() for r in conn.network.routers()]
+        except Exception as e:
+            print(f"Error listing routers: {e}")
+
+        # Networks
+        try:
+            resources["networks"] = [
+                n.to_dict()
+                for n in conn.network.networks()
+                if getattr(n, "project_id", None) == project_id
             ]
         except Exception as e:
-            print(f"Error al listar routers: {e}")
+            print(f"Error listing networks: {e}")
 
+        # Volumes (optional but shown in the template)
         try:
-            recursos["redes"] = [
-                net.to_dict()
-                for net in conn.network.networks()
-                if net.project_id == project_id
+            # Depending on SDK/permissions you may need details=True/False
+            resources["volumes"] = [
+                v.to_dict()
+                for v in conn.block_storage.volumes()
+                if getattr(v, "project_id", None) == project_id
             ]
         except Exception as e:
-            print(f"Error al listar redes: {e}")
+            print(f"Error listing volumes: {e}")
 
+        # Current account (not required, but kept if you use it elsewhere)
         try:
             current_account = conn.current_user.name
         except Exception:
             current_account = "N/A"
 
-        # Roles en el proyecto
+        # Roles in the project
         roles = []
         try:
             roles = [
@@ -76,33 +90,33 @@ def dashboard(request):
                 )
             ]
         except Exception as e:
-            print(f"Error al obtener roles: {e}")
+            print(f"Error fetching roles: {e}")
+
         role_info = ", ".join(roles) if roles else "N/A"
 
     user_info = None
-    if proyecto_seleccionado:
+    if selected_project_obj:
         user_info = {
-            "project_id": proyecto_seleccionado.id,
-            "project_name": proyecto_seleccionado.name,
-            "status": "Enabled" if proyecto_seleccionado.is_enabled else "Disabled",
-            "instances": len(recursos["instancias"]),
-            "routers": len(recursos["routers"]),
-            "networks": len(recursos["redes"]),
+            "project_id": selected_project_obj.id,
+            "project_name": selected_project_obj.name,
+            "status": "Enabled" if selected_project_obj.is_enabled else "Disabled",
+            "instances": len(resources["instances"]),
+            "routers": len(resources["routers"]),
+            "networks": len(resources["networks"]),
+            "volumes": len(resources["volumes"]),
             "role": role_info,
         }
 
     context = {
-        "proyectos": proyectos,
-        "proyecto_seleccionado": (
+        "projects": projects,
+        "selected_project": (
             {
-                "id": proyecto_seleccionado.id if proyecto_seleccionado else None,
-                "nombre": proyecto_seleccionado.name if proyecto_seleccionado else None,
-                "descripcion": (
-                    proyecto_seleccionado.description if proyecto_seleccionado else None
-                ),
-                "recursos": recursos,
+                "id": selected_project_obj.id,
+                "name": selected_project_obj.name,
+                "description": selected_project_obj.description,
+                "resources": resources,
             }
-            if proyecto_seleccionado
+            if selected_project_obj
             else None
         ),
         "user_info": user_info,

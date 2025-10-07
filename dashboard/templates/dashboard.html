@@ -1,10 +1,15 @@
-{% extends 'base.html' %}
 {% load static %}
-
-{% block title %}RIZU Dashboard{% endblock %}
-
-{% block body_class %}page-dashboard{% endblock %}
-
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RIZU Dashboard</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+  <link rel="stylesheet" href="{% static 'index.css' %}">
+</head>
+<body class="page-dashboard">
   <div class="dashboard-main-container">
     <div class="sidebar">
       <h3 class="sidebar-title">
@@ -25,38 +30,33 @@
         <button type="button" class="btn-signout">Sign out</button>
       </div>
     </div>
-    <div class="mt-auto w-100">
-      <button type="button" class="btn btn-danger w-100">Sign out</button>
-    </div>
-  </div>
-{% endblock %}
 
     <div class="dashboard-content">
       <div class="dashboard-header">
-          <h1>Dashboard</h1>
-          <form method="get">
-              <select name="project_id" class="project-selector" onchange="this.form.submit()">
-                <option value="" {% if not proyecto_seleccionado %}selected{% endif %}>
-                    Choose a project...
-                </option>
-                  {% for proyecto in proyectos %}
-                      {% if proyecto_seleccionado and proyecto.id == proyecto_seleccionado.id %}
-                          <option value="{{ proyecto.id }}" selected>{{ proyecto.nombre }}</option>
-                      {% else %}
-                          <option value="{{ proyecto.id }}">{{ proyecto.nombre }}</option>
-                      {% endif %}
-                  {% endfor %}
-              </select>
-          </form>
+        <h1>Dashboard</h1>
+        <form method="get">
+          <select name="project_id" class="project-selector" onchange="this.form.submit()">
+            <option value="" {% if not selected_project %}selected{% endif %}>
+              Choose a project...
+            </option>
+            {% for project in projects %}
+              {% if selected_project and project.id == selected_project.id %}
+                <option value="{{ project.id }}" selected>{{ project.name }}</option>
+              {% else %}
+                <option value="{{ project.id }}">{{ project.name }}</option>
+              {% endif %}
+            {% endfor %}
+          </select>
+        </form>
       </div>
 
-      {% if proyecto_seleccionado %}
+      {% if selected_project %}
       <div class="project-card">
         <div class="project-card-header">
           <h4 class="project-card-title">
             <i class="fa-solid fa-diagram-project project-icon"></i>
-            {{ proyecto_seleccionado.nombre }}
-            <small class="project-description">{{ proyecto_seleccionado.descripcion }}</small>
+            {{ selected_project.name }}
+            <small class="project-description">{{ selected_project.description }}</small>
           </h4>
         </div>
         <div class="project-card-body">
@@ -64,13 +64,13 @@
             <i class="fa-solid fa-server resource-icon resource-icon-instances"></i>Instances
           </h5>
           <ul class="resource-list">
-            {% for vm in proyecto_seleccionado.recursos.instancias %}
-            <li class="resource-item">
-              <span>{{ vm.name }}</span>
-              <span class="resource-status-badge">{{ vm.status }}</span>
-            </li>
+            {% for vm in selected_project.resources.instances %}
+              <li class="resource-item">
+                <span>{{ vm.name }}</span>
+                <span class="resource-status-badge">{{ vm.status }}</span>
+              </li>
             {% empty %}
-            <li class="resource-item-empty">No instances yet</li>
+              <li class="resource-item-empty">No instances yet</li>
             {% endfor %}
           </ul>
 
@@ -78,34 +78,34 @@
             <i class="fa-solid fa-route resource-icon resource-icon-routers"></i>Routers
           </h5>
           <ul class="resource-list">
-            {% for router in proyecto_seleccionado.recursos.routers %}
-            <li class="resource-item">
-              <span>{{ router.name }}</span>
-              <span class="resource-id">ID: {{ router.id }}</span>
-            </li>
+            {% for router in selected_project.resources.routers %}
+              <li class="resource-item">
+                <span>{{ router.name }}</span>
+                <span class="resource-id">ID: {{ router.id }}</span>
+              </li>
             {% empty %}
-            <li class="resource-item-empty">No routers yet</li>
+              <li class="resource-item-empty">No routers yet</li>
             {% endfor %}
           </ul>
 
           <h5 class="resource-section-title">
-            <i class="fa-solid fa-network-wired resource-icon resource-icon-networks"></i>Network
+            <i class="fa-solid fa-network-wired resource-icon resource-icon-networks"></i>Networks
           </h5>
           <ul class="resource-list">
-            {% for net in proyecto_seleccionado.recursos.redes %}
-            <li class="resource-item">
-              <span>{{ net.name }}</span>
-              <span class="resource-id">ID: {{ net.id }}</span>
-            </li>
+            {% for net in selected_project.resources.networks %}
+              <li class="resource-item">
+                <span>{{ net.name }}</span>
+                <span class="resource-id">ID: {{ net.id }}</span>
+              </li>
             {% empty %}
-            <li class="resource-item-empty">No networks yet</li>
+              <li class="resource-item-empty">No networks yet</li>
             {% endfor %}
           </ul>
         </div>
       </div>
       {% else %}
       <div class="no-project-alert">
-        <p>Select a proyect</p>
+        <p>Select a project</p>
       </div>
       {% endif %}
 
@@ -120,38 +120,9 @@
           <i class="fa-solid fa-route action-icon"></i>Create Router
         </a>
       </div>
-
-        <h5 class="card-title"><i class="fa-solid fa-network-wired me-2 text-warning"></i>Networks</h5>
-        <ul class="list-group list-group-flush mb-4">
-          {% for net in selected_project.resources.networks %}
-          <li class="list-group-item d-flex justify-content-between align-items-center">
-            <span>{{ net.name }}</span>
-            <span class="text-muted small">ID: {{ net.id }}</span>
-          </li>
-          {% empty %}
-          <li class="list-group-item text-muted">No networks yet</li>
-          {% endfor %}
-        </ul>
-      </div>
     </div>
-    {% else %}
-    <div class="alert alert-info text-center" role="alert">
-      <p class="mb-0">Select a project</p>
-    </div>
-    {% endif %}
-
-    <div class="d-grid gap-2 col-6 mx-auto justify-content-center mt-5">
-      <a href="{% url 'create_project' %}" class="btn btn-create btn-lg">
-        <i class="fa-solid fa-plus me-2"></i>Create New Project
-      </a>
-      <a href="{% url 'create_network' %}" class="btn btn-warning btn-lg">
-        <i class="fa-solid fa-network-wired me-2"></i>Create Network
-      </a>
-      <a href="{% url 'create_router' %}" class="btn btn-info btn-lg">
-        <i class="fa-solid fa-route me-2"></i>Create Router
-      </a>
-    </div>
-
   </div>
-</div>
-{% endblock %}
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
