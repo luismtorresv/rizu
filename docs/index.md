@@ -12,3 +12,5 @@
 that allows you to give freedom to your developers to deploy applications
 on-premises. Rizu was developed as an Integrative Project for a course at
 EAFIT University.
+
+:simple-github: [Rizu Product Backlog](https://github.com/users/luismtorresv/projects/9/views/1).
