@@ -28,8 +28,14 @@ class OpenStackCommunication:
         user = self.conn.identity.find_user(username)
         project_role = self.conn.identity.find_role(role)
 
-        if not (project and user and project_role):
-            raise ValueError("Project, user, or role not found!")
+        if not project:
+            raise ValueError(f"❌ Project '{project_name}' not found in OpenStack.")
+
+        if not user:
+            raise ValueError(f"❌ User '{username}' not found in OpenStack.")
+
+        if not project_role:
+            raise ValueError(f"❌ Role '{role}' not found in OpenStack.")
 
         self.conn.identity.assign_project_role_to_user(project, user, project_role)
 
