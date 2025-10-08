@@ -3,6 +3,9 @@ from django.contrib.auth.forms import AuthenticationForm
 from .forms import OpenStackUserRegistrationForm
 from django.shortcuts import render, redirect
 from django.contrib import messages
+from Rizu.openStackCommunication import OpenStackCommunication
+
+osc = OpenStackCommunication()
 
 
 def login_view(request):
@@ -29,6 +32,7 @@ def register_view(request):
         if form.is_valid():
             user = form.save()
             auth_login(request, user)
+            osc.create_openstack_user(user=user)
             return redirect("front_page_index")
     else:
         form = OpenStackUserRegistrationForm()

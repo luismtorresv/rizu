@@ -23,6 +23,16 @@ class OpenStackCommunication:
             print(f"Something went wrong with the project creation. Error: {e}")
             return False
 
+    def create_openstack_user(self, user):
+        new_user = self.conn.identity.create_user(
+            name=user.username,
+            password=user.password,
+            domain_id="default",
+            email=user.email,
+            default_project_id=None,  # or specify a project ID if needed
+            enabled=True,
+        )
+
     def assign_openstack_role(self, project_name, username, role):
         project = self.conn.identity.find_project(project_name)
         user = self.conn.identity.find_user(username)
