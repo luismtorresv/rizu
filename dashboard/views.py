@@ -22,7 +22,7 @@ def get_connection(request=None, project_id=None, system=False):
         return openstack.connect(
             auth=dict(
                 username=request.user.username,
-                password=request.user.password,  # You’ll need to store this
+                password=request.user.openstack_password,  # You’ll need to store this
                 auth_url="http://controller:5000/v3",
                 project_id=project_id,
                 user_domain_name="Default",

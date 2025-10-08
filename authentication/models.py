@@ -17,6 +17,7 @@ class OpenStackUser(AbstractUser):
     )
 
     role = models.CharField(max_length=20, choices=ROLE_CHOICES, default="member")
+    openstack_password = models.CharField(max_length=128, blank=True, null=True)
 
     class Meta:
         constraints = [

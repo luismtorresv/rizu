@@ -1,5 +1,7 @@
 import openstack
 import os
+import secrets
+import string
 
 
 class OpenStackCommunication:
@@ -24,16 +26,26 @@ class OpenStackCommunication:
             print(f"Something went wrong with the project creation. Error: {e}")
             return False
 
+    def generate_password(length=16):
+        chars = string.ascii_letters + string.digits + string.punctuation
+        return ''.join(secrets.choice(chars) for _ in range(length))
+
+
     def create_openstack_user(self, user):
+        rand_pass = self.generate_password() #OpenStack Password
+
         new_user = self.conn.identity.create_user(
             name=user.username,
-            password=user.password,
+            password=rand_pass,
             domain_id="default",
             email=user.email,
             default_project_id=None,  # or specify a project ID if needed
             enabled=True,
         )
 
+        user.openstack_password = rand_pass
+        user.save()
+        
     def assign_openstack_role(self, project_name, username, role):
         project = self.conn.identity.find_project(project_name)
         user = self.conn.identity.find_user(username)
