@@ -26,13 +26,12 @@ class OpenStackCommunication:
             print(f"Something went wrong with the project creation. Error: {e}")
             return False
 
-    def generate_password(length=16):
+    def generate_password(self, length=16):
         chars = string.ascii_letters + string.digits + string.punctuation
-        return ''.join(secrets.choice(chars) for _ in range(length))
-
+        return "".join(secrets.choice(chars) for _ in range(length))
 
     def create_openstack_user(self, user):
-        rand_pass = self.generate_password() #OpenStack Password
+        rand_pass = self.generate_password()  # OpenStack Password
 
         new_user = self.conn.identity.create_user(
             name=user.username,
@@ -45,7 +44,7 @@ class OpenStackCommunication:
 
         user.openstack_password = rand_pass
         user.save()
-        
+
     def assign_openstack_role(self, project_name, username, role):
         project = self.conn.identity.find_project(project_name)
         user = self.conn.identity.find_user(username)
