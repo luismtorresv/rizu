@@ -71,7 +71,6 @@ def dashboard(request):
         # Default fallback (guest / no role)
         projects = []
 
-
     selected_project_obj = None
     resources = {"instances": [], "routers": [], "networks": [], "volumes": []}
     role_info = "N/A"
@@ -172,8 +171,7 @@ def create_project(request):
     if request.user.role != "project_manager":
         return HttpResponse("You are not allowed to create projects.")
 
-    admin_conn = get_connection(system=True)
-    osc = OpenStackCommunication(admin_conn)
+    osc = OpenStackCommunication("kolla-admin-system")
 
     if request.method == "POST":
         project_name = request.POST.get("name")
