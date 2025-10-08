@@ -3,8 +3,8 @@ import os
 
 
 class OpenStackCommunication:
-    def __init__(self, cloud="kolla-admin-system"):
-        self.conn = openstack.connect(cloud=cloud)
+    def __init__(self, cloud="kolla-admin-system",conn=None):
+        self.conn = conn or openstack.connect(cloud=cloud)
 
     def create_openstack_project(self, project_name, project_description, user, role):
         try:
@@ -13,6 +13,7 @@ class OpenStackCommunication:
                 description=project_description,
                 domain_id="default",
                 enabled=True,
+                tags=[f"owner:{user.username}"],
             )
 
             # assign myself to the project

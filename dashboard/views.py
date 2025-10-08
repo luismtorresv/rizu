@@ -10,32 +10,73 @@ from Rizu.openStackCommunication import OpenStackCommunication
 osc = OpenStackCommunication()
 
 
-def get_connection(project_id=None, system=False):
+def get_connection(request=None, project_id=None, system=False):
+    # Admin/system connection (used internally for privileged ops)
     if system:
         return openstack.connect(cloud="kolla-admin-system")
 
-    if project_id:
-        return openstack.connect(cloud="kolla-admin", project_id=project_id)
+    # If the user is logged in and we want their own OpenStack token
+    if request and hasattr(request, "user") and request.user.is_authenticated:
+        # Ideally, store each user's OpenStack password in your DB (encrypted)
+        # Or have an app password/token saved after registration.
+        return openstack.connect(
+            auth=dict(
+                username=request.user.username,
+                password=request.user.password,  # You’ll need to store this
+                auth_url="http://controller:5000/v3",
+                project_id=project_id,
+                user_domain_name="Default",
+                project_domain_name="Default",
+            )
+        )
 
+    # Fallback generic cloud
     return openstack.connect(cloud="kolla-admin")
 
 
 def dashboard(request):
     project_id = request.GET.get("project_id")
+    user = request.user
 
-    sys_conn = get_connection(system=True)
-    projects = [
-        {"id": proj.id, "name": proj.name, "description": proj.description}
-        for proj in sys_conn.identity.projects()
-        if proj.name.lower() not in ["service", "services"]
-    ]
+    # Admin/system connection (has full visibility)
+    conn = get_connection(system=True)
+
+    # Filter projects depending on user role
+    if user.role == "admin":
+        # Admins see all non-service projects
+        projects = [
+            {"id": proj.id, "name": proj.name, "description": proj.description}
+            for proj in conn.identity.projects()
+            if proj.name.lower() not in ["service", "services"]
+        ]
+
+    elif user.role == "project_manager":
+        # Managers see only projects they own
+        # (Assuming you tagged projects with "owner:<username>" or similar)
+        projects = [
+            {"id": proj.id, "name": proj.name, "description": proj.description}
+            for proj in conn.identity.projects()
+            if getattr(proj, "tags", []) and f"owner:{user.username}" in proj.tags
+        ]
+
+    elif user.role == "member":
+        # Members see projects they belong to
+        user_conn = get_connection(request=request)
+        projects = [
+            {"id": p.id, "name": p.name, "description": p.description}
+            for p in user_conn.identity.projects(user=user_conn.current_user_id)
+        ]
+
+    else:
+        # Default fallback (guest / no role)
+        projects = []
+
 
     selected_project_obj = None
     resources = {"instances": [], "routers": [], "networks": [], "volumes": []}
     role_info = "N/A"
 
     if project_id:
-        conn = get_connection(project_id=project_id)
         request.session["project_id"] = project_id
         selected_project_obj = conn.identity.get_project(project_id)
 
@@ -128,6 +169,12 @@ def create_vm(request):
 
 
 def create_project(request):
+    if request.user.role != "project_manager":
+        return HttpResponse("You are not allowed to create projects.")
+
+    admin_conn = get_connection(system=True)
+    osc = OpenStackCommunication(admin_conn)
+
     if request.method == "POST":
         project_name = request.POST.get("name")
         description = request.POST.get("description")
@@ -139,8 +186,7 @@ def create_project(request):
         user = request.user  # puedes cambiarlo luego según autenticación real
         user_role = user.role
 
-        conn = OpenStackCommunication()
-        response = conn.create_openstack_project(
+        response = osc.create_openstack_project(
             project_name, description, user, user_role
         )
 
