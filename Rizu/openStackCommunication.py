@@ -6,7 +6,7 @@ class OpenStackCommunication:
     def __init__(self, cloud="kolla-admin-system"):
         self.conn = openstack.connect(cloud=cloud)
 
-    def create_openstack_project(self, project_name, project_description, username):
+    def create_openstack_project(self, project_name, project_description, user, role):
         try:
             new_project = self.conn.identity.create_project(
                 name=project_name,
@@ -16,22 +16,22 @@ class OpenStackCommunication:
             )
 
             # assign myself to the project
-            self.assign_openstack_role(project_name, username)
+            self.assign_openstack_role(project_name, user.username, role)
 
             return True
         except Exception as e:
             print(f"Something went wrong with the project creation. Error: {e}")
             return False
 
-    def assign_openstack_role(self, project_name, username):
+    def assign_openstack_role(self, project_name, username, role):
         project = self.conn.identity.find_project(project_name)
         user = self.conn.identity.find_user(username)
-        role = self.conn.identity.find_role("admin")
+        project_role = self.conn.identity.find_role(role)
 
-        if not (project and user and role):
+        if not (project and user and project_role):
             raise ValueError("Project, user, or role not found!")
 
-        self.conn.identity.assign_project_role_to_user(project, user, role)
+        self.conn.identity.assign_project_role_to_user(project, user, project_role)
 
     def create_openstack_network(self, network_name, project_id):
         try:

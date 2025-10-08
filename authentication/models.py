@@ -11,18 +11,18 @@ class OpenStackUser(AbstractUser):
     # to quote the explanation: "In Django, when you define choices, the first value ('admin') is what’s stored in the database,
     # and the second ('Admin') is the human-readable label shown in forms/admin."
     ROLE_CHOICES = (
-        ("administrator", "Administrator"),
+        ("admin", "Administrator"),
         ("project_manager", "Project Manager"),
-        ("user", "User"),
+        ("member", "User"),
     )
 
-    role = models.CharField(max_length=20, choices=ROLE_CHOICES, default="user")
+    role = models.CharField(max_length=20, choices=ROLE_CHOICES, default="member")
 
     class Meta:
         constraints = [
             models.UniqueConstraint(
                 fields=["role"],
-                condition=models.Q(role="administrator"),
+                condition=models.Q(role="admin"),
                 name="unique_administrator_constraint",
             )
         ]
