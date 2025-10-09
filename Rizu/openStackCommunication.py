@@ -61,12 +61,11 @@ class OpenStackCommunication:
 
         self.conn.identity.assign_project_role_to_user(project, user, project_role)
 
-    def create_openstack_network(self, network_name, project_id):
+    def create_openstack_network(self, network_name, project_id, conn_token):
         try:
             # Connect directly with project scope
-            conn = openstack.connect(cloud="kolla-admin", project_id=project_id)
 
-            network = conn.network.create_network(
+            network = conn_token.network.create_network(
                 name=network_name,
                 project_id=project_id,
                 is_router_external=False,

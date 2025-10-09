@@ -11,26 +11,34 @@ osc = OpenStackCommunication()
 
 
 def get_connection(request=None, project_id=None, system=False):
-    # Admin/system connection (used internally for privileged ops)
     if system:
         return openstack.connect(cloud="kolla-admin-system")
 
-    # If the user is logged in and we want their own OpenStack token
     if request and hasattr(request, "user") and request.user.is_authenticated:
-        # Ideally, store each user's OpenStack password in your DB (encrypted)
-        # Or have an app password/token saved after registration.
-        return openstack.connect(
-            auth=dict(
-                username=request.user.username,
-                password=request.user.openstack_password,  # You’ll need to store this
-                auth_url="http://controller:5000/v3",
-                project_id=project_id,
-                user_domain_name="Default",
-                project_domain_name="Default",
+        if project_id:
+            # Project-scoped token for managers or members
+            return openstack.connect(
+                auth=dict(
+                    username=request.user.username,
+                    password=request.user.openstack_password,
+                    project_id=project_id,
+                    auth_url="http://192.168.10.254:5000/v3",
+                    user_domain_name="Default",
+                    project_domain_name="Default",
+                )
             )
-        )
+        else:
+            # fallback: system token for listing projects
+            return openstack.connect(
+                auth=dict(
+                    username=request.user.username,
+                    password=request.user.openstack_password,
+                    auth_url="http://192.168.10.254:5000/v3",
+                    user_domain_name="Default",
+                )
+            )
 
-    # Fallback generic cloud
+    # fallback generic
     return openstack.connect(cloud="kolla-admin")
 
 
@@ -38,7 +46,7 @@ def dashboard(request):
     project_id = request.GET.get("project_id")
     user = request.user
 
-    # Admin/system connection (has full visibility)
+    # Admin/system connection (has full visibility
     conn = get_connection(system=True)
 
     # Filter projects depending on user role
@@ -61,10 +69,9 @@ def dashboard(request):
 
     elif user.role == "member":
         # Members see projects they belong to
-        user_conn = get_connection(request=request)
         projects = [
             {"id": p.id, "name": p.name, "description": p.description}
-            for p in user_conn.identity.projects(user=user_conn.current_user_id)
+            for p in conn.identity.projects(user=conn.current_user_id)
         ]
 
     else:
@@ -73,12 +80,17 @@ def dashboard(request):
 
     selected_project_obj = None
     resources = {"instances": [], "routers": [], "networks": [], "volumes": []}
-    role_info = "N/A"
 
     if project_id:
+        conn = get_connection(request=request, project_id=project_id)
         request.session["project_id"] = project_id
-        selected_project_obj = conn.identity.get_project(project_id)
+        try:
+            selected_project_obj = conn.identity.get_project(project_id)
+        except Exception as e:
+            print(f"Failed to fetch selected project: {e}")
+            selected_project_obj = None
 
+    if selected_project_obj:
         # Instances
         try:
             resources["instances"] = [vm.to_dict() for vm in conn.compute.servers()]
@@ -118,20 +130,6 @@ def dashboard(request):
         except Exception:
             current_account = "N/A"
 
-        # Roles in the project
-        roles = []
-        try:
-            roles = [
-                role.name
-                for role in conn.identity.roles(
-                    user=conn.current_user_id, project=project_id
-                )
-            ]
-        except Exception as e:
-            print(f"Error fetching roles: {e}")
-
-        role_info = ", ".join(roles) if roles else "N/A"
-
     user_info = None
     if selected_project_obj:
         user_info = {
@@ -142,7 +140,6 @@ def dashboard(request):
             "routers": len(resources["routers"]),
             "networks": len(resources["networks"]),
             "volumes": len(resources["volumes"]),
-            "role": role_info,
         }
 
     context = {
@@ -200,9 +197,15 @@ def create_project(request):
 
 def create_network(request):
     if request.method == "POST":
+
         name = request.POST.get("network_name")
         project_id = request.session.get("project_id")
-        net = osc.create_openstack_network(name, project_id)
+
+        # Give temporary admin-level credentials
+        conn = get_connection(request=request, project_id=project_id)
+
+        net = osc.create_openstack_network(name, project_id, conn)
+
         if net:
             messages.success(request, f"Network {name} created")
         else:
@@ -217,6 +220,7 @@ def create_router(request):
         project_id = request.session.get("project_id")
         external_net = request.POST.get("external_network_name") or None
         router = osc.create_openstack_router(name, project_id, external_net)
+
         if router:
             messages.success(request, f"Router {name} created")
         else:
@@ -273,7 +277,7 @@ def join_projects_view(request):
 
 
 def project_detail_view(request, project_id: str):
-    conn = get_connection(project_id=project_id)
+    conn = get_connection(request=request, project_id=project_id)
     project = conn.identity.get_project(project_id)
 
     resources = {"instances": [], "routers": [], "networks": []}
