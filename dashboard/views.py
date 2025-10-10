@@ -79,6 +79,7 @@ def dashboard(request):
         projects = []
 
     selected_project_obj = None
+    user_project_role = ""
     resources = {"instances": [], "routers": [], "networks": [], "volumes": []}
 
     if project_id:
@@ -91,6 +92,31 @@ def dashboard(request):
             selected_project_obj = None
 
     if selected_project_obj:
+        try:
+            # Find the OpenStack user by username
+            openstack_user = next(
+                (u for u in conn.identity.users() if u.name == request.user.username),
+                None,
+            )
+
+            if openstack_user:
+                # Get all roles this user has in the selected project
+                roles = list(
+                    conn.identity.roles(
+                        user=openstack_user, project=selected_project_obj
+                    )
+                )
+                role_names = [r.name for r in roles]
+                user_project_role = (
+                    ", ".join(role_names) if role_names else "No role assigned"
+                )
+            else:
+                user_project_role = "User not found in OpenStack"
+
+        except Exception as e:
+            print(f"Error fetching user role in project: {e}")
+            user_project_role = "Error retrieving role"
+
         # Instances
         try:
             resources["instances"] = [vm.to_dict() for vm in conn.compute.servers()]
@@ -140,7 +166,7 @@ def dashboard(request):
             "routers": len(resources["routers"]),
             "networks": len(resources["networks"]),
             "volumes": len(resources["volumes"]),
-            "user_roler": request.user.role,
+            "user_role": user_project_role,
         }
 
     context = {

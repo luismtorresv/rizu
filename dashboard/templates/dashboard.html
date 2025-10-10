@@ -102,6 +102,20 @@
             {% empty %}
               <li class="resource-item-empty">No networks yet</li>
             {% endfor %}
+            <div class="dashboard-actions">
+              {% if user_role == "member" %}
+              <a href="{% url 'create_network' %}" class="btn-dashboard-action btn-create-network">
+                <i class="fa-solid fa-network-wired action-icon"></i>Create VMs
+              </a>
+              {% else %}
+              <a href="{% url 'create_network' %}" class="btn-dashboard-action btn-create-network">
+                <i class="fa-solid fa-network-wired action-icon"></i>Create Network
+              </a>
+              <a href="{% url 'create_router' %}" class="btn-dashboard-action btn-create-router">
+                <i class="fa-solid fa-route action-icon"></i>Create Router
+              </a>
+              {% endif %}
+            </div>
           </ul>
         </div>
       </div>
@@ -110,21 +124,6 @@
         <p>Select a project</p>
       </div>
       {% endif %}
-
-      <div class="dashboard-actions">
-        {% if user_role == "member" %}
-          <a href="{% url 'create_network' %}" class="btn-dashboard-action btn-create-network">
-            <i class="fa-solid fa-network-wired action-icon"></i>Create VMs
-          </a>
-        {% else %}
-          <a href="{% url 'create_network' %}" class="btn-dashboard-action btn-create-network">
-            <i class="fa-solid fa-network-wired action-icon"></i>Create Network
-          </a>
-          <a href="{% url 'create_router' %}" class="btn-dashboard-action btn-create-router">
-            <i class="fa-solid fa-route action-icon"></i>Create Router
-          </a>
-        {% endif %}
-      </div>
     </div>
   </div>
 
