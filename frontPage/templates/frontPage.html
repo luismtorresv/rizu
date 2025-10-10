@@ -95,11 +95,8 @@
           <a href="{% url 'dashboard' %}" class="btn-dashboard-action btn-create-project">
             <i class="fa-solid fa-tachometer-alt action-icon"></i>Go to Dashboard
           </a>
-          <a href="" class="btn-dashboard-action btn-create-project">
+          <a href="{% url 'join_projects' %}" class="btn-dashboard-action btn-create-project">
             <i class="fa-solid fa-tachometer-alt action-icon"></i>Join Project
-          </a>
-          <a href="" class="btn-dashboard-action btn-create-project">
-            <i class="fa-solid fa-tachometer-alt action-icon"></i>View Projects
           </a>
           {% if user_role == "project_manager" %}
             <a href="{% url 'create_project' %}" class="btn-dashboard-action btn-create-project">

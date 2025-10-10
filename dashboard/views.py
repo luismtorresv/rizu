@@ -140,6 +140,7 @@ def dashboard(request):
             "routers": len(resources["routers"]),
             "networks": len(resources["networks"]),
             "volumes": len(resources["volumes"]),
+            "user_roler": request.user.role,
         }
 
     context = {

@@ -27,7 +27,9 @@
         <p class="sidebar-detail-item"><strong>Role:</strong> {{ user_info.role }}</p>
       </div>
       <div class="sidebar-footer">
-        <button type="button" class="btn-signout">Sign out</button>
+        <a href="{% url 'front_page_index' %}">
+          <button type="button" class="btn-signout">Back</button>
+        </a>
       </div>
     </div>
 
@@ -110,15 +112,18 @@
       {% endif %}
 
       <div class="dashboard-actions">
-        <a href="{% url 'create_project' %}" class="btn-dashboard-action btn-create-project">
-          <i class="fa-solid fa-plus action-icon"></i>Create New Project
-        </a>
-        <a href="{% url 'create_network' %}" class="btn-dashboard-action btn-create-network">
-          <i class="fa-solid fa-network-wired action-icon"></i>Create Network
-        </a>
-        <a href="{% url 'create_router' %}" class="btn-dashboard-action btn-create-router">
-          <i class="fa-solid fa-route action-icon"></i>Create Router
-        </a>
+        {% if user_role == "member" %}
+          <a href="{% url 'create_network' %}" class="btn-dashboard-action btn-create-network">
+            <i class="fa-solid fa-network-wired action-icon"></i>Create VMs
+          </a>
+        {% else %}
+          <a href="{% url 'create_network' %}" class="btn-dashboard-action btn-create-network">
+            <i class="fa-solid fa-network-wired action-icon"></i>Create Network
+          </a>
+          <a href="{% url 'create_router' %}" class="btn-dashboard-action btn-create-router">
+            <i class="fa-solid fa-route action-icon"></i>Create Router
+          </a>
+        {% endif %}
       </div>
     </div>
   </div>
