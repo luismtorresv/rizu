@@ -264,10 +264,32 @@ def _initials(name: str) -> str:
 
 
 def join_projects_view(request):
+    try:
+        sys_conn = OpenStackCommunication.get_connection(system=True)
+    except Exception as e:
+        print(f"Could not connect to OpenStack, Error: {e}")
+        return
+
+    if request.method == "POST":
+        try:
+            project_name = request.POST.get("project_name")
+            user_name = request.user.username
+            role = "member"
+
+            OpenStackCommunication.assign_openstack_role(
+                project_name=project_name,
+                username=user_name,
+                role=role,
+                conn_token=sys_conn,
+            )
+
+            return redirect("front_page_index")
+        except:
+            messages.error(request, "Failed to Join proyect")
+
     q = (request.GET.get("q") or "").strip().lower()
 
     try:
-        sys_conn = OpenStackCommunication.get_connection(system=True)
         projects_raw = [
             {"id": p.id, "name": p.name, "description": p.description or ""}
             for p in sys_conn.identity.projects()
@@ -303,11 +325,8 @@ def join_projects_view(request):
 
 
 def project_detail_view(request, project_id: str):
-
     try:
-        conn = OpenStackCommunication.get_connection(
-            request=request, project_id=project_id
-        )
+        conn = OpenStackCommunication.get_connection(system=True)
     except Exception as e:
         print(f"Could not connect to OpenStack, Error: {e}")
         return

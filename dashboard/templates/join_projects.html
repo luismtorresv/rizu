@@ -59,8 +59,10 @@
 
               <div class="jp-actions">
                 <a class="jp-btn" href="{% url 'project_detail' p.id %}">View</a>
-                <!-- Join deshabilitado -->
-                <button class="jp-btn-primary" type="button">Join</button>
+                <form action="POST">
+                  <input type="hidden" name="project_name" value="{{ p.name }}">
+                  <button class="jp-btn-primary" type="button">Join</button>
+                 </form>
               </div>
             </article>
           {% endfor %}

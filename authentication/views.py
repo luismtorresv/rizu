@@ -37,6 +37,7 @@ def register_view(request):
                 return
 
             OpenStackCommunication.create_openstack_user(user=user, conn_token=conn)
+
             return redirect("front_page_index")
     else:
         form = OpenStackUserRegistrationForm()
