@@ -1,4 +1,4 @@
-mkdocs-material[imaging]
+mkdocs-material[imaging]==9.6.20
 mkdocs-enumerate-headings-plugin
 mkdocs-git-authors-plugin
 mkdocs-git-revision-date-localized-plugin
