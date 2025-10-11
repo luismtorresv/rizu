@@ -122,6 +122,88 @@ necesidades de ventas y establecer el punto de equilibrio y viabilidad económic
 del proyecto. Estime a continuación los costos fijos y variables para mantener
 la operación. -->
 
+Once the pre-operation budget has been established, it is necessary to define
+the operational budget, estimating both fixed and variable costs. The following
+tables present the estimated monthly and per-client costs for maintaining the
+project.
+
+<table border="1" cellspacing="0" cellpadding="6" style="border-collapse:collapse; width:100%;">
+  <tr style="background-color:#f2f2f2; font-weight:bold; text-align:center;">
+    <td colspan="2">Fixed Costs</td>
+  </tr>
+  <tr style="background-color:#f9f9f9;">
+    <th>Category</th>
+    <th>Monthly Expense (COP)</th>
+  </tr>
+  <tr>
+    <td>Developer Stipends (4 members)</td>
+    <td>$3,200,000.00</td>
+  </tr>
+  <tr>
+    <td>Server Maintenance (University Infrastructure)</td>
+    <td>$500,000.00</td>
+  </tr>
+  <tr>
+    <td>Software Subscriptions (GitHub, IDEs, APIs)</td>
+    <td>$300,000.00</td>
+  </tr>
+  <tr>
+    <td>Domain and Hosting Services</td>
+    <td>$150,000.00</td>
+  </tr>
+  <tr>
+    <td>Electricity and Connectivity</td>
+    <td>$250,000.00</td>
+  </tr>
+  <tr>
+    <td>Administrative and Communication Expenses</td>
+    <td>$200,000.00</td>
+  </tr>
+  <tr style="font-weight:bold; background-color:#f2f2f2;">
+    <td>Total Fixed Costs</td>
+    <td>$4,600,000.00</td>
+  </tr>
+</table>
+
+<table border="1" cellspacing="0" cellpadding="6" style="border-collapse:collapse; width:100%; margin-top:16px;">
+  <tr style="background-color:#f2f2f2; font-weight:bold; text-align:center;">
+    <td colspan="2">Variable Costs</td>
+  </tr>
+  <tr style="background-color:#f9f9f9;">
+    <th>Category</th>
+    <th>Cost per Client or Deployment (COP)</th>
+  </tr>
+  <tr>
+    <td>Cloud Hosting (per client deployment)</td>
+    <td>$120,000.00</td>
+  </tr>
+  <tr>
+    <td>Data Transfer and API Usage Fees</td>
+    <td>$60,000.00</td>
+  </tr>
+  <tr>
+    <td>Technical Support and Maintenance</td>
+    <td>$80,000.00</td>
+  </tr>
+  <tr>
+    <td>Testing and CI/CD Pipeline Resources</td>
+    <td>$40,000.00</td>
+  </tr>
+  <tr>
+    <td>Payment Processing and Transaction Fees</td>
+    <td>$20,000.00</td>
+  </tr>
+  <tr style="font-weight:bold; background-color:#f2f2f2;">
+    <td>Total Estimated Variable Cost (per client)</td>
+    <td>$320,000.00</td>
+  </tr>
+</table>
+
+The operational budget reflects a modest academic-scale setup using
+institutional infrastructure and open-source tools, anticipating limited
+operational costs should the project evolve into serving external users.
+
+
 ### First Operational Year
 
 <!-- Complete la siguiente tabla de acuerdo con las proyecciones realistas
