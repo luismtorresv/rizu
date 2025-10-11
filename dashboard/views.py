@@ -3,43 +3,7 @@ from django.contrib import messages
 from django.http import HttpResponse
 import openstack
 import os
-
-
 from Rizu.openStackCommunication import OpenStackCommunication
-
-osc = OpenStackCommunication()
-
-
-def get_connection(request=None, project_id=None, system=False):
-    if system:
-        return openstack.connect(cloud="kolla-admin-system")
-
-    if request and hasattr(request, "user") and request.user.is_authenticated:
-        if project_id:
-            # Project-scoped token for managers or members
-            return openstack.connect(
-                auth=dict(
-                    username=request.user.username,
-                    password=request.user.openstack_password,
-                    project_id=project_id,
-                    auth_url="http://192.168.10.254:5000/v3",
-                    user_domain_name="Default",
-                    project_domain_name="Default",
-                )
-            )
-        else:
-            # fallback: system token for listing projects
-            return openstack.connect(
-                auth=dict(
-                    username=request.user.username,
-                    password=request.user.openstack_password,
-                    auth_url="http://192.168.10.254:5000/v3",
-                    user_domain_name="Default",
-                )
-            )
-
-    # fallback generic
-    return openstack.connect(cloud="kolla-admin")
 
 
 def dashboard(request):
@@ -47,7 +11,10 @@ def dashboard(request):
     user = request.user
 
     # Admin/system connection (has full visibility
-    conn = get_connection(system=True)
+    try:
+        conn = OpenStackCommunication.get_connection(system=True)
+    except Exception as e:
+        print(f"Error Connecting to OpenStack deployment")
 
     # Filter projects depending on user role
     if user.role == "admin":
@@ -83,7 +50,9 @@ def dashboard(request):
     resources = {"instances": [], "routers": [], "networks": [], "volumes": []}
 
     if project_id:
-        conn = get_connection(request=request, project_id=project_id)
+        conn = OpenStackCommunication.get_connection(
+            request=request, project_id=project_id
+        )
         request.session["project_id"] = project_id
         try:
             selected_project_obj = conn.identity.get_project(project_id)
@@ -195,8 +164,6 @@ def create_project(request):
     if request.user.role != "project_manager":
         return HttpResponse("You are not allowed to create projects.")
 
-    osc = OpenStackCommunication("kolla-admin-system")
-
     if request.method == "POST":
         project_name = request.POST.get("name")
         description = request.POST.get("description")
@@ -208,8 +175,14 @@ def create_project(request):
         user = request.user  # puedes cambiarlo luego según autenticación real
         user_role = user.role
 
-        response = osc.create_openstack_project(
-            project_name, description, user, user_role
+        conn = OpenStackCommunication.get_connection(system=True)
+
+        response = OpenStackCommunication.create_openstack_project(
+            project_name,
+            description,
+            user,
+            user_role,
+            conn,
         )
 
         # Muestras respuesta o rediriges al dashboard
@@ -229,9 +202,11 @@ def create_network(request):
         project_id = request.session.get("project_id")
 
         # Give temporary admin-level credentials
-        conn = get_connection(request=request, project_id=project_id)
+        conn = OpenStackCommunication.get_connection(
+            request=request, project_id=project_id
+        )
 
-        net = osc.create_openstack_network(name, project_id, conn)
+        net = OpenStackCommunication.create_openstack_network(name, project_id, conn)
 
         if net:
             messages.success(request, f"Network {name} created")
@@ -246,7 +221,17 @@ def create_router(request):
         name = request.POST.get("router_name")
         project_id = request.session.get("project_id")
         external_net = request.POST.get("external_network_name") or None
-        router = osc.create_openstack_router(name, project_id, external_net)
+
+        conn = OpenStackCommunication.get_connection(
+            request=request, project_id=project_id
+        )
+
+        router = conn.create_openstack_router(
+            name,
+            project_id,
+            conn,
+            external_net,
+        )
 
         if router:
             messages.success(request, f"Router {name} created")
@@ -268,7 +253,7 @@ def join_projects_view(request):
     q = (request.GET.get("q") or "").strip().lower()
 
     try:
-        sys_conn = get_connection(system=True)
+        sys_conn = OpenStackCommunication.get_connection(system=True)
         projects_raw = [
             {"id": p.id, "name": p.name, "description": p.description or ""}
             for p in sys_conn.identity.projects()
@@ -304,7 +289,7 @@ def join_projects_view(request):
 
 
 def project_detail_view(request, project_id: str):
-    conn = get_connection(request=request, project_id=project_id)
+    conn = OpenStackCommunication.get_connection(request=request, project_id=project_id)
     project = conn.identity.get_project(project_id)
 
     resources = {"instances": [], "routers": [], "networks": []}

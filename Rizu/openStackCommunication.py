@@ -5,12 +5,45 @@ import string
 
 
 class OpenStackCommunication:
-    def __init__(self, cloud="kolla-admin-system", conn=None):
-        self.conn = conn or openstack.connect(cloud=cloud)
 
-    def create_openstack_project(self, project_name, project_description, user, role):
+    @staticmethod
+    def get_connection(request=None, project_id=None, system=False):
+        if system:
+            return openstack.connect(cloud="kolla-admin-system")
+
+        if request and hasattr(request, "user") and request.user.is_authenticated:
+            if project_id:
+                # Project-scoped token for managers or members
+                return openstack.connect(
+                    auth=dict(
+                        username=request.user.username,
+                        password=request.user.openstack_password,
+                        project_id=project_id,
+                        auth_url="http://192.168.10.254:5000/v3",
+                        user_domain_name="Default",
+                        project_domain_name="Default",
+                    )
+                )
+            else:
+                # fallback: system token for listing projects
+                return openstack.connect(
+                    auth=dict(
+                        username=request.user.username,
+                        password=request.user.openstack_password,
+                        auth_url="http://192.168.10.254:5000/v3",
+                        user_domain_name="Default",
+                    )
+                )
+
+        # fallback generic
+        return openstack.connect(cloud="kolla-admin")
+
+    @staticmethod
+    def create_openstack_project(
+        project_name, project_description, user, role, conn_token
+    ):
         try:
-            new_project = self.conn.identity.create_project(
+            new_project = conn_token.identity.create_project(
                 name=project_name,
                 description=project_description,
                 domain_id="default",
@@ -19,36 +52,46 @@ class OpenStackCommunication:
             )
 
             # assign myself to the project
-            self.assign_openstack_role(project_name, user.username, role)
+
+            OpenStackCommunication.assign_openstack_role(
+                project_name, user.username, role, conn_token
+            )
 
             return True
         except Exception as e:
             print(f"Something went wrong with the project creation. Error: {e}")
             return False
 
-    def generate_password(self, length=16):
+    @staticmethod
+    def generate_password(length=16):
         chars = string.ascii_letters + string.digits + string.punctuation
         return "".join(secrets.choice(chars) for _ in range(length))
 
-    def create_openstack_user(self, user):
-        rand_pass = self.generate_password()  # OpenStack Password
+    @staticmethod
+    def create_openstack_user(user, conn_token):
+        try:
+            rand_pass = OpenStackCommunication.generate_password()  # OpenStack Password
 
-        new_user = self.conn.identity.create_user(
-            name=user.username,
-            password=rand_pass,
-            domain_id="default",
-            email=user.email,
-            default_project_id=None,  # or specify a project ID if needed
-            enabled=True,
-        )
+            new_user = conn_token.identity.create_user(
+                name=user.username,
+                password=rand_pass,
+                domain_id="default",
+                email=user.email,
+                default_project_id=None,  # or specify a project ID if needed
+                enabled=True,
+            )
 
-        user.openstack_password = rand_pass
-        user.save()
+            user.openstack_password = rand_pass
+            user.save()
+        except Exception as e:
+            print(f"Something went wrong with the user creation process. Error: {e}")
+            return False
 
-    def assign_openstack_role(self, project_name, username, role):
-        project = self.conn.identity.find_project(project_name)
-        user = self.conn.identity.find_user(username)
-        project_role = self.conn.identity.find_role(role)
+    @staticmethod
+    def assign_openstack_role(project_name, username, role, conn_token):
+        project = conn_token.identity.find_project(project_name)
+        user = conn_token.identity.find_user(username)
+        project_role = conn_token.identity.find_role(role)
 
         if not project:
             raise ValueError(f"❌ Project '{project_name}' not found in OpenStack.")
@@ -59,9 +102,10 @@ class OpenStackCommunication:
         if not project_role:
             raise ValueError(f"❌ Role '{role}' not found in OpenStack.")
 
-        self.conn.identity.assign_project_role_to_user(project, user, project_role)
+        conn_token.identity.assign_project_role_to_user(project, user, project_role)
 
-    def create_openstack_network(self, network_name, project_id, conn_token):
+    @staticmethod
+    def create_openstack_network(network_name, project_id, conn_token):
         try:
             # Connect directly with project scope
 
@@ -76,13 +120,14 @@ class OpenStackCommunication:
             print(f"Failed to create network {network_name}: {e}")
             return None
 
+    @staticmethod
     def create_openstack_router(
-        self, router_name, project_id, external_network_name=None
+        router_name,
+        project_id,
+        conn_token,
+        external_network_name=None,
     ):
         try:
-            # Connect directly with project scope
-            conn = openstack.connect(cloud="kolla-admin", project_id=project_id)
-
             kwargs = {
                 "name": router_name,
                 "project_id": project_id,
@@ -90,7 +135,7 @@ class OpenStackCommunication:
             }
 
             if external_network_name:
-                ext_net = conn.network.find_network(
+                ext_net = conn_token.network.find_network(
                     external_network_name, external=True
                 )
                 if not ext_net:
@@ -99,7 +144,7 @@ class OpenStackCommunication:
                     )
                 kwargs["external_gateway_info"] = {"network_id": ext_net.id}
 
-            router = conn.network.create_router(**kwargs)
+            router = conn_token.network.create_router(**kwargs)
             return router
         except Exception as e:
             print(f"Failed to create router {router_name}: {e}")
