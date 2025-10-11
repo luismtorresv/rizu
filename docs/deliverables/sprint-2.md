@@ -22,6 +22,18 @@ de estos servicios. -->
 considerando una tabla como la que se muestra a continuación. Puede agregar,
 eliminar, modificar o desglosar los campos de la tabla a su conveniencia -->
 
+The following table presents the global pre-operation budget for the execution
+of the project.
+
+This budget covers all necessary expenses for the development, testing, and
+initial deployment of the OpenStack alternative dashboard, including
+personnel remuneration, required hardware and software,
+and dissemination of results.
+
+!!! warning "Currency format"
+
+     All values are expressed in Colombian pesos (COP).
+
 <table border="1" cellspacing="0" cellpadding="6" style="border-collapse:collapse; width:100%;">
   <tr style="background-color:#f2f2f2;">
     <th rowspan="2">Items</th>
