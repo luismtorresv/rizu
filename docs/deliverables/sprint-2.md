@@ -22,6 +22,78 @@ de estos servicios. -->
 considerando una tabla como la que se muestra a continuación. Puede agregar,
 eliminar, modificar o desglosar los campos de la tabla a su conveniencia -->
 
+<table border="1" cellspacing="0" cellpadding="6" style="border-collapse:collapse; width:100%;">
+  <tr style="background-color:#f2f2f2;">
+    <th rowspan="2">Items</th>
+    <th colspan="2">Sources</th>
+    <th rowspan="2">Total</th>
+  </tr>
+  <tr style="background-color:#f9f9f9;">
+    <th>Own (Our Team)</th>
+    <th>Other Sources</th>
+  </tr>
+  <tr>
+    <td>Personnel</td>
+    <td>$4,000,000.00</td>
+    <td>$2,000,000.00 (University Support Program)</td>
+    <td>$6,000,000.00</td>
+  </tr>
+  <tr>
+    <td>Equipment</td>
+    <td>$3,500,000.00</td>
+    <td>$1,000,000.00 (Faculty Lab Access)</td>
+    <td>$4,500,000.00</td>
+  </tr>
+  <tr>
+    <td>Software</td>
+    <td>$1,200,000.00</td>
+    <td>$0.00</td>
+    <td>$1,200,000.00</td>
+  </tr>
+  <tr>
+    <td>Materials</td>
+    <td>$600,000.00</td>
+    <td>$0.00</td>
+    <td>$600,000.00</td>
+  </tr>
+  <tr>
+    <td>Field Visits</td>
+    <td>$800,000.00</td>
+    <td>$400,000.00 (OpenInfra Meetup Travel Fund)</td>
+    <td>$1,200,000.00</td>
+  </tr>
+  <tr>
+    <td>Bibliographic Material</td>
+    <td>$300,000.00</td>
+    <td>$0.00</td>
+    <td>$300,000.00</td>
+  </tr>
+  <tr>
+    <td>Publications, Patents, or Software Registration</td>
+    <td>$500,000.00</td>
+    <td>$500,000.00 (Institutional Research Fund)</td>
+    <td>$1,000,000.00</td>
+  </tr>
+  <tr>
+    <td>Technical Services</td>
+    <td>$700,000.00</td>
+    <td>$0.00</td>
+    <td>$700,000.00</td>
+  </tr>
+  <tr>
+    <td>Travel</td>
+    <td>$400,000.00</td>
+    <td>$200,000.00 (Collaboration Grant)</td>
+    <td>$600,000.00</td>
+  </tr>
+  <tr style="font-weight:bold; background-color:#f2f2f2;">
+    <td>Total</td>
+    <td>$12,000,000.00</td>
+    <td>$4,100,000.00</td>
+    <td>$16,100,000.00</td>
+  </tr>
+</table>
+
 <!-- Una vez completada la anterior tabla, tendrá el valor o presupuesto de
 lo que costaría desarrollar el producto o servicio para llevarlo al mercado; es
 allí cuando comienza la operación. Por ejemplo, si el producto o servicio fuese
