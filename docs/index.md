@@ -8,9 +8,14 @@
 <img src="assets/logo/risu-katakana.png" width="150px" alt="'risu' in katakana.">
 </div>
 
-**Rizu** is an alternative to expensive Infrastructure as a Service (IaaS) solutions
-that allows you to give freedom to your developers to deploy applications
-on-premises. Rizu was developed as an Integrative Project for a course at
-EAFIT University.
+Rizu is a cloud console for a private cloud running on the OpenStack.
+It's an alternative to the Horizon OpenStack dashboard with built-in support
+for custom Terraform scripts.
+The project's goal is to provide a streamlined introduction to cloud management
+for people or staff that has no little to no experience.
 
-:simple-github: [Rizu Product Backlog](https://github.com/users/luismtorresv/projects/9/views/1).
+Rizu was developed as an Integrative Project for a course at EAFIT University.
+
+You can check out the
+:simple-github: [product backlog](https://github.com/users/luismtorresv/projects/9/views/1)
+here.
