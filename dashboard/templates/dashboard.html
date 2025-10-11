@@ -102,7 +102,11 @@
             {% empty %}
               <li class="resource-item-empty">No networks yet</li>
             {% endfor %}
-            <div class="dashboard-actions">
+            </div>
+          </ul>
+        </div>
+      </div>
+      <div class="dashboard-actions">
               {% if user_role == "member" %}
               <a href="{% url 'create_network' %}" class="btn-dashboard-action btn-create-network">
                 <i class="fa-solid fa-network-wired action-icon"></i>Create VMs
@@ -115,10 +119,6 @@
                 <i class="fa-solid fa-route action-icon"></i>Create Router
               </a>
               {% endif %}
-            </div>
-          </ul>
-        </div>
-      </div>
       {% else %}
       <div class="no-project-alert">
         <p>Select a project</p>

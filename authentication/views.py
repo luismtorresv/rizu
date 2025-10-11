@@ -5,8 +5,6 @@ from django.shortcuts import render, redirect
 from django.contrib import messages
 from Rizu.openStackCommunication import OpenStackCommunication
 
-osc = OpenStackCommunication()
-
 
 def login_view(request):
     if request.method == "POST":
@@ -32,7 +30,10 @@ def register_view(request):
         if form.is_valid():
             user = form.save()
             auth_login(request, user)
-            osc.create_openstack_user(user=user)
+
+            conn = OpenStackCommunication.get_connection(system=True)
+
+            OpenStackCommunication.create_openstack_user(user=user, conn_token=conn)
             return redirect("front_page_index")
     else:
         form = OpenStackUserRegistrationForm()
