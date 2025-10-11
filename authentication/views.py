@@ -30,8 +30,11 @@ def register_view(request):
         if form.is_valid():
             user = form.save()
             auth_login(request, user)
-
-            conn = OpenStackCommunication.get_connection(system=True)
+            try:
+                conn = OpenStackCommunication.get_connection(system=True)
+            except Exception as e:
+                print(f"Could not connect to OpenStack, Error: {e}")
+                return
 
             OpenStackCommunication.create_openstack_user(user=user, conn_token=conn)
             return redirect("front_page_index")

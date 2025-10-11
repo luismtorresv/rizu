@@ -15,6 +15,7 @@ def dashboard(request):
         conn = OpenStackCommunication.get_connection(system=True)
     except Exception as e:
         print(f"Error Connecting to OpenStack deployment")
+        return
 
     # Filter projects depending on user role
     if user.role == "admin":
@@ -50,6 +51,8 @@ def dashboard(request):
     resources = {"instances": [], "routers": [], "networks": [], "volumes": []}
 
     if project_id:
+        # There's no try catch statement here because if it couldn't connect before it would never reach this point
+
         conn = OpenStackCommunication.get_connection(
             request=request, project_id=project_id
         )
@@ -175,7 +178,11 @@ def create_project(request):
         user = request.user  # puedes cambiarlo luego según autenticación real
         user_role = user.role
 
-        conn = OpenStackCommunication.get_connection(system=True)
+        try:
+            conn = OpenStackCommunication.get_connection(system=True)
+        except Exception as e:
+            print(f"Could not connect to OpenStack, Error: {e}")
+            return
 
         response = OpenStackCommunication.create_openstack_project(
             project_name,
@@ -201,10 +208,13 @@ def create_network(request):
         name = request.POST.get("network_name")
         project_id = request.session.get("project_id")
 
-        # Give temporary admin-level credentials
-        conn = OpenStackCommunication.get_connection(
-            request=request, project_id=project_id
-        )
+        try:
+            conn = OpenStackCommunication.get_connection(
+                request=request, project_id=project_id
+            )
+        except Exception as e:
+            print(f"Could not connect to OpenStack, Error: {e}")
+            return
 
         net = OpenStackCommunication.create_openstack_network(name, project_id, conn)
 
@@ -222,9 +232,13 @@ def create_router(request):
         project_id = request.session.get("project_id")
         external_net = request.POST.get("external_network_name") or None
 
-        conn = OpenStackCommunication.get_connection(
-            request=request, project_id=project_id
-        )
+        try:
+            conn = OpenStackCommunication.get_connection(
+                request=request, project_id=project_id
+            )
+        except Exception as e:
+            print(f"Could not connect to OpenStack, Error: {e}")
+            return
 
         router = conn.create_openstack_router(
             name,
@@ -289,7 +303,15 @@ def join_projects_view(request):
 
 
 def project_detail_view(request, project_id: str):
-    conn = OpenStackCommunication.get_connection(request=request, project_id=project_id)
+
+    try:
+        conn = OpenStackCommunication.get_connection(
+            request=request, project_id=project_id
+        )
+    except Exception as e:
+        print(f"Could not connect to OpenStack, Error: {e}")
+        return
+
     project = conn.identity.get_project(project_id)
 
     resources = {"instances": [], "routers": [], "networks": []}

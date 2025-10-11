@@ -8,35 +8,39 @@ class OpenStackCommunication:
 
     @staticmethod
     def get_connection(request=None, project_id=None, system=False):
-        if system:
-            return openstack.connect(cloud="kolla-admin-system")
+        try:
+            if system:
+                return openstack.connect(cloud="kolla-admin-system")
 
-        if request and hasattr(request, "user") and request.user.is_authenticated:
-            if project_id:
-                # Project-scoped token for managers or members
-                return openstack.connect(
-                    auth=dict(
-                        username=request.user.username,
-                        password=request.user.openstack_password,
-                        project_id=project_id,
-                        auth_url="http://192.168.10.254:5000/v3",
-                        user_domain_name="Default",
-                        project_domain_name="Default",
+            if request and hasattr(request, "user") and request.user.is_authenticated:
+                if project_id:
+                    # Project-scoped token for managers or members
+                    return openstack.connect(
+                        auth=dict(
+                            username=request.user.username,
+                            password=request.user.openstack_password,
+                            project_id=project_id,
+                            auth_url="http://192.168.10.254:5000/v3",
+                            user_domain_name="Default",
+                            project_domain_name="Default",
+                        )
                     )
-                )
-            else:
-                # fallback: system token for listing projects
-                return openstack.connect(
-                    auth=dict(
-                        username=request.user.username,
-                        password=request.user.openstack_password,
-                        auth_url="http://192.168.10.254:5000/v3",
-                        user_domain_name="Default",
+                else:
+                    # fallback: system token for listing projects
+                    return openstack.connect(
+                        auth=dict(
+                            username=request.user.username,
+                            password=request.user.openstack_password,
+                            auth_url="http://192.168.10.254:5000/v3",
+                            user_domain_name="Default",
+                        )
                     )
-                )
 
-        # fallback generic
-        return openstack.connect(cloud="kolla-admin")
+            # fallback generic
+            return openstack.connect(cloud="kolla-admin")
+        except Exception as e:
+            print(f"Cannot connect to Openstack. Error: {e}")
+            return
 
     @staticmethod
     def create_openstack_project(
