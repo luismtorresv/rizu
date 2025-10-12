@@ -59,10 +59,10 @@
 
               <div class="jp-actions">
                 <a class="jp-btn" href="{% url 'project_detail' p.id %}">View</a>
-                <form action="POST">
+                <form method="post">
                   {% csrf_token %}
                   <input type="hidden" name="project_name" value="{{ p.name }}">
-                  <button class="jp-btn-primary" type="button">Join</button>
+                  <button class="jp-btn-primary" type="submit">Join</button>
                  </form>
               </div>
             </article>
