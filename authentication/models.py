@@ -7,7 +7,6 @@ from django.contrib.auth.models import AbstractUser
 # Abstract user already comes with the username, email,first_name and last_name, password,
 # and a status (is_active, is_staff, is_superuser) attributes.
 class OpenStackUser(AbstractUser):
-
     # to quote the explanation: "In Django, when you define choices, the first value ('admin') is what’s stored in the database,
     # and the second ('Admin') is the human-readable label shown in forms/admin."
     ROLE_CHOICES = (

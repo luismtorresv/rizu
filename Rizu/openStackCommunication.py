@@ -5,7 +5,6 @@ import string
 
 
 class OpenStackCommunication:
-
     @staticmethod
     def get_connection(request=None, project_id=None, system=False):
         try:

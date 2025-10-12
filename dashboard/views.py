@@ -204,7 +204,6 @@ def create_project(request):
 
 def create_network(request):
     if request.method == "POST":
-
         name = request.POST.get("network_name")
         project_id = request.session.get("project_id")
 
