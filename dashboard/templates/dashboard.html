@@ -103,22 +103,21 @@
         </div>
       </div>
       <div class="dashboard-actions">
-        {% if user_role == "member" %}
-          <a href="{% url 'create_network' %}" class="btn-dashboard-action btn-create-network">
-            <i class="fa-solid fa-network-wired action-icon"></i>Create VMs
-          </a>
-          {% else %}
+        <p>DEBUG: user_info.user_project_role = "{{ user_info.user_role }}"</p>
+        {% if user_info.user_role == "project_manager" %}
           <a href="{% url 'create_network' %}" class="btn-dashboard-action btn-create-network">
             <i class="fa-solid fa-network-wired action-icon"></i>Create Network
           </a>
           <a href="{% url 'create_router' %}" class="btn-dashboard-action btn-create-router">
             <i class="fa-solid fa-route action-icon"></i>Create Router
           </a>
-
           <a href="{% url 'terraform' %}" class="btn-dashboard-action btn-create-project">
-+            <i class="fa-solid fa-hammer action-icon"></i> Use Terraform
-+          </a>
+            <i class="fa-solid fa-hammer action-icon"></i> Use Terraform
+          </a>
         {% endif %}
+        <a href="{% url 'create_vm' %}" class="btn-dashboard-action btn-create-network">
+            <i class="fa-solid fa-network-wired action-icon"></i>Create VMs
+        </a>
       </div>
       {% else %}
       <div class="no-project-alert">

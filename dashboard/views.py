@@ -55,51 +55,33 @@ def dashboard(request):
     if project_id:
         # There's no try catch statement here because if it couldn't connect before it would never reach this point
 
-        conn = OpenStackCommunication.get_connection(
+        project_conn = OpenStackCommunication.get_connection(
             request=request, project_id=project_id
         )
         request.session["project_id"] = project_id
         try:
-            selected_project_obj = conn.identity.get_project(project_id)
+            selected_project_obj = project_conn.identity.get_project(project_id)
         except Exception as e:
             print(f"Failed to fetch selected project: {e}")
             selected_project_obj = None
 
     if selected_project_obj:
-        try:
-            # Find the OpenStack user by username
-            openstack_user = next(
-                (u for u in conn.identity.users() if u.name == request.user.username),
-                None,
-            )
-
-            if openstack_user:
-                # Get all roles this user has in the selected project
-                roles = list(
-                    conn.identity.roles(
-                        user=openstack_user, project=selected_project_obj
-                    )
-                )
-                role_names = [r.name for r in roles]
-                user_project_role = (
-                    ", ".join(role_names) if role_names else "No role assigned"
-                )
-            else:
-                user_project_role = "User not found in OpenStack"
-
-        except Exception as e:
-            print(f"Error fetching user role in project: {e}")
-            user_project_role = "Error retrieving role"
+        # Find the OpenStack user by username
+        user_project_role = OpenStackCommunication.get_user_primary_role(
+            user.username, selected_project_obj, conn
+        )
 
         # Instances
         try:
-            resources["instances"] = [vm.to_dict() for vm in conn.compute.servers()]
+            resources["instances"] = [
+                vm.to_dict() for vm in project_conn.compute.servers()
+            ]
         except Exception as e:
             print(f"Error listing instances: {e}")
 
         # Routers
         try:
-            resources["routers"] = [r.to_dict() for r in conn.network.routers()]
+            resources["routers"] = [r.to_dict() for r in project_conn.network.routers()]
         except Exception as e:
             print(f"Error listing routers: {e}")
 
@@ -107,7 +89,7 @@ def dashboard(request):
         try:
             resources["networks"] = [
                 n.to_dict()
-                for n in conn.network.networks()
+                for n in project_conn.network.networks()
                 if getattr(n, "project_id", None) == project_id
             ]
         except Exception as e:
@@ -118,12 +100,11 @@ def dashboard(request):
             # Depending on SDK/permissions you may need details=True/False
             resources["volumes"] = [
                 v.to_dict()
-                for v in conn.block_storage.volumes()
+                for v in project_conn.block_storage.volumes()
                 if getattr(v, "project_id", None) == project_id
             ]
         except Exception as e:
             print(f"Error listing volumes: {e}")
-
     user_info = None
     if selected_project_obj:
         user_info = {

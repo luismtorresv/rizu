@@ -45,7 +45,7 @@ class OpenStackCommunication:
         project_name, project_description, user, role, conn_token
     ):
         try:
-            _ = conn_token.identity.create_project(
+            project = conn_token.identity.create_project(
                 name=project_name,
                 description=project_description,
                 domain_id="default",
@@ -106,6 +106,12 @@ class OpenStackCommunication:
 
         conn_token.identity.assign_project_role_to_user(project, user, project_role)
 
+        # assign default project ID
+        if not getattr(user, "default_project_id", None):
+            conn_token.identity.update_user(user, default_project_id=project.id)
+        elif user.default_project_id != project.id:
+            conn_token.identity.update_user(user, default_project_id=project.id)
+
     @staticmethod
     def create_openstack_network(network_name, project_id, conn_token):
         try:
@@ -151,3 +157,33 @@ class OpenStackCommunication:
         except Exception as e:
             print(f"Failed to create router {router_name}: {e}")
             return None
+
+    @staticmethod
+    def get_user_primary_role(username, project_id, conn_token):
+        """
+        Return the user's primary role ('admin', 'project_manager', or 'member')
+        in the given project using roles(), without querying role_assignments().
+        """
+        try:
+            # Find the OpenStack user by username
+            user = next(
+                (u for u in conn_token.identity.users() if u.name == username), None
+            )
+            if not user:
+                return "User not found in OpenStack"
+
+            # Get all roles assigned to the user in the project
+            roles = list(conn_token.identity.roles(user=user, project=project_id))
+            print(roles)
+            # Only keep the roles we care about
+            role_priority = ["project_manager", "member"]
+            for prio_role in role_priority:
+                for role in roles:
+                    if role.name.lower() == prio_role:
+                        return prio_role
+
+            return "No relevant role assigned"
+
+        except Exception as e:
+            print(f"Error fetching user role: {e}")
+            return "Error retrieving role"
