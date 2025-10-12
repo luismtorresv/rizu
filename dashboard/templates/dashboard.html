@@ -101,7 +101,7 @@
               </li>
             {% empty %}
               <li class="resource-item-empty">No networks yet</li>
-            {% endfor %}     
+            {% endfor %}
           </ul>
         </div>
       </div>
@@ -117,6 +117,10 @@
           <a href="{% url 'create_router' %}" class="btn-dashboard-action btn-create-router">
             <i class="fa-solid fa-route action-icon"></i>Create Router
           </a>
+
+          <a href="{% url 'terraform' %}" class="btn-dashboard-action btn-create-project">
++            <i class="fa-solid fa-hammer action-icon"></i> Use Terraform
++          </a>
         {% endif %}
       </div>
       {% else %}

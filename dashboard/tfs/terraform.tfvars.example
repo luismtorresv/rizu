@@ -1,0 +1,42 @@
+##############################################################################
+# Terraform Variables Example File
+# Copy this file to terraform.tfvars and update with your actual values
+# 
+# SECURITY WARNING: Never commit terraform.tfvars to version control!
+# Add terraform.tfvars to your .gitignore file
+##############################################################################
+
+# OpenStack Authentication (SENSITIVE - use environment variables in production)
+openstack_user_name   = "admin"
+openstack_tenant_name = "admin"
+openstack_password    = "YOUR_OPENSTACK_PASSWORD_HERE"
+openstack_auth_url    = "http://192.168.10.254:5000/v3"
+openstack_region      = "microstack"
+openstack_domain_name = "Default"
+openstack_insecure    = true
+
+# Project Configuration
+project_name        = "demo_project"
+project_description = "Demo project created with Terraform"
+environment         = "dev"
+
+# Network Configuration
+subnet_cidr       = "192.168.100.0/24"
+dns_nameservers   = ["8.8.8.8", "8.8.4.4"]
+
+# External Network (optional)
+# Uncomment and set to connect router to external network
+# external_network_id = "your-external-network-id-here"
+
+##############################################################################
+# Alternative: Using Environment Variables (Recommended for Production)
+##############################################################################
+# Instead of using this file, you can set environment variables:
+#
+# export TF_VAR_openstack_user_name="admin"
+# export TF_VAR_openstack_password="your-password"
+# export TF_VAR_openstack_auth_url="http://192.168.10.254:5000/v3"
+# export TF_VAR_project_name="my_project"
+#
+# Then run: terraform plan
+##############################################################################

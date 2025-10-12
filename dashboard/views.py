@@ -3,6 +3,10 @@ from django.contrib import messages
 from django.http import HttpResponse
 from Rizu.openStackCommunication import OpenStackCommunication
 
+import subprocess
+from pathlib import Path
+import re
+
 
 def dashboard(request):
     project_id = request.GET.get("project_id")
@@ -351,3 +355,42 @@ def project_detail_view(request, project_id: str):
         "resources": resources,
     }
     return render(request, "project_detail.html", context)
+
+
+def terraform_view(request):
+    output = None
+
+    if request.method == "POST":
+        terraform_code = request.POST.get("terraform_code")
+        base_dir = Path(__file__).resolve().parent
+        tf_path = base_dir / "tfs"
+        tf_path.mkdir(parents=True, exist_ok=True)
+        tf_file = tf_path / "main.tf"
+        if not tf_file.exists():
+            tf_file.touch()
+        lines = terraform_code.strip().splitlines()
+        cleaned_lines = [line.lstrip() for line in lines if line.strip()]
+        cleaned_code = "\n".join(cleaned_lines)
+
+        with open(tf_path / "main.tf", "w", encoding="utf-8") as f:
+            f.write(cleaned_code)
+
+        try:
+            subprocess.run(["terraform", "init"], cwd=tf_path, check=True)
+            result = subprocess.run(
+                ["terraform", "apply", "-auto-approve"],
+                cwd=tf_path,
+                check=True,
+                capture_output=True,
+                text=True,
+                encoding="utf-8",
+            )
+
+            ansi_escape = re.compile(r"(?:\x1B[@-_][0-?]*[ -/]*[@-~])")
+            output = ansi_escape.sub("", result.stdout)
+
+        except subprocess.CalledProcessError as e:
+            ansi_escape = re.compile(r"(?:\x1B[@-_][0-?]*[ -/]*[@-~])")
+            output = "Failed to execute Terraform:\n" + ansi_escape.sub("", e.stderr)
+
+    return render(request, "use_terraform.html", {"output": output})

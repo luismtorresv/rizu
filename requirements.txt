@@ -1,3 +1,4 @@
 Django==5.2.7
 openstacksdk==4.7.0
 black==25.9.0
+python-terraform>=0.10.1

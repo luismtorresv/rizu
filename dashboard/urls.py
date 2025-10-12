@@ -16,4 +16,5 @@ urlpatterns = [
     path(
         "projects/<str:project_id>/", views.project_detail_view, name="project_detail"
     ),
+    path("terraform/", views.terraform_view, name="terraform"),
 ]
