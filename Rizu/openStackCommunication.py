@@ -1,5 +1,4 @@
 import openstack
-import os
 import secrets
 import string
 
@@ -46,7 +45,7 @@ class OpenStackCommunication:
         project_name, project_description, user, role, conn_token
     ):
         try:
-            new_project = conn_token.identity.create_project(
+            _ = conn_token.identity.create_project(
                 name=project_name,
                 description=project_description,
                 domain_id="default",
@@ -75,7 +74,7 @@ class OpenStackCommunication:
         try:
             rand_pass = OpenStackCommunication.generate_password()  # OpenStack Password
 
-            new_user = conn_token.identity.create_user(
+            _ = conn_token.identity.create_user(
                 name=user.username,
                 password=rand_pass,
                 domain_id="default",

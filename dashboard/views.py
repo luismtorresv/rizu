@@ -1,8 +1,6 @@
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.http import HttpResponse
-import openstack
-import os
 from Rizu.openStackCommunication import OpenStackCommunication
 
 
@@ -13,8 +11,8 @@ def dashboard(request):
     # Admin/system connection (has full visibility
     try:
         conn = OpenStackCommunication.get_connection(system=True)
-    except Exception as e:
-        print(f"Error Connecting to OpenStack deployment")
+    except Exception:
+        print("Error Connecting to OpenStack deployment")
         return
 
     # Filter projects depending on user role
@@ -121,12 +119,6 @@ def dashboard(request):
             ]
         except Exception as e:
             print(f"Error listing volumes: {e}")
-
-        # Current account (not required, but kept if you use it elsewhere)
-        try:
-            current_account = conn.current_user.name
-        except Exception:
-            current_account = "N/A"
 
     user_info = None
     if selected_project_obj:
@@ -283,7 +275,7 @@ def join_projects_view(request):
             )
 
             return redirect("front_page_index")
-        except:
+        except Exception:
             messages.error(request, "Failed to Join proyect")
 
     q = (request.GET.get("q") or "").strip().lower()
