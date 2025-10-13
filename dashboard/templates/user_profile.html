@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}User Profile{% endblock %}
+{% block body_class %}page-user-profile{% endblock %}
+
+{% block header %}{% endblock %}
+
+{% block content %}
+<div class="dashboard-main-container">
+  <div class="sidebar">
+    <h3 class="sidebar-title">
+      <img src="{% static 'images/rizusinfondo.png' %}" alt="Rizu Logo" class="sidebar-logo">
+      <span class="sidebar-brand-text">Rizu</span>
+    </h3>
+    <hr class="sidebar-divider">
+    <div class="sidebar-details">
+      <h4 class="sidebar-details-title">User</h4>
+      <p class="sidebar-detail-item"><strong>Username:</strong> {{ user.username }}</p>
+      <p class="sidebar-detail-item"><strong>Email:</strong> {{ user.email }}</p>
+      <p class="sidebar-detail-item"><strong>Role:</strong> {{ role }}</p>
+    </div>
+    <div class="sidebar-footer">
+      <a href="{% url 'dashboard' %}">
+        <button type="button" class="btn-signout">Back</button>
+      </a>
+    </div>
+  </div>
+
+  <div class="dashboard-content">
+    <div class="dashboard-header">
+      <h1>Profile</h1>
+    </div>
+
+    <div class="project-card">
+      <div class="project-card-header">
+        <h4 class="project-card-title">Projects</h4>
+      </div>
+      <div class="project-card-body">
+        {% if projects %}
+          <ul class="resource-list">
+            {% for p in projects %}
+              <li class="resource-item">
+                <a href="{% url 'project_detail' p.id %}">{{ p.name }}</a>
+                <span class="resource-id">ID: {{ p.id }}</span>
+              </li>
+            {% endfor %}
+          </ul>
+        {% else %}
+          <p>No projects assigned.</p>
+        {% endif %}
+      </div>
+    </div>
+
+    <div class="project-card" style="margin-top:1rem;">
+      <div class="project-card-header">
+        <h4 class="project-card-title">Danger Zone</h4>
+      </div>
+      <div class="project-card-body">
+        <p>Delete your account. This action is irreversible.</p>
+        <form method="post" onsubmit="return confirm('Are you sure you want to delete your account? This cannot be undone.');">
+          {% csrf_token %}
+          <input type="hidden" name="action" value="delete_account">
+          <input type="hidden" name="username" value="{{ user.username }}">
+          <button type="submit" class="btn-dashboard-action btn-delete-account">Delete Account</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

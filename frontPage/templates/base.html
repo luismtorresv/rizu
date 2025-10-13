@@ -26,8 +26,9 @@
 
 
     {% block messages %}
+    <div class="rz-messages-wrapper">
     {% if messages %}
-        <div class="container mt-3">
+        <div class="container mt-3 rz-messages pe-5">
             {% for message in messages %}
                 <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags }}{% endif %} alert-dismissible fade show" role="alert">
                     {{ message }}
@@ -36,6 +37,7 @@
             {% endfor %}
         </div>
     {% endif %}
+    </div>
     {% endblock %}
 
     <main>

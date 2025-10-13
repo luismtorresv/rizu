@@ -90,8 +90,8 @@ class OpenStackCommunication:
 
     @staticmethod
     def assign_openstack_role(project_name, username, role, conn_token):
-        project = conn_token.identity.find_project(project_name)
-        user = conn_token.identity.find_user(username)
+        project = conn_token.identity.find_project(project_name, domain_id="Default")
+        user = conn_token.identity.find_user(username, domain_id="Default")
         project_role = conn_token.identity.find_role(role)
         print(project.id)
         print(project_name)
@@ -99,32 +99,35 @@ class OpenStackCommunication:
         if not project or not user or not project_role:
             raise ValueError("Project, user, or role not found")
 
-        # Check if user already has this role on the project
-        existing_roles = {
-            r.role["name"].lower()
-            for r in conn_token.identity.role_assignments(
-                user_id=user.id,
-                project_id=project.id,
-                scope_type="project",  # restrict to project only
-                include_names=True,
-            )
-            if "name" in r.role
-        }
+        # DEBUG: mostrar todas las asignaciones actuales del usuario
+        assignments = list(conn_token.identity.role_assignments(
+            user_id=user.id,
+            include_names=True,
+        ))
+        for a in assignments:
+            print("ASSIGNMENT:", a.scope, a.role["name"])
 
-        print(existing_roles)
-        print(project.id)
+        # Check if user already has this role on the project
+        existing_roles = set()
+        for a in assignments:
+            scope = a.scope
+            #  filtrar solo los roles que realmente pertenecen al proyecto actual
+            if "project" in scope and scope["project"]["id"] == project.id:
+                existing_roles.add(a.role["name"].lower())
+
+        print(f"[DEBUG] Project: {project.name} ({project.id})")
+        print(f"[DEBUG] Roles found: {existing_roles}")
 
         # Only assign if it’s not already there
         if role.lower() not in existing_roles:
             conn_token.identity.assign_project_role_to_user(project, user, project_role)
+            print(f"[INFO] Assigned {role} to {username} in {project.name}")
+        else:
+            print(f"[INFO] {username} already has {role} in {project.name}")
 
         # Optional: handle default project if necessary
-        if role == "member":
-            if (
-                not getattr(user, "default_project_id", None)
-                or user.default_project_id != project.id
-            ):
-                conn_token.identity.update_user(user, default_project_id=project.id)
+        if role.lower() == "member" and not getattr(user, "default_project_id", None):
+            conn_token.identity.update_user(user, default_project_id=project.id)
 
     @staticmethod
     def create_openstack_network(network_name, project_id, conn_token):

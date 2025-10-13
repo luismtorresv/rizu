@@ -21,9 +21,12 @@
         <p class="sidebar-detail-item"><strong>Instances:</strong> {{ user_info.instances }}</p>
         <p class="sidebar-detail-item"><strong>Volumes:</strong> {{ user_info.volumes }}</p>
         <p class="sidebar-detail-item"><strong>Networks:</strong> {{ user_info.networks }}</p>
-        <p class="sidebar-detail-item"><strong>Role:</strong> {{ user_info.role }}</p>
+        <p class="sidebar-detail-item"><strong>Role:</strong> {{ user_info.user_role }}</p>
       </div>
       <div class="sidebar-footer">
+        <a href="{% url 'user_profile' %}">
+          <button type="button" class="btn-signout">Perfil</button>
+        </a>
         <a href="{% url 'front_page_index' %}">
           <button type="button" class="btn-signout">Back</button>
         </a>

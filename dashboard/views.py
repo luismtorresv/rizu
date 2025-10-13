@@ -374,3 +374,59 @@ def terraform_view(request):
             output = "Failed to execute Terraform:\n" + ansi_escape.sub("", e.stderr)
 
     return render(request, "use_terraform.html", {"output": output})
+
+
+def user_profile(request):
+    """Render the logged-in user's profile and allow deletion.
+
+    GET: show profile with role and projects.
+    POST: if action=delete_account, delete the Django user (only if requester is the same user or is_staff).
+    """
+    if not request.user.is_authenticated:
+        return redirect("front_page_index")
+
+    try:
+        sys_conn = OpenStackCommunication.get_connection(system=True)
+    except Exception as e:
+        print(f"Could not connect to OpenStack for profile: {e}")
+        sys_conn = None
+
+    # Find OpenStack user and their project assignments
+    openstack_user = None
+    projects = []
+    role = request.user.role  # Use the role stored in the Django user model
+
+    try:
+        if sys_conn:
+            openstack_user = sys_conn.identity.find_user(request.user.username)
+            if openstack_user:
+                assignments = list(
+                    sys_conn.identity.role_assignments(user_id=openstack_user.id, include_names=True)
+                )
+
+                project_ids = {
+                    a.scope["project"]["id"]
+                    for a in assignments
+                    if "project" in a.scope
+                }
+
+                for pid in project_ids:
+                    try:
+                        p = sys_conn.identity.get_project(pid)
+                        projects.append({"id": p.id, "name": p.name, "description": p.description or ""})
+                    except Exception:
+                        pass
+    except Exception as e:
+        print(f"Error building profile info: {e}")
+
+    projects.sort(key=lambda x: x["name"].lower())
+
+    return render(
+        request,
+        "user_profile.html",
+        {
+            "user": request.user,
+            "role": role,  # Use the stored role
+            "projects": projects,  # List all projects
+        },
+    )
