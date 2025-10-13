@@ -3,7 +3,8 @@ from django.contrib.auth.forms import AuthenticationForm
 from .forms import OpenStackUserRegistrationForm
 from django.shortcuts import render, redirect
 from django.contrib import messages
-from Rizu.openStackCommunication import OpenStackCommunication
+from Rizu.Openstack.Utils import OpenStackUtils
+from Rizu.Openstack.Builders import OpenStackBuilders
 
 
 def login_view(request):
@@ -31,12 +32,12 @@ def register_view(request):
             user = form.save()
             auth_login(request, user)
             try:
-                conn = OpenStackCommunication.get_connection(system=True)
+                conn = OpenStackUtils.get_connection(system=True)
             except Exception as e:
                 print(f"Could not connect to OpenStack, Error: {e}")
                 return
 
-            OpenStackCommunication.create_openstack_user(user=user, conn_token=conn)
+            OpenStackBuilders.create_openstack_user(user=user, conn_token=conn)
 
             return redirect("front_page_index")
     else:

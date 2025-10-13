@@ -1,9 +1,8 @@
 import openstack
-import secrets
-import string
 
 
-class OpenStackCommunication:
+class OpenStackUtils:
+
     @staticmethod
     def get_connection(request=None, project_id=None, system=False):
         try:
@@ -41,60 +40,10 @@ class OpenStackCommunication:
             return
 
     @staticmethod
-    def create_openstack_project(
-        project_name, project_description, user, role, conn_token
-    ):
-        try:
-            _ = conn_token.identity.create_project(
-                name=project_name,
-                description=project_description,
-                domain_id="default",
-                enabled=True,
-            )
-
-            # assign myself to the project
-
-            OpenStackCommunication.assign_openstack_role(
-                project_name, user.username, role, conn_token
-            )
-
-            return True
-        except Exception as e:
-            print(f"Something went wrong with the project creation. Error: {e}")
-            return False
-
-    @staticmethod
-    def generate_password(length=16):
-        chars = string.ascii_letters + string.digits + string.punctuation
-        return "".join(secrets.choice(chars) for _ in range(length))
-
-    @staticmethod
-    def create_openstack_user(user, conn_token):
-        try:
-            rand_pass = OpenStackCommunication.generate_password()  # OpenStack Password
-
-            _ = conn_token.identity.create_user(
-                name=user.username,
-                password=rand_pass,
-                domain_id="default",
-                email=user.email,
-                default_project_id=None,  # or specify a project ID if needed
-                enabled=True,
-            )
-
-            user.openstack_password = rand_pass
-            user.save()
-        except Exception as e:
-            print(f"Something went wrong with the user creation process. Error: {e}")
-            return False
-
-    @staticmethod
     def assign_openstack_role(project_name, username, role, conn_token):
         project = conn_token.identity.find_project(project_name, domain_id="Default")
         user = conn_token.identity.find_user(username, domain_id="Default")
         project_role = conn_token.identity.find_role(role)
-        print(project.id)
-        print(project_name)
 
         if not project or not user or not project_role:
             raise ValueError("Project, user, or role not found")
@@ -106,8 +55,9 @@ class OpenStackCommunication:
                 include_names=True,
             )
         )
-        for a in assignments:
-            print("ASSIGNMENT:", a.scope, a.role["name"])
+        
+        # for a in assignments:
+        #     print("ASSIGNMENT:", a.scope, a.role["name"])
 
         # Check if user already has this role on the project
         existing_roles = set()
@@ -117,8 +67,8 @@ class OpenStackCommunication:
             if "project" in scope and scope["project"]["id"] == project.id:
                 existing_roles.add(a.role["name"].lower())
 
-        print(f"[DEBUG] Project: {project.name} ({project.id})")
-        print(f"[DEBUG] Roles found: {existing_roles}")
+        # print(f"[DEBUG] Project: {project.name} ({project.id})")
+        # print(f"[DEBUG] Roles found: {existing_roles}")
 
         # Only assign if it’s not already there
         if role.lower() not in existing_roles:
@@ -130,52 +80,6 @@ class OpenStackCommunication:
         # Optional: handle default project if necessary
         if role.lower() == "member" and not getattr(user, "default_project_id", None):
             conn_token.identity.update_user(user, default_project_id=project.id)
-
-    @staticmethod
-    def create_openstack_network(network_name, project_id, conn_token):
-        try:
-            # Connect directly with project scope
-
-            network = conn_token.network.create_network(
-                name=network_name,
-                project_id=project_id,
-                is_router_external=False,
-                admin_state_up=True,
-            )
-            return network
-        except Exception as e:
-            print(f"Failed to create network {network_name}: {e}")
-            return None
-
-    @staticmethod
-    def create_openstack_router(
-        router_name,
-        project_id,
-        conn_token,
-        external_network_name=None,
-    ):
-        try:
-            kwargs = {
-                "name": router_name,
-                "project_id": project_id,
-                "admin_state_up": True,
-            }
-
-            if external_network_name:
-                ext_net = conn_token.network.find_network(
-                    external_network_name, external=True
-                )
-                if not ext_net:
-                    raise ValueError(
-                        f"External network {external_network_name} not found"
-                    )
-                kwargs["external_gateway_info"] = {"network_id": ext_net.id}
-
-            router = conn_token.network.create_router(**kwargs)
-            return router
-        except Exception as e:
-            print(f"Failed to create router {router_name}: {e}")
-            return None
 
     @staticmethod
     def get_user_primary_role(openstack_user, project_id, conn_token):

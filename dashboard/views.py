@@ -1,7 +1,8 @@
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.http import HttpResponse
-from Rizu.openStackCommunication import OpenStackCommunication
+from Rizu.Openstack.Utils import OpenStackUtils
+from Rizu.Openstack.Builders import OpenStackBuilders
 
 import subprocess
 from pathlib import Path
@@ -14,10 +15,10 @@ def dashboard(request):
 
     # Admin/system connection (has full visibility
     try:
-        conn = OpenStackCommunication.get_connection(system=True)
-    except Exception:
-        print("Error Connecting to OpenStack deployment")
-        return
+        conn = OpenStackUtils.get_connection(system=True)
+    except Exception as e:
+        print(f"Error Connecting to OpenStack deployment: {e}")
+        return HttpResponse("Error connecting to OpenStack", status=500)
 
     openstack_user = conn.identity.find_user(user.username)
 
@@ -54,7 +55,7 @@ def dashboard(request):
     if project_id:
         # There's no try catch statement here because if it couldn't connect before it would never reach this point
 
-        project_conn = OpenStackCommunication.get_connection(
+        project_conn = OpenStackUtils.get_connection(
             request=request, project_id=project_id
         )
         request.session["project_id"] = project_id
@@ -66,7 +67,7 @@ def dashboard(request):
 
     if selected_project_obj:
         # Find the OpenStack user by username
-        user_project_role = OpenStackCommunication.get_user_primary_role(
+        user_project_role = OpenStackUtils.get_user_primary_role(
             openstack_user, selected_project_obj.id, project_conn
         )
 
@@ -155,12 +156,12 @@ def create_project(request):
         user_role = user.role
 
         try:
-            conn = OpenStackCommunication.get_connection(system=True)
+            conn = OpenStackUtils.get_connection(system=True)
         except Exception as e:
             print(f"Could not connect to OpenStack, Error: {e}")
-            return
+            return HttpResponse("Error connecting to OpenStack", status=500)
 
-        response = OpenStackCommunication.create_openstack_project(
+        response = OpenStackBuilders.create_openstack_project(
             project_name,
             description,
             user,
@@ -184,14 +185,12 @@ def create_network(request):
         project_id = request.session.get("project_id")
 
         try:
-            conn = OpenStackCommunication.get_connection(
-                request=request, project_id=project_id
-            )
+            conn = OpenStackUtils.get_connection(request=request, project_id=project_id)
         except Exception as e:
             print(f"Could not connect to OpenStack, Error: {e}")
-            return
+            return HttpResponse("Error connecting to OpenStack", status=500)
 
-        net = OpenStackCommunication.create_openstack_network(name, project_id, conn)
+        net = OpenStackBuilders.create_openstack_network(name, project_id, conn)
 
         if net:
             messages.success(request, f"Network {name} created")
@@ -208,14 +207,12 @@ def create_router(request):
         external_net = request.POST.get("external_network_name") or None
 
         try:
-            conn = OpenStackCommunication.get_connection(
-                request=request, project_id=project_id
-            )
+            conn = OpenStackUtils.get_connection(request=request, project_id=project_id)
         except Exception as e:
             print(f"Could not connect to OpenStack, Error: {e}")
-            return
+            return HttpResponse("Error connecting to OpenStack", status=500)
 
-        router = conn.create_openstack_router(
+        router = OpenStackBuilders.create_openstack_router(
             name,
             project_id,
             conn,
@@ -240,10 +237,10 @@ def _initials(name: str) -> str:
 
 def join_projects_view(request):
     try:
-        sys_conn = OpenStackCommunication.get_connection(system=True)
+        sys_conn = OpenStackUtils.get_connection(system=True)
     except Exception as e:
         print(f"Could not connect to OpenStack, Error: {e}")
-        return
+        return HttpResponse("Error connecting to OpenStack", status=500)
 
     if request.method == "POST":
         try:
@@ -251,7 +248,7 @@ def join_projects_view(request):
             user_name = request.user.username
             role = "member"
 
-            OpenStackCommunication.assign_openstack_role(
+            OpenStackUtils.assign_openstack_role(
                 project_name=project_name,
                 username=user_name,
                 role=role,
@@ -301,10 +298,10 @@ def join_projects_view(request):
 
 def project_detail_view(request, project_id: str):
     try:
-        conn = OpenStackCommunication.get_connection(system=True)
+        conn = OpenStackUtils.get_connection(system=True)
     except Exception as e:
         print(f"Could not connect to OpenStack, Error: {e}")
-        return
+        return HttpResponse("Error connecting to OpenStack", status=500)
 
     project = conn.identity.get_project(project_id)
 
@@ -382,7 +379,7 @@ def user_profile(request):
         return redirect("front_page_index")
 
     try:
-        sys_conn = OpenStackCommunication.get_connection(system=True)
+        sys_conn = OpenStackUtils.get_connection(system=True)
     except Exception as e:
         print(f"Could not connect to OpenStack for profile: {e}")
         sys_conn = None
