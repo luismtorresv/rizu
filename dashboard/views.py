@@ -19,34 +19,33 @@ def dashboard(request):
         print("Error Connecting to OpenStack deployment")
         return
 
-    # Filter projects depending on user role
-    if user.role == "admin":
-        # Admins see all non-service projects
-        projects = [
-            {"id": proj.id, "name": proj.name, "description": proj.description}
-            for proj in conn.identity.projects()
-            if proj.name.lower() not in ["service", "services"]
-        ]
+    openstack_user = conn.identity.find_user(user.username)
 
-    elif user.role == "project_manager":
-        # Managers see only projects they own
-        # (Assuming you tagged projects with "owner:<username>" or similar)
-        projects = [
-            {"id": proj.id, "name": proj.name, "description": proj.description}
-            for proj in conn.identity.projects()
-            if getattr(proj, "tags", []) and f"owner:{user.username}" in proj.tags
-        ]
+    assignments = list(
+        conn.identity.role_assignments(user_id=openstack_user.id, include_names=True)
+    )
 
-    elif user.role == "member":
-        # Members see projects they belong to
-        projects = [
-            {"id": p.id, "name": p.name, "description": p.description}
-            for p in conn.identity.projects(user=conn.current_user_id)
-        ]
+    # Extract unique project IDs where the user has a role
+    project_ids = {
+        a.scope["project"]["id"]
+        for a in assignments
+        if "project" in a.scope  # ensure it's project-scoped (ignore domain/system)
+    }
 
-    else:
-        # Default fallback (guest / no role)
-        projects = []
+    # Fetch only those projects
+    projects = []
+    for pid in project_ids:
+        try:
+            proj = conn.identity.get_project(pid)
+            projects.append(
+                {
+                    "id": proj.id,
+                    "name": proj.name,
+                    "description": proj.description,
+                }
+            )
+        except Exception as e:
+            print(f"Error fetching project {pid}: {e}")
 
     selected_project_obj = None
     user_project_role = ""
@@ -68,7 +67,7 @@ def dashboard(request):
     if selected_project_obj:
         # Find the OpenStack user by username
         user_project_role = OpenStackCommunication.get_user_primary_role(
-            user.username, selected_project_obj, conn
+            openstack_user, selected_project_obj, conn
         )
 
         # Instances

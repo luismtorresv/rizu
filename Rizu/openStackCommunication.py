@@ -45,12 +45,11 @@ class OpenStackCommunication:
         project_name, project_description, user, role, conn_token
     ):
         try:
-            project = conn_token.identity.create_project(
+            _ = conn_token.identity.create_project(
                 name=project_name,
                 description=project_description,
                 domain_id="default",
                 enabled=True,
-                tags=[f"owner:{user.username}"],
             )
 
             # assign myself to the project
@@ -96,21 +95,37 @@ class OpenStackCommunication:
         project_role = conn_token.identity.find_role(role)
 
         if not project:
-            raise ValueError(f"❌ Project '{project_name}' not found in OpenStack.")
-
+            raise ValueError(f" Project '{project_name}' not found in OpenStack.")
         if not user:
-            raise ValueError(f"❌ User '{username}' not found in OpenStack.")
-
+            raise ValueError(f" User '{username}' not found in OpenStack.")
         if not project_role:
-            raise ValueError(f"❌ Role '{role}' not found in OpenStack.")
+            raise ValueError(f" Role '{role}' not found in OpenStack.")
 
+        # Check if user already has this role on the project
+        existing_roles = [
+            r.role["name"].lower()
+            for r in conn_token.identity.role_assignments(
+                user_id=user.id, project_id=project.id, include_names=True
+            )
+            if "name" in r.role
+        ]
+
+        if role.lower() in existing_roles:
+            print(
+                f" User {username} already has role '{role}' in project '{project_name}', skipping assignment."
+            )
+            return
+
+        # Only assign if it’s not already there
         conn_token.identity.assign_project_role_to_user(project, user, project_role)
 
-        # assign default project ID
-        if not getattr(user, "default_project_id", None):
-            conn_token.identity.update_user(user, default_project_id=project.id)
-        elif user.default_project_id != project.id:
-            conn_token.identity.update_user(user, default_project_id=project.id)
+        # Optional: handle default project if necessary
+        if role == "member":
+            if (
+                not getattr(user, "default_project_id", None)
+                or user.default_project_id != project.id
+            ):
+                conn_token.identity.update_user(user, default_project_id=project.id)
 
     @staticmethod
     def create_openstack_network(network_name, project_id, conn_token):
@@ -159,31 +174,37 @@ class OpenStackCommunication:
             return None
 
     @staticmethod
-    def get_user_primary_role(username, project_id, conn_token):
-        """
-        Return the user's primary role ('admin', 'project_manager', or 'member')
-        in the given project using roles(), without querying role_assignments().
-        """
+    def get_user_primary_role(openstack_user, project_id, conn_token):
         try:
-            # Find the OpenStack user by username
-            user = next(
-                (u for u in conn_token.identity.users() if u.name == username), None
+            # Fetch only role assignments for this user in this project
+            assignments = list(
+                conn_token.identity.role_assignments(
+                    user_id=openstack_user.id,
+                    project_id=project_id,
+                    include_names=True,  # critical fix
+                )
             )
-            if not user:
-                return "User not found in OpenStack"
 
-            # Get all roles assigned to the user in the project
-            roles = list(conn_token.identity.roles(user=user, project=project_id))
-            print(roles)
-            # Only keep the roles we care about
-            role_priority = ["project_manager", "member"]
-            for prio_role in role_priority:
-                for role in roles:
-                    if role.name.lower() == prio_role:
-                        return prio_role
+            if not assignments:
+                return "No relevant role assigned"
 
-            return "No relevant role assigned"
+            # Extract role names safely
+            role_names = [
+                a.role["name"].lower() for a in assignments if "name" in a.role
+            ]
+
+            print(f"Roles for {openstack_user.name} in {project_id}: {role_names}")
+
+            # Priority: admin > project_manager > member
+            if "admin" in role_names:
+                return "admin"
+            elif "project_manager" in role_names:
+                return "project_manager"
+            elif "member" in role_names:
+                return "member"
+            else:
+                return "No relevant role assigned"
 
         except Exception as e:
-            print(f"Error fetching user role: {e}")
+            print(f"Error fetching user role for {openstack_user.name}: {e}")
             return "Error retrieving role"
