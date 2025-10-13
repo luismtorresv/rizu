@@ -1,6 +1,8 @@
-from Rizu.Openstack.Utils import OpenStackUtils
+import ipaddress
 import secrets
 import string
+from Rizu.Openstack.Utils import OpenStackUtils
+from openstack import exceptions
 
 
 class OpenStackBuilders:
@@ -54,18 +56,62 @@ class OpenStackBuilders:
             return False
 
     @staticmethod
-    def create_openstack_network(network_name, project_id, conn_token):
+    def create_openstack_network(
+        network_name,
+        project_id,
+        conn_token,
+        cidr=None,
+        gateway_ip=None,
+        is_external=False,
+    ):
         try:
             # Connect directly with project scope
-
             network = conn_token.network.create_network(
                 name=network_name,
                 project_id=project_id,
-                is_router_external=False,
+                is_router_external=is_external,
                 admin_state_up=True,
             )
+
+            # Assign a default CIDR if none provided
+            if not cidr:
+                # Pick a default subnet pool, e.g., 10.0.X.0/24
+                # Here we use 10.0.0.0/24 for simplicity
+                cidr = "10.0.0.0/24"
+
+            # Validate CIDR format
+            try:
+                subnet_network = ipaddress.IPv4Network(cidr)
+            except ValueError:
+                raise ValueError(f"Invalid CIDR format: {cidr}")
+
+            # Assign default gateway if not provided
+            if not gateway_ip:
+                gateway_ip = str(subnet_network[1])  # first usable IP
+
+            # Optional: check for overlapping subnets in the project
+            existing_subnets = list(conn_token.network.subnets(project_id=project_id))
+            for s in existing_subnets:
+                existing_cidr = ipaddress.IPv4Network(s.cidr)
+                if subnet_network.overlaps(existing_cidr):
+                    raise ValueError(
+                        f"CIDR {cidr} overlaps with existing subnet {s.name} ({s.cidr})"
+                    )
+
+            # Create the subnet
+            _ = conn_token.network.create_subnet(
+                name=f"{network_name}-subnet",
+                network_id=network.id,
+                ip_version=4,
+                cidr=cidr,
+                gateway_ip=gateway_ip,
+                enable_dhcp=not is_external,
+                project_id=project_id,
+            )
+
             return network
-        except Exception as e:
+
+        except (exceptions.HttpException, ValueError) as e:
             print(f"Failed to create network {network_name}: {e}")
             return None
 

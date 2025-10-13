@@ -12,7 +12,7 @@ import re
 def dashboard(request):
     project_id = request.GET.get("project_id")
     user = request.user
-
+    print(user.openstack_password)
     # Admin/system connection (has full visibility
     try:
         conn = OpenStackUtils.get_connection(system=True)
@@ -182,21 +182,34 @@ def create_project(request):
 def create_network(request):
     if request.method == "POST":
         name = request.POST.get("network_name")
+        cidr = request.POST.get("cidr")
+        gateway_ip = request.POST.get("gateway_ip")
+        is_external = request.POST.get("is_external")  # checkbox in form
         project_id = request.session.get("project_id")
-
         try:
             conn = OpenStackUtils.get_connection(request=request, project_id=project_id)
         except Exception as e:
             print(f"Could not connect to OpenStack, Error: {e}")
-            return HttpResponse("Error connecting to OpenStack", status=500)
+            messages.error(request, "Error connecting to OpenStack")
+            return redirect("dashboard")
 
-        net = OpenStackBuilders.create_openstack_network(name, project_id, conn)
+        net = OpenStackBuilders.create_openstack_network(
+            network_name=name,
+            project_id=project_id,
+            conn_token=conn,
+            cidr=cidr,
+            gateway_ip=gateway_ip,
+            is_external=is_external,
+        )
 
         if net:
             messages.success(request, f"Network {name} created")
         else:
             messages.error(request, "Failed to create network")
+
         return redirect("dashboard")
+
+    # GET request: render the form
     return render(request, "create_network.html")
 
 
