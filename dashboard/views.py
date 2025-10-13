@@ -67,7 +67,7 @@ def dashboard(request):
     if selected_project_obj:
         # Find the OpenStack user by username
         user_project_role = OpenStackCommunication.get_user_primary_role(
-            openstack_user, selected_project_obj, conn
+            openstack_user, selected_project_obj.id, project_conn
         )
 
         # Instances

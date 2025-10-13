@@ -93,31 +93,30 @@ class OpenStackCommunication:
         project = conn_token.identity.find_project(project_name)
         user = conn_token.identity.find_user(username)
         project_role = conn_token.identity.find_role(role)
+        print(project.id)
+        print(project_name)
 
-        if not project:
-            raise ValueError(f" Project '{project_name}' not found in OpenStack.")
-        if not user:
-            raise ValueError(f" User '{username}' not found in OpenStack.")
-        if not project_role:
-            raise ValueError(f" Role '{role}' not found in OpenStack.")
+        if not project or not user or not project_role:
+            raise ValueError("Project, user, or role not found")
 
         # Check if user already has this role on the project
-        existing_roles = [
+        existing_roles = {
             r.role["name"].lower()
             for r in conn_token.identity.role_assignments(
-                user_id=user.id, project_id=project.id, include_names=True
+                user_id=user.id,
+                project_id=project.id,
+                scope_type="project",  # restrict to project only
+                include_names=True,
             )
             if "name" in r.role
-        ]
+        }
 
-        if role.lower() in existing_roles:
-            print(
-                f" User {username} already has role '{role}' in project '{project_name}', skipping assignment."
-            )
-            return
+        print(existing_roles)
+        print(project.id)
 
         # Only assign if it’s not already there
-        conn_token.identity.assign_project_role_to_user(project, user, project_role)
+        if role.lower() not in existing_roles:
+            conn_token.identity.assign_project_role_to_user(project, user, project_role)
 
         # Optional: handle default project if necessary
         if role == "member":
@@ -182,6 +181,7 @@ class OpenStackCommunication:
                     user_id=openstack_user.id,
                     project_id=project_id,
                     include_names=True,  # critical fix
+                    scope_type="project",
                 )
             )
 
@@ -190,10 +190,11 @@ class OpenStackCommunication:
 
             # Extract role names safely
             role_names = [
-                a.role["name"].lower() for a in assignments if "name" in a.role
+                a.role["name"].lower()
+                for a in assignments
+                if "name" in a.role
+                and a.scope.get("project", {}).get("id") == project_id
             ]
-
-            print(f"Roles for {openstack_user.name} in {project_id}: {role_names}")
 
             # Priority: admin > project_manager > member
             if "admin" in role_names:
