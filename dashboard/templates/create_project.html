@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% load static %}
 
-{% block title %}Create Project - RIZU{% endblock %}
+{% block title %}Create Project{% endblock %}
 {% block body_class %}page-create{% endblock %}
 
 {% block header %}{% endblock %}
@@ -18,10 +18,10 @@
                     <span class="logo-text">Rizu</span>
                 </div>
             </div>
-            
+
             <form id="project-form" method="POST">
                 {% csrf_token %}
-                
+
                 <!-- general section -->
                 <div class="form-section">
                     <h3 class="form-section__title">

@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% load static %}
 
-{% block title %}Run Terraform - RIZU{% endblock %}
+{% block title %}Run Terraform{% endblock %}
 {% block body_class %}page-create{% endblock %}
 
 {% block header %}{% endblock %}
@@ -31,11 +31,11 @@
 
                     <div class="form-group mb-3">
                         <label for="terraform_code" class="form-label">main.tf File</label>
-                        <textarea 
-                            id="terraform_code" 
-                            name="terraform_code" 
-                            class="form-control form-control-sm" 
-                            rows="12" 
+                        <textarea
+                            id="terraform_code"
+                            name="terraform_code"
+                            class="form-control form-control-sm"
+                            rows="12"
                             placeholder="Write or paste your Terraform code here..."
                             required></textarea>
                     </div>

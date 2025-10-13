@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% load static %}
 
-{% block title %}RIZU - Login{% endblock %}
+{% block title %}Login{% endblock %}
 {% block body_class %}page-dashboard{% endblock %}
 
 {% block header %}{% endblock %}
@@ -14,12 +14,12 @@
         <span class="sidebar-brand-text">Rizu</span>
       </h3>
       <hr class="sidebar-divider">
-      
+
       <div class="sidebar-details">
         <h4 class="sidebar-details-title">Welcome Back</h4>
         <p class="sidebar-detail-item">Sign in to access your cloud management dashboard</p>
       </div>
-      
+
       <div class="sidebar-footer">
         <a href="{% url 'front_page_index' %}" class="btn-signout" style="text-decoration: none; display: block; text-align: center;">
           <i class="fa-solid fa-home" style="margin-right: 0.5rem;"></i>Home
@@ -39,7 +39,7 @@
             Login to Your Account
           </h4>
         </div>
-        
+
         <div class="project-card-body">
           {% if messages %}
             <div class="auth-messages">
@@ -54,7 +54,7 @@
 
           <form method="post" class="auth-form">
             {% csrf_token %}
-            
+
             <div class="form-section">
               {% for field in form %}
                 <div class="mb-3">
@@ -85,7 +85,7 @@
               <button type="submit" class="btn-dashboard-action btn-create-project">
                 <i class="fa-solid fa-sign-in-alt action-icon"></i>Sign In
               </button>
-              
+
               <div class="auth-link">
                 <p>Don't have an account? <a href="{% url 'register' %}">Create one here</a></p>
               </div>

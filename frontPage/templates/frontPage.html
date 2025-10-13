@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% load static %}
 
-{% block title %}RIZU - Private Cloud Management Platform{% endblock %}
+{% block title %}Private Cloud Management Platform{% endblock %}
 {% block body_class %}page-dashboard{% endblock %}
 
 {% block content %}
@@ -12,7 +12,7 @@
       <span class="sidebar-brand-text">Rizu</span>
     </h3>
     <hr class="sidebar-divider">
-    
+
     {% if user.is_authenticated %}
       <div class="sidebar-details">
         <h4 class="sidebar-details-title">User Details</h4>
@@ -62,7 +62,7 @@
             <i class="fa-solid fa-info-circle resource-icon resource-icon-instances"></i>About Rizu
           </h5>
           <p class="welcome-description">
-            Rizu simplifies cloud infrastructure management, making it easy for developers to set up and manage private clouds on-premise. 
+            Rizu simplifies cloud infrastructure management, making it easy for developers to set up and manage private clouds on-premise.
             Our intuitive interface removes the complexity typically associated with cloud computing platforms.
           </p>
 
