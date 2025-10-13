@@ -55,7 +55,7 @@ class OpenStackUtils:
                 include_names=True,
             )
         )
-        
+
         # for a in assignments:
         #     print("ASSIGNMENT:", a.scope, a.role["name"])
 
