@@ -377,11 +377,7 @@ def terraform_view(request):
 
 
 def user_profile(request):
-    """Render the logged-in user's profile and allow deletion.
-
-    GET: show profile with role and projects.
-    POST: if action=delete_account, delete the Django user (only if requester is the same user or is_staff).
-    """
+    """Render the logged-in user's profile and allow deletion."""
     if not request.user.is_authenticated:
         return redirect("front_page_index")
 
@@ -401,7 +397,9 @@ def user_profile(request):
             openstack_user = sys_conn.identity.find_user(request.user.username)
             if openstack_user:
                 assignments = list(
-                    sys_conn.identity.role_assignments(user_id=openstack_user.id, include_names=True)
+                    sys_conn.identity.role_assignments(
+                        user_id=openstack_user.id, include_names=True
+                    )
                 )
 
                 project_ids = {
@@ -413,7 +411,13 @@ def user_profile(request):
                 for pid in project_ids:
                     try:
                         p = sys_conn.identity.get_project(pid)
-                        projects.append({"id": p.id, "name": p.name, "description": p.description or ""})
+                        projects.append(
+                            {
+                                "id": p.id,
+                                "name": p.name,
+                                "description": p.description or "",
+                            }
+                        )
                     except Exception:
                         pass
     except Exception as e:

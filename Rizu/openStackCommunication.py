@@ -99,11 +99,13 @@ class OpenStackCommunication:
         if not project or not user or not project_role:
             raise ValueError("Project, user, or role not found")
 
-        # DEBUG: mostrar todas las asignaciones actuales del usuario
-        assignments = list(conn_token.identity.role_assignments(
-            user_id=user.id,
-            include_names=True,
-        ))
+        # DEBUG: show all assignments for this user
+        assignments = list(
+            conn_token.identity.role_assignments(
+                user_id=user.id,
+                include_names=True,
+            )
+        )
         for a in assignments:
             print("ASSIGNMENT:", a.scope, a.role["name"])
 
@@ -111,7 +113,7 @@ class OpenStackCommunication:
         existing_roles = set()
         for a in assignments:
             scope = a.scope
-            #  filtrar solo los roles que realmente pertenecen al proyecto actual
+            #  only roles directly assigned to this project count
             if "project" in scope and scope["project"]["id"] == project.id:
                 existing_roles.add(a.role["name"].lower())
 
