@@ -19,7 +19,7 @@ class LoginViewTestCase(TestCase):
             username="testuser",
             email="test@example.com",
             password="testpass123",
-            role="user",
+            role="member",
         )
 
     def test_login_view_get_request(self):
@@ -166,7 +166,7 @@ class RegisterViewTestCase(TestCase):
             username="existinguser",
             email="existing@example.com",
             password="testpass123",
-            role="user",
+            role="member",
         )
 
         # Try to register with same username

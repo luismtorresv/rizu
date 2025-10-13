@@ -19,7 +19,7 @@
         <p class="sidebar-detail-item"><strong>Username:</strong> {{ user.username }}</p>
         {% if user_role == "project_manager" %}
           <p class="sidebar-detail-item"><strong>Access:</strong> Project Manager</p>
-        {% elif user_role == "user" %}
+        {% elif user_role == "member" %}
           <p class="sidebar-detail-item"><strong>Access:</strong> Standard User</p>
         {% endif %}
       </div>

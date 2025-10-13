@@ -32,7 +32,7 @@ class FrontPageViewTestCase(TestCase):
             username="regular_user",
             email="user@example.com",
             password="testpass123",
-            role="user",
+            role="member",
         )
 
     def test_frontpage_unauthenticated_user(self):
@@ -91,7 +91,7 @@ class FrontPageViewTestCase(TestCase):
 
         # Check context contains user_role
         self.assertIn("user_role", response.context)
-        self.assertEqual(response.context["user_role"], "user")
+        self.assertEqual(response.context["user_role"], "member")
 
     def test_frontpage_get_method_only(self):
         """Test that frontPage view handles GET requests properly."""
@@ -131,7 +131,7 @@ class FrontPageViewTestCase(TestCase):
         self.client.login(username="regular_user", password="testpass123")
         response = self.client.get(self.url)
         self.assertIn("user_role", response.context)
-        self.assertEqual(response.context["user_role"], "user")
+        self.assertEqual(response.context["user_role"], "member")
 
         # Logout and test again
         self.client.logout()

@@ -18,7 +18,7 @@ class CreateVMViewTestCase(TestCase):
             username="testuser",
             email="test@example.com",
             password="testpass123",
-            role="user",
+            role="member",
         )
 
     def test_create_vm_get_unauthenticated(self):
@@ -63,7 +63,7 @@ class CreateProjectViewTestCase(TestCase):
             username="regular_user",
             email="user@example.com",
             password="testpass123",
-            role="user",
+            role="member",
         )
 
     def test_create_project_get_as_project_manager(self):
@@ -113,7 +113,7 @@ class CreateNetworkViewTestCase(TestCase):
             username="testuser",
             email="test@example.com",
             password="testpass123",
-            role="user",
+            role="member",
         )
 
     def test_create_network_get_request(self):
@@ -151,7 +151,7 @@ class CreateRouterViewTestCase(TestCase):
             username="testuser",
             email="test@example.com",
             password="testpass123",
-            role="user",
+            role="member",
         )
 
     def test_create_router_get_request(self):

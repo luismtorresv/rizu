@@ -102,9 +102,9 @@ class Migration(migrations.Migration):
                         choices=[
                             ("administrator", "Administrator"),
                             ("project_manager", "Project Manager"),
-                            ("user", "User"),
+                            ("member", "User"),
                         ],
-                        default="user",
+                        default="member",
                         max_length=20,
                     ),
                 ),
