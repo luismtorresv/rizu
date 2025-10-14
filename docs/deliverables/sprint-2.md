@@ -786,7 +786,7 @@ post-session to identify usability pain points and improvement priorities.
 
 <!----------------------------------------------------------------------------->
 
-## Automatic Testing
+## Automated Testing
 
 <!-- El proyecto debe tener una estrategia de pruebas automáticas que
 garanticen la calidad y el buen funcionamiento de la aplicación. -->
@@ -796,3 +796,43 @@ garanticen la calidad y el buen funcionamiento de la aplicación. -->
 
 <!-- Todas las funcionalidades entregadas deben estar cubiertas por al menos
 una prueba automática. -->
+
+## Automated Testing Strategy
+
+The automated testing strategy ensures that all delivered functionalities in the
+Rizu web console are validated for correctness, internal consistency, and user
+flow reliability. The current scope of automated testing focuses exclusively on
+Rizu’s own application layer (views, forms, routing, and permission logic)
+without interacting directly with live OpenStack APIs. The goal is to maintain
+code stability and predictable behavior across releases by verifying that all
+implemented views and components respond correctly to expected and edge-case
+inputs.
+
+Automated tests are executed continuously as part of the development workflow
+using **pytest** and **pytest-django**. Each push or pull request triggers the
+test suite, ensuring regressions are caught before merging into main. Coverage
+centers on the application’s authentication, project management, and dashboard
+modules, which together represent the primary user interaction paths.
+
+### Test Coverage Matrix
+
+| Functionality                                 | Type of Test                   | Rationale                                                                                                                                                                                                               |
+| --------------------------------------------- | ------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **User Authentication (Login, Registration)** | Unit and Integration Tests     | Authentication is a critical entry point. Unit tests validate form handling, field validation, and credential verification, while integration tests confirm end-to-end request/response behavior and redirection logic. |
+| **Project Creation and Access Control**       | Integration and Scenario Tests | Project-level permissions and roles (manager vs. user) require validation across multiple components (views, permissions, templates). Scenario tests confirm correct restriction and authorization behavior.            |
+
+### Implementation Notes
+
+- The current automated suite consists mainly of **unit** and **integration**
+  tests built with **pytest-django**.
+- **Unit tests** focus on individual views, forms, and permission decorators,
+  validating template usage, form fields, and error handling.
+- **Integration tests** verify that views and templates work together, checking
+  for correct redirections, access control, and context rendering.
+- Existing unit tests (as shown) cover all authentication, registration, and
+  dashboard-related views.
+- The test suite runs automatically in CI for every commit, maintaining baseline
+  assurance that recent changes have not broken authentication, routing, or
+  permission logic.
+- Scenario and E2E tests will be added using tools such as **pytest-django** to
+  simulate real user workflows (login → project → network → VM).
