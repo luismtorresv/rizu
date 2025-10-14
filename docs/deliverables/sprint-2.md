@@ -12,6 +12,28 @@ permita dar a conocer el producto y servicio, acercándose al público objetivo.
 Considere, en el presupuesto de la sección de Finanzas, los costos proyectados
 de estos servicios. -->
 
+The marketing strategy for Rizu focuses on introducing the platform to
+organizations seeking a simplified approach to private cloud management through
+OpenStack. The target audience consists mainly of small and medium-sized
+enterprises, educational institutions, and IT departments that need accessible
+cloud tools without the complexity of traditional interfaces. This audience has
+been selected because of its increasing interest in adopting cloud-based
+infrastructure and its demand for solutions that reduce training and operational
+barriers.
+
+Promotion will rely on digital channels aligned with professional and technical
+user habits, including campaigns on LinkedIn and participation in online
+communities dedicated to cloud technologies. Demonstration workshops and
+technical webinars will be used to showcase Rizu’s features and build trust
+through direct interaction. Strategic collaborations with local technology
+providers will help extend market reach and create referral networks.
+
+Sales will follow a business-to-business model supported by direct outreach and
+an online trial system to facilitate product adoption. The financial plan
+includes projected costs for digital marketing, event participation, and content
+production, ensuring consistency between the promotional activities and the
+overall financial structure.
+
 <!----------------------------------------------------------------------------->
 
 ## Finance
