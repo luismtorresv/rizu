@@ -209,12 +209,431 @@ operational costs should the project evolve into serving external users.
 <!-- Complete la siguiente tabla de acuerdo con las proyecciones realistas
 del mercado y los costos y ganancias estimados en las anteriores tablas. -->
 
+This section presents the projected income and expenses for the first 12 months
+of operation for the project. Estimates assume gradual adoption by users through
+university research groups, academic institutions, and potential industry
+partnerships.
+
+#### Products and Services Offered
+
+<table
+  border="1"
+  cellspacing="0"
+  cellpadding="6"
+  style="border-collapse: collapse; width: 100%"
+>
+  <tr style="background-color: #f9f9f9">
+    <th>Product or Service</th>
+    <th>Estimated Price per Client or Deployment (COP)</th>
+  </tr>
+  <tr>
+    <td>Premium Dashboard Subscription (per client/month)</td>
+    <td>$180,000.00</td>
+  </tr>
+  <tr>
+    <td>Custom Module Development (per contract)</td>
+    <td>$800,000.00</td>
+  </tr>
+  <tr>
+    <td>Technical Support and Maintenance Package (monthly)</td>
+    <td>$250,000.00</td>
+  </tr>
+  <tr>
+    <td>API Integration Service (per deployment)</td>
+    <td>$400,000.00</td>
+  </tr>
+  <tr>
+    <td>Training and Implementation Workshop (per session)</td>
+    <td>$600,000.00</td>
+  </tr>
+</table>
+
+#### Financial Projection
+
+##### Year 1
+
+<table
+  border="1"
+  cellspacing="0"
+  cellpadding="6"
+  style="border-collapse: collapse; width: 100%"
+>
+  <tr style="background-color: #f9f9f9">
+    <th>Month</th>
+    <th>Estimated<br>Clients<br>or Sales</th>
+    <th>Income</th>
+    <th>Expenses</th>
+  </tr>
+  <tr><td>Month 1</td><td>2</td><td>$360,000.00</td><td>$4,920,000.00</td></tr>
+  <tr><td>Month 2</td><td>3</td><td>$540,000.00</td><td>$4,920,000.00</td></tr>
+  <tr><td>Month 3</td><td>4</td><td>$720,000.00</td><td>$4,920,000.00</td></tr>
+  <tr><td>Month 4</td><td>5</td><td>$900,000.00</td><td>$4,920,000.00</td></tr>
+  <tr><td>Month 5</td><td>6</td><td>$1,080,000.00</td><td>$4,920,000.00</td></tr>
+  <tr><td>Month 6</td><td>7</td><td>$1,260,000.00</td><td>$4,920,000.00</td></tr>
+  <tr><td>Month 7</td><td>9</td><td>$1,620,000.00</td><td>$5,000,000.00</td></tr>
+  <tr><td>Month 8</td><td>11</td><td>$1,980,000.00</td><td>$5,000,000.00</td></tr>
+  <tr><td>Month 9</td><td>13</td><td>$2,340,000.00</td><td>$5,000,000.00</td></tr>
+  <tr><td>Month 10</td><td>15</td><td>$2,700,000.00</td><td>$5,000,000.00</td></tr>
+  <tr><td>Month 11</td><td>18</td><td>$3,240,000.00</td><td>$5,000,000.00</td></tr>
+  <tr><td>Month 12</td><td>20</td><td>$3,600,000.00</td><td>$5,000,000.00</td></tr>
+  <tr style="font-weight: bold; background-color: #f2f2f2">
+    <td>Total Year 1</td><td>113</td><td>$20,340,000.00</td><td>$59,520,000.00</td>
+  </tr>
+</table>
+
+##### Year 2
+
+<table
+  border="1"
+  cellspacing="0"
+  cellpadding="6"
+  style="border-collapse: collapse; width: 100%"
+>
+  <tr style="background-color: #f9f9f9">
+    <th>Month</th>
+    <th>Estimated<br>Clients<br>or Sales</th>
+    <th>Income</th>
+    <th>Expenses</th>
+  </tr>
+  <tr><td>Month 13</td><td>22</td><td>$3,960,000.00</td><td>$5,500,000.00</td></tr>
+  <tr><td>Month 14</td><td>24</td><td>$4,320,000.00</td><td>$5,500,000.00</td></tr>
+  <tr><td>Month 15</td><td>26</td><td>$4,680,000.00</td><td>$5,500,000.00</td></tr>
+  <tr><td>Month 16</td><td>28</td><td>$5,040,000.00</td><td>$5,500,000.00</td></tr>
+  <tr><td>Month 17</td><td>30</td><td>$5,400,000.00</td><td>$5,600,000.00</td></tr>
+  <tr><td>Month 18</td><td>32</td><td>$5,760,000.00</td><td>$5,600,000.00</td></tr>
+  <tr><td>Month 19</td><td>34</td><td>$6,120,000.00</td><td>$5,700,000.00</td></tr>
+  <tr><td>Month 20</td><td>36</td><td>$6,480,000.00</td><td>$5,700,000.00</td></tr>
+  <tr><td>Month 21</td><td>38</td><td>$6,840,000.00</td><td>$5,800,000.00</td></tr>
+  <tr><td>Month 22</td><td>40</td><td>$7,200,000.00</td><td>$5,800,000.00</td></tr>
+  <tr><td>Month 23</td><td>43</td><td>$7,740,000.00</td><td>$5,900,000.00</td></tr>
+  <tr><td>Month 24</td><td>46</td><td>$8,280,000.00</td><td>$6,000,000.00</td></tr>
+  <tr style="font-weight: bold; background-color: #f2f2f2">
+    <td>Total Year 2</td><td>399</td><td>$72,720,000.00</td><td>$67,100,000.00</td>
+  </tr>
+</table>
+
+##### Year 3
+
+<table
+  border="1"
+  cellspacing="0"
+  cellpadding="6"
+  style="border-collapse: collapse; width: 100%"
+>
+  <tr style="background-color: #f9f9f9">
+    <th>Month</th>
+    <th>Estimated<br>Clients<br>or Sales</th>
+    <th>Income</th>
+    <th>Expenses</th>
+  </tr>
+  <tr><td>Month 25</td><td>48</td><td>$8,640,000.00</td><td>$6,200,000.00</td></tr>
+  <tr><td>Month 26</td><td>50</td><td>$9,000,000.00</td><td>$6,200,000.00</td></tr>
+  <tr><td>Month 27</td><td>52</td><td>$9,360,000.00</td><td>$6,200,000.00</td></tr>
+  <tr><td>Month 28</td><td>54</td><td>$9,720,000.00</td><td>$6,200,000.00</td></tr>
+  <tr><td>Month 29</td><td>56</td><td>$10,080,000.00</td><td>$6,200,000.00</td></tr>
+  <tr><td>Month 30</td><td>58</td><td>$10,440,000.00</td><td>$6,300,000.00</td></tr>
+  <tr><td>Month 31</td><td>60</td><td>$10,800,000.00</td><td>$6,300,000.00</td></tr>
+  <tr><td>Month 32</td><td>62</td><td>$11,160,000.00</td><td>$6,400,000.00</td></tr>
+  <tr><td>Month 33</td><td>64</td><td>$11,520,000.00</td><td>$6,400,000.00</td></tr>
+  <tr><td>Month 34</td><td>66</td><td>$11,880,000.00</td><td>$6,400,000.00</td></tr>
+  <tr><td>Month 35</td><td>68</td><td>$12,240,000.00</td><td>$6,500,000.00</td></tr>
+  <tr><td>Month 36</td><td>70</td><td>$12,600,000.00</td><td>$6,500,000.00</td></tr>
+  <tr style="font-weight: bold; background-color: #f2f2f2">
+    <td>Total Year 3</td><td>708</td><td>$128,440,000.00</td><td>$75,000,000.00</td>
+  </tr>
+</table>
+
+##### Summary of Totals
+
+<table
+  border="1"
+  cellspacing="0"
+  cellpadding="6"
+  style="border-collapse: collapse; width: 100%"
+>
+  <tr style="background-color: #f9f9f9">
+    <th>Year</th>
+    <th>Total Clients/Sales</th>
+    <th>Total Income (COP)</th>
+    <th>Total Expenses (COP)</th>
+    <th>Net Result</th>
+  </tr>
+  <tr><td>Year 1</td><td>113</td><td>$20,340,000.00</td><td>$59,520,000.00</td><td>- $39,180,000.00</td></tr>
+  <tr><td>Year 2</td><td>399</td><td>$72,720,000.00</td><td>$67,100,000.00</td><td>+ $5,620,000.00</td></tr>
+  <tr><td>Year 3</td><td>708</td><td>$128,440,000.00</td><td>$75,000,000.00</td><td>+ $53,440,000.00</td></tr>
+</table>
+
 ### Balance and Break-even Point
 
 <!-- Resuma las tablas de la proyección anual y genere una gráfica en el
 tiempo en la que se observe la proyección de las ventas y los egresos vs.
 ingresos, con el fin de determinar cuándo se alcanzaría el punto de equilibrio
 (momento en que los egresos igualan los ingresos). -->
+
+```vegalite
+{
+    "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+    "description": "Three-year cash flow projection showing income vs expenses and breakeven progression.",
+    "data": {
+        "values": [
+            {
+                "month": 1,
+                "income": 360000,
+                "expenses": 4920000
+            },
+            {
+                "month": 2,
+                "income": 540000,
+                "expenses": 4920000
+            },
+            {
+                "month": 3,
+                "income": 720000,
+                "expenses": 4920000
+            },
+            {
+                "month": 4,
+                "income": 900000,
+                "expenses": 4920000
+            },
+            {
+                "month": 5,
+                "income": 1080000,
+                "expenses": 4920000
+            },
+            {
+                "month": 6,
+                "income": 1260000,
+                "expenses": 4920000
+            },
+            {
+                "month": 7,
+                "income": 1620000,
+                "expenses": 5000000
+            },
+            {
+                "month": 8,
+                "income": 1980000,
+                "expenses": 5000000
+            },
+            {
+                "month": 9,
+                "income": 2340000,
+                "expenses": 5000000
+            },
+            {
+                "month": 10,
+                "income": 2700000,
+                "expenses": 5000000
+            },
+            {
+                "month": 11,
+                "income": 3240000,
+                "expenses": 5000000
+            },
+            {
+                "month": 12,
+                "income": 3600000,
+                "expenses": 5000000
+            },
+            {
+                "month": 13,
+                "income": 3960000,
+                "expenses": 5500000
+            },
+            {
+                "month": 14,
+                "income": 4320000,
+                "expenses": 5500000
+            },
+            {
+                "month": 15,
+                "income": 4680000,
+                "expenses": 5500000
+            },
+            {
+                "month": 16,
+                "income": 5040000,
+                "expenses": 5500000
+            },
+            {
+                "month": 17,
+                "income": 5400000,
+                "expenses": 5600000
+            },
+            {
+                "month": 18,
+                "income": 5760000,
+                "expenses": 5600000
+            },
+            {
+                "month": 19,
+                "income": 6120000,
+                "expenses": 5700000
+            },
+            {
+                "month": 20,
+                "income": 6480000,
+                "expenses": 5700000
+            },
+            {
+                "month": 21,
+                "income": 6840000,
+                "expenses": 5800000
+            },
+            {
+                "month": 22,
+                "income": 7200000,
+                "expenses": 5800000
+            },
+            {
+                "month": 23,
+                "income": 7740000,
+                "expenses": 5900000
+            },
+            {
+                "month": 24,
+                "income": 8280000,
+                "expenses": 6000000
+            },
+            {
+                "month": 25,
+                "income": 8640000,
+                "expenses": 6200000
+            },
+            {
+                "month": 26,
+                "income": 9000000,
+                "expenses": 6200000
+            },
+            {
+                "month": 27,
+                "income": 9360000,
+                "expenses": 6200000
+            },
+            {
+                "month": 28,
+                "income": 9720000,
+                "expenses": 6200000
+            },
+            {
+                "month": 29,
+                "income": 10080000,
+                "expenses": 6200000
+            },
+            {
+                "month": 30,
+                "income": 10440000,
+                "expenses": 6300000
+            },
+            {
+                "month": 31,
+                "income": 10800000,
+                "expenses": 6300000
+            },
+            {
+                "month": 32,
+                "income": 11160000,
+                "expenses": 6400000
+            },
+            {
+                "month": 33,
+                "income": 11520000,
+                "expenses": 6400000
+            },
+            {
+                "month": 34,
+                "income": 11880000,
+                "expenses": 6400000
+            },
+            {
+                "month": 35,
+                "income": 12240000,
+                "expenses": 6500000
+            },
+            {
+                "month": 36,
+                "income": 12600000,
+                "expenses": 6500000
+            }
+        ]
+    },
+    "layer": [
+        {
+            "mark": {
+                "type": "line",
+                "point": true,
+                "color": "#1f77b4"
+            },
+            "encoding": {
+                "x": {
+                    "field": "month",
+                    "type": "ordinal",
+                    "title": "Month"
+                },
+                "y": {
+                    "field": "income",
+                    "type": "quantitative",
+                    "title": "COP"
+                },
+                "tooltip": [
+                    {
+                        "field": "income",
+                        "type": "quantitative"
+                    }
+                ]
+            }
+        },
+        {
+            "mark": {
+                "type": "line",
+                "point": true,
+                "color": "#d62728"
+            },
+            "encoding": {
+                "x": {
+                    "field": "month",
+                    "type": "ordinal"
+                },
+                "y": {
+                    "field": "expenses",
+                    "type": "quantitative"
+                },
+                "tooltip": [
+                    {
+                        "field": "expenses",
+                        "type": "quantitative"
+                    }
+                ]
+            }
+        },
+        {
+            "mark": {
+                "type": "rule",
+                "color": "green",
+                "strokeDash": [
+                    5,
+                    5
+                ]
+            },
+            "encoding": {
+                "x": {
+                    "datum": 15
+                }
+            },
+            "params": [
+                {
+                    "name": "Breakeven",
+                    "value": 15,
+                    "select": "interval"
+                }
+            ]
+        }
+    ],
+    "title": "Three-Year Cash Flow Projection and Breakeven Point"
+}
+```
+
 
 <!----------------------------------------------------------------------------->
 

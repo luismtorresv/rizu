@@ -55,6 +55,7 @@ plugins:
   - git-authors:
       enabled: true
   - search
+  - charts
   - glightbox:
       enabled: true
       touchNavigation: true
@@ -85,7 +86,11 @@ markdown_extensions:
       pygments_lang_class: true
   - pymdownx.inlinehilite
   - pymdownx.snippets
-  - pymdownx.superfences
+  - pymdownx.superfences:
+      custom_fences:
+        - name: vegalite
+          format: !!python/name:mkdocs_charts_plugin.fences.fence_vegalite
+          class: vegalite
 
   # Admonitions
   - admonition
@@ -100,3 +105,8 @@ markdown_extensions:
   - pymdownx.emoji:
       emoji_index: !!python/name:material.extensions.emoji.twemoji
       emoji_generator: !!python/name:material.extensions.emoji.to_svg
+
+extra_javascript:
+  - https://cdn.jsdelivr.net/npm/vega@5
+  - https://cdn.jsdelivr.net/npm/vega-lite@5
+  - https://cdn.jsdelivr.net/npm/vega-embed@6
