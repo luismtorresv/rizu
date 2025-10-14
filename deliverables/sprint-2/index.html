@@ -655,11 +655,44 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#automatic-testing" class="md-nav__link">
+  <a href="#automated-testing" class="md-nav__link">
     <span class="md-ellipsis">
-      Automatic Testing
+      Automated Testing
     </span>
   </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#automated-testing-strategy" class="md-nav__link">
+    <span class="md-ellipsis">
+      Automated Testing Strategy
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Automated Testing Strategy">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#test-coverage-matrix" class="md-nav__link">
+    <span class="md-ellipsis">
+      Test Coverage Matrix
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#implementation-notes" class="md-nav__link">
+    <span class="md-ellipsis">
+      Implementation Notes
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -1586,11 +1619,44 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#automatic-testing" class="md-nav__link">
+  <a href="#automated-testing" class="md-nav__link">
     <span class="md-ellipsis">
-      Automatic Testing
+      Automated Testing
     </span>
   </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#automated-testing-strategy" class="md-nav__link">
+    <span class="md-ellipsis">
+      Automated Testing Strategy
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Automated Testing Strategy">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#test-coverage-matrix" class="md-nav__link">
+    <span class="md-ellipsis">
+      Test Coverage Matrix
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#implementation-notes" class="md-nav__link">
+    <span class="md-ellipsis">
+      Implementation Notes
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -2335,7 +2401,7 @@ Quantitative metrics will be complemented with short qualitative interviews
 post-session to identify usability pain points and improvement priorities.</p>
 <!----------------------------------------------------------------------------->
 
-<h2 id="automatic-testing">Automatic Testing</h2>
+<h2 id="automated-testing">Automated Testing</h2>
 <!-- El proyecto debe tener una estrategia de pruebas automáticas que
 garanticen la calidad y el buen funcionamiento de la aplicación. -->
 
@@ -2344,6 +2410,59 @@ garanticen la calidad y el buen funcionamiento de la aplicación. -->
 
 <!-- Todas las funcionalidades entregadas deben estar cubiertas por al menos
 una prueba automática. -->
+
+<h2 id="automated-testing-strategy">Automated Testing Strategy</h2>
+<p>The automated testing strategy ensures that all delivered functionalities in the
+Rizu web console are validated for correctness, internal consistency, and user
+flow reliability. The current scope of automated testing focuses exclusively on
+Rizu’s own application layer (views, forms, routing, and permission logic)
+without interacting directly with live OpenStack APIs. The goal is to maintain
+code stability and predictable behavior across releases by verifying that all
+implemented views and components respond correctly to expected and edge-case
+inputs.</p>
+<p>Automated tests are executed continuously as part of the development workflow
+using <strong>pytest</strong> and <strong>pytest-django</strong>. Each push or pull request triggers the
+test suite, ensuring regressions are caught before merging into main. Coverage
+centers on the application’s authentication, project management, and dashboard
+modules, which together represent the primary user interaction paths.</p>
+<h3 id="test-coverage-matrix">Test Coverage Matrix</h3>
+<table>
+<thead>
+<tr>
+<th>Functionality</th>
+<th>Type of Test</th>
+<th>Rationale</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>User Authentication (Login, Registration)</strong></td>
+<td>Unit and Integration Tests</td>
+<td>Authentication is a critical entry point. Unit tests validate form handling, field validation, and credential verification, while integration tests confirm end-to-end request/response behavior and redirection logic.</td>
+</tr>
+<tr>
+<td><strong>Project Creation and Access Control</strong></td>
+<td>Integration and Scenario Tests</td>
+<td>Project-level permissions and roles (manager vs. user) require validation across multiple components (views, permissions, templates). Scenario tests confirm correct restriction and authorization behavior.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="implementation-notes">Implementation Notes</h3>
+<ul>
+<li>The current automated suite consists mainly of <strong>unit</strong> and <strong>integration</strong>
+  tests built with <strong>pytest-django</strong>.</li>
+<li><strong>Unit tests</strong> focus on individual views, forms, and permission decorators,
+  validating template usage, form fields, and error handling.</li>
+<li><strong>Integration tests</strong> verify that views and templates work together, checking
+  for correct redirections, access control, and context rendering.</li>
+<li>Existing unit tests (as shown) cover all authentication, registration, and
+  dashboard-related views.</li>
+<li>The test suite runs automatically in CI for every commit, maintaining baseline
+  assurance that recent changes have not broken authentication, routing, or
+  permission logic.</li>
+<li>Scenario and E2E tests will be added using tools such as <strong>pytest-django</strong> to
+  simulate real user workflows (login → project → network → VM).</li>
+</ul>
         <script>
         var mkdocs_chart_plugin = {'data_path': '', 'use_data_path': 'True', 'vega_theme': 'deprecated', 'vega_theme_light': 'default', 'vega_theme_dark': 'dark', 'vega_renderer': 'svg', 'vega_width': 'container', 'fallback_width': '800', 'integrations': {'mkdocs_material': {'themes_light': ['default'], 'themes_dark': ['slate']}}, 'path_to_homepage': '../..'}
         </script>
@@ -2370,7 +2489,7 @@ una prueba automática. -->
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"></path></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-iso_datetime" title="October 14, 2025 22:35:51 UTC">2025-10-14 22:35:51</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-iso_datetime" title="October 14, 2025 23:56:01 UTC">2025-10-14 23:56:01</span>
   </span>
 
     
