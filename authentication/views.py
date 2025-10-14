@@ -37,7 +37,7 @@ def register_view(request):
                 print(f"Could not connect to OpenStack, Error: {e}")
                 return
 
-            OpenStackBuilders.create_openstack_user(user=user, conn_token=conn)
+            OpenStackBuilders.create_openstack_user(conn, user)
 
             return redirect("front_page_index")
     else:

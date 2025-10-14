@@ -12,7 +12,7 @@ import re
 def dashboard(request):
     project_id = request.GET.get("project_id")
     user = request.user
-    print(user.openstack_password)
+
     # Admin/system connection (has full visibility
     try:
         conn = OpenStackUtils.get_connection(system=True)
@@ -162,11 +162,11 @@ def create_project(request):
             return HttpResponse("Error connecting to OpenStack", status=500)
 
         response = OpenStackBuilders.create_openstack_project(
+            conn,
             project_name,
             description,
             user,
             user_role,
-            conn,
         )
 
         # Muestras respuesta o rediriges al dashboard
@@ -194,9 +194,9 @@ def create_network(request):
             return redirect("dashboard")
 
         net = OpenStackBuilders.create_openstack_network(
-            network_name=name,
-            project_id=project_id,
-            conn_token=conn,
+            conn,
+            name,
+            project_id,
             cidr=cidr,
             gateway_ip=gateway_ip,
             is_external=is_external,
@@ -214,30 +214,40 @@ def create_network(request):
 
 
 def create_router(request):
+    project_id = request.session.get("project_id")
+
+    try:
+        conn = OpenStackUtils.get_connection(request=request, project_id=project_id)
+    except Exception as e:
+        print(f"Could not connect to OpenStack, Error: {e}")
+        return HttpResponse("Error connecting to OpenStack", status=500)
+
     if request.method == "POST":
         name = request.POST.get("router_name")
-        project_id = request.session.get("project_id")
-        external_net = request.POST.get("external_network_name") or None
-
-        try:
-            conn = OpenStackUtils.get_connection(request=request, project_id=project_id)
-        except Exception as e:
-            print(f"Could not connect to OpenStack, Error: {e}")
-            return HttpResponse("Error connecting to OpenStack", status=500)
+        external_net = request.POST.get("external_network_name")
 
         router = OpenStackBuilders.create_openstack_router(
+            conn,
             name,
             project_id,
-            conn,
             external_net,
         )
 
         if router:
-            messages.success(request, f"Router {name} created")
+            messages.success(request, f"Router {name} created successfully.")
         else:
-            messages.error(request, "Failed to create router")
+            messages.error(request, "Failed to create router.")
         return redirect("dashboard")
-    return render(request, "create_router.html")
+
+    # 👇 Get all external networks for dropdown
+    external_networks = [
+        net
+        for net in conn.network.networks()
+        if getattr(net, "is_router_external", False)
+    ]
+
+    context = {"external_networks": external_networks}
+    return render(request, "create_router.html", context)
 
 
 # -------- JOIN PROJECTS AND PROJECT DETAIL VIEWS (no terminado..)--------

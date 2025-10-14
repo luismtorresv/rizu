@@ -26,12 +26,13 @@
       <label for="gateway_ip" class="form-label">Gateway IP (optional)</label>
       <input type="text" id="gateway_ip" name="gateway_ip" class="form-control" placeholder="Leave empty for default">
     </div>
+    <!-- hidden default (always sent first) -->
+    <input type="hidden" name="is_external" value="false">
 
+    <!-- checkbox overrides hidden if checked -->
     <div class="form-check mb-3">
-      <input class="form-check-input" type="checkbox" value="on" id="is_external" name="is_external">
-      <label class="form-check-label" for="is_external">
-        External Network
-      </label>
+      <input class="form-check-input" type="checkbox" id="is_external" name="is_external" value="true">
+      <label class="form-check-label" for="is_external">External Network</label>
     </div>
 
     <button type="submit" class="btn btn-primary">Create</button>

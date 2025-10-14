@@ -9,7 +9,7 @@ class OpenStackBuilders:
 
     @staticmethod
     def create_openstack_project(
-        project_name, project_description, user, role, conn_token
+        conn_token, project_name, project_description, user, role
     ):
         try:
             _ = conn_token.identity.create_project(
@@ -36,7 +36,10 @@ class OpenStackBuilders:
         return "".join(secrets.choice(chars) for _ in range(length))
 
     @staticmethod
-    def create_openstack_user(user, conn_token):
+    def create_openstack_user(
+        conn_token,
+        user,
+    ):
         try:
             rand_pass = OpenStackBuilders.generate_password()  # OpenStack Password
 
@@ -57,21 +60,23 @@ class OpenStackBuilders:
 
     @staticmethod
     def create_openstack_network(
+        conn_token,
         network_name,
         project_id,
-        conn_token,
         cidr=None,
         gateway_ip=None,
         is_external=False,
     ):
         try:
             # Connect directly with project scope
+            print("hola1")
             network = conn_token.network.create_network(
                 name=network_name,
                 project_id=project_id,
                 is_router_external=is_external,
                 admin_state_up=True,
             )
+            print("hola2")
 
             # Assign a default CIDR if none provided
             if not cidr:
@@ -97,7 +102,6 @@ class OpenStackBuilders:
                     raise ValueError(
                         f"CIDR {cidr} overlaps with existing subnet {s.name} ({s.cidr})"
                     )
-
             # Create the subnet
             _ = conn_token.network.create_subnet(
                 name=f"{network_name}-subnet",
@@ -117,12 +121,27 @@ class OpenStackBuilders:
 
     @staticmethod
     def create_openstack_router(
-        router_name,
-        project_id,
-        conn_token,
-        external_network_name=None,
+        conn_token, router_name, project_id, external_network_name=None
     ):
         try:
+            # Find internal network for the project
+            internal_net = next(
+                (
+                    n
+                    for n in conn_token.network.networks(project_id=project_id)
+                    if not n.is_router_external
+                ),
+                None,
+            )
+            if not internal_net:
+                raise ValueError(f"No internal network found for project {project_id}")
+
+            # Pick its first subnet
+            subnet = next(conn_token.network.subnets(network_id=internal_net.id), None)
+            if not subnet:
+                raise ValueError(f"No subnet found for network {internal_net.name}")
+
+            # Prepare router kwargs
             kwargs = {
                 "name": router_name,
                 "project_id": project_id,
@@ -139,8 +158,16 @@ class OpenStackBuilders:
                     )
                 kwargs["external_gateway_info"] = {"network_id": ext_net.id}
 
+            # Create router
             router = conn_token.network.create_router(**kwargs)
+            print(f"Created router {router.name}")
+
+            # Attach internal subnet
+            conn_token.network.add_interface_to_router(router, subnet_id=subnet.id)
+            print(f"Attached subnet {subnet.name} to router {router.name}")
+
             return router
+
         except Exception as e:
             print(f"Failed to create router {router_name}: {e}")
             return None
