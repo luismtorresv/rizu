@@ -668,6 +668,122 @@ Usabilidad”. -->
 <!-- OJO: Solo se deben planear las pruebas; la ejecución de estas se
 realizará durante el Sprint 3. -->
 
+The main objective of the usability tests is to evaluate the usability of the
+Rizu web console to ensure an effective, efficient, and satisfactory experience
+for end users managing OpenStack resources. The tests will validate key user
+flows in the MVP v2 interface and identify friction points affecting
+comprehension, navigation, and task completion.
+
+### Test 1: Account Creation and Login
+
+**Task:**
+ Create a new account and log into the platform.
+
+**Hypothesis:**
+ Users will be able to sign up and log in without requiring
+external guidance. Field labeling and validation feedback will be sufficient to
+guide completion.
+
+**Metrics:**
+
+- Time to complete (minutes)
+- Success rate (%)
+- Number of input errors
+- Post-task satisfaction (1–5 scale)
+
+**Research Question:**
+ Can new users easily understand the registration and
+authentication process?
+
+### Test 2: Project Selection and Navigation
+
+**Task:**
+ Access the dashboard after login and select an existing project to
+manage.
+
+**Hypothesis:**
+ The project list and selection mechanism are intuitive, with no
+ambiguity regarding where to start managing cloud resources.
+
+**Metrics:**
+
+- Time to locate and select project
+- Success rate (%)
+- Navigation errors (wrong clicks, confusion events)
+- User-reported clarity of layout (1–5)
+
+**Research Question:**
+ Do users understand how to locate and access a specific
+project from the dashboard?
+
+### Test 3: Network and Router Creation
+
+**Task:**
+ Create a network and attach a router using the provided interface.
+
+**Hypothesis:**
+ The configuration flow for network and router creation follows a
+logical sequence and requires minimal technical prior knowledge.
+
+**Metrics:**
+
+- Task completion time
+- Number of retries/errors
+- Success rate (%)
+- User confidence rating (1–5)
+
+**Research Question:**
+ Can users successfully configure networking components
+without prior OpenStack experience?
+
+### Test 4: Virtual Machine Deployment
+
+**Task:**
+ Launch a new virtual machine (instance) within a selected project and
+network.
+
+**Hypothesis:**
+ The VM creation wizard provides clear guidance and prevents
+misconfiguration through validation and defaults.
+
+**Metrics:**
+
+- Time to launch instance
+- Error count (e.g., missing fields, invalid selections)
+- Completion rate (%)
+- Satisfaction level (1–5)
+
+**Research Question:**
+ Do users understand how to deploy a VM and verify its
+status after creation?
+
+### Test 5: Overall Workflow Comprehension
+
+**Task:**
+ Perform a complete end-to-end flow: login → select project → create
+network → launch VM → verify deployment.
+
+**Hypothesis:**
+ Users can complete the full workflow with limited confusion and
+minimal external reference.
+
+**Metrics:**
+
+- Total time for full flow
+- Task success rate (%)
+- Total number of errors
+- Overall satisfaction (System Usability Scale or 1–5 average)
+
+**Research Question:**
+ Does the integrated workflow provide a coherent and
+seamless experience across tasks?
+
+### Measurement and Reporting
+
+All tests will be conducted using screen recording and direct observation.
+Quantitative metrics will be complemented with short qualitative interviews
+post-session to identify usability pain points and improvement priorities.
+
 <!----------------------------------------------------------------------------->
 
 ## Automatic Testing
