@@ -3,6 +3,10 @@ title: "Sprint 2: MVP v2"
 icon: "material/motorbike"
 ---
 
+> “Would it save you a lot of time if I just gave up and went mad now?”
+>
+> ― Douglas Adams, _The Hitchhiker’s Guide to the Galaxy_
+
 <!----------------------------------------------------------------------------->
 
 ## Marketing and Sales Strategy
