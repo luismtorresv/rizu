@@ -24,12 +24,16 @@
         <p class="sidebar-detail-item"><strong>Role:</strong> {{ user_info.user_role }}</p>
       </div>
       <div class="sidebar-footer">
-        <a href="{% url 'user_profile' %}">
-          <button type="button" class="btn-signout">Profile</button>
-        </a>
         <a href="{% url 'front_page_index' %}">
           <button type="button" class="btn-signout">Back</button>
         </a>
+        <a href="{% url 'user_profile' %}">
+          <button type="button" class="btn-signout">Profile</button>
+        </a>
+        <form method="POST" action="{% url 'logout' %}">
+          {% csrf_token %}
+          <button type="submit" class="btn-signout">Sign out</button>
+        </form>
       </div>
     </div>
 
@@ -39,7 +43,7 @@
         <form method="get">
           <select name="project_id" class="project-selector" onchange="this.form.submit()">
             <option value="" {% if not selected_project %}selected{% endif %}>
-              Choose a project...
+              Select a project...
             </option>
             {% for project in projects %}
               {% if selected_project and project.id == selected_project.id %}
@@ -124,7 +128,7 @@
       </div>
       {% else %}
       <div class="no-project-alert">
-        <p>Select a project</p>
+        <p>Welcome to the dashboard! Select a project to get started.</p>
       </div>
       {% endif %}
     </div>

@@ -325,6 +325,21 @@ def join_projects_view(request):
         print(f"Could not connect to OpenStack, Error: {e}")
         return HttpResponse("Error connecting to OpenStack", status=500)
 
+    # compute projects user already has roles on so we can disable Join
+    user_project_ids = set()
+    if request.user.is_authenticated:
+        try:
+            os_user = sys_conn.identity.find_user(request.user.username)
+            if os_user:
+                user_assignments = list(
+                    sys_conn.identity.role_assignments(user_id=os_user.id, include_names=True)
+                )
+                user_project_ids = {
+                    a.scope["project"]["id"] for a in user_assignments if "project" in a.scope
+                }
+        except Exception as e:
+            print(f"Error fetching user assignments for join view: {e}")
+
     if request.method == "POST":
         try:
             project_name = request.POST.get("project_name")
@@ -358,6 +373,8 @@ def join_projects_view(request):
         if q and q not in f"{p['name']} {p['description']}".lower():
             continue
         p["initials"] = _initials(p["name"])
+        # mark joined status
+        p["joined"] = p["id"] in user_project_ids
         projects.append(p)
 
     projects.sort(key=lambda x: x["name"].lower())

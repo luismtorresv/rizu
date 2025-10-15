@@ -18,9 +18,20 @@
       <div class="sidebar-details">
         <h4 class="sidebar-details-title">User Details</h4>
         <p class="sidebar-detail-item"><strong>Username:</strong> {{ username|default:"Guest" }}</p>
+        {% if request.user.is_authenticated %}
+          <p class="sidebar-detail-item"><strong>Email:</strong> {{ request.user.email|default:"-" }}</p>
+          <p class="sidebar-detail-item"><strong>Role:</strong> {{ request.user.role|default:"-" }}</p>
+          <p class="sidebar-detail-item"><strong>Projects:</strong> {{ projects|length }}</p>
+        {% endif %}
       </div>
       <div class="sidebar-footer">
-        <button type="button" class="btn-signout">Sign out</button>
+        <a href="{% url 'front_page_index' %}"><button type="button" class="btn-signout">Back</button></a>
+        {% if request.user.is_authenticated %}
+          <form method="POST" action="{% url 'logout' %}">
+            {% csrf_token %}
+            <button type="submit" class="btn-signout">Sign out</button>
+          </form>
+        {% endif %}
       </div>
     </div>
 
@@ -56,11 +67,15 @@
 
               <div class="jp-actions">
                 <a class="jp-btn" href="{% url 'project_detail' p.id %}">View</a>
-                <form method="post">
-                  {% csrf_token %}
-                  <input type="hidden" name="project_name" value="{{ p.name }}">
-                  <button class="jp-btn-primary" type="submit">Join</button>
-                 </form>
+                {% if p.joined %}
+                  <button class="jp-btn" type="button" disabled>Join</button>
+                {% else %}
+                  <form method="post" style="display:inline;">
+                    {% csrf_token %}
+                    <input type="hidden" name="project_name" value="{{ p.name }}">
+                    <button class="jp-btn-primary" type="submit">Join</button>
+                  </form>
+                {% endif %}
               </div>
             </article>
           {% endfor %}
