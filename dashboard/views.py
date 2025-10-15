@@ -332,10 +332,14 @@ def join_projects_view(request):
             os_user = sys_conn.identity.find_user(request.user.username)
             if os_user:
                 user_assignments = list(
-                    sys_conn.identity.role_assignments(user_id=os_user.id, include_names=True)
+                    sys_conn.identity.role_assignments(
+                        user_id=os_user.id, include_names=True
+                    )
                 )
                 user_project_ids = {
-                    a.scope["project"]["id"] for a in user_assignments if "project" in a.scope
+                    a.scope["project"]["id"]
+                    for a in user_assignments
+                    if "project" in a.scope
                 }
         except Exception as e:
             print(f"Error fetching user assignments for join view: {e}")
