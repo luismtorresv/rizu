@@ -12,6 +12,7 @@ import re
 def dashboard(request):
     project_id = request.GET.get("project_id")
     user = request.user
+    print(user.openstack_password)
 
     # Admin/system connection (has full visibility
     try:
@@ -137,7 +138,65 @@ def dashboard(request):
 
 
 def create_vm(request):
-    return render(request, "create_vm.html")
+    project_id = request.session.get("project_id")
+
+    try:
+        conn = OpenStackUtils.get_connection(request=request, project_id=project_id)
+    except Exception as e:
+        print(f"Error connecting to OpenStack: {e}")
+        messages.error(request, "Failed to connect to OpenStack.")
+        return redirect("dashboard")
+
+    if request.method == "POST":
+        vm_name = request.POST.get("vm_name")
+        flavor_id = request.POST.get("flavor_id")
+        private_network_id = request.POST.get("private_network_id")
+        external_network_id = request.POST.get("external_network_id")
+        image_id = request.POST.get("image_id")
+
+        response = OpenStackBuilders.create_openstack_vm(
+            conn_token=conn,
+            flavor_name=flavor_id,
+            image_name=image_id,
+            private_network_name=private_network_id,
+            external_network_id=external_network_id,
+            vm_name=vm_name,
+        )
+
+        # Muestras respuesta o rediriges al dashboard
+        if not response:
+            return HttpResponse("Error creating project", status=500)
+
+        messages.success(request, f"VM '{vm_name}' created successfully.")
+        return redirect("dashboard")
+
+    # GET request → gather available resources
+    try:
+        flavors = list(conn.compute.flavors())
+        images = list(conn.compute.images())
+
+        # Networks
+        external_networks = [n for n in conn.network.networks() if n.is_router_external]
+        private_networks = [
+            n for n in conn.network.networks() if not n.is_router_external
+        ]
+    except Exception as e:
+        print(f"Error fetching resources: {e}")
+        flavors, images, private_networks, external_networks = (
+            [],
+            [],
+            [],
+            [],
+        )
+
+    context = {
+        "flavors": flavors,
+        "images": images,
+        "private_networks": private_networks,
+        "external_networks": external_networks,
+    }
+
+    return render(request, "create_vm.html", context)
 
 
 def create_project(request):
@@ -239,7 +298,7 @@ def create_router(request):
             messages.error(request, "Failed to create router.")
         return redirect("dashboard")
 
-    # 👇 Get all external networks for dropdown
+    # Get all external networks for dropdown
     external_networks = [
         net
         for net in conn.network.networks()
@@ -247,6 +306,7 @@ def create_router(request):
     ]
 
     context = {"external_networks": external_networks}
+
     return render(request, "create_router.html", context)
 
 

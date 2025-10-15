@@ -150,13 +150,17 @@ class OpenStackBuilders:
 
             if external_network_name:
                 ext_net = conn_token.network.find_network(
-                    external_network_name, external=True
+                    external_network_name,
+                    external=True,
                 )
                 if not ext_net:
                     raise ValueError(
                         f"External network {external_network_name} not found"
                     )
-                kwargs["external_gateway_info"] = {"network_id": ext_net.id}
+                kwargs["external_gateway_info"] = {
+                    "network_id": ext_net.id,
+                    "enable_snat": True,
+                }
 
             # Create router
             router = conn_token.network.create_router(**kwargs)
@@ -166,8 +170,66 @@ class OpenStackBuilders:
             conn_token.network.add_interface_to_router(router, subnet_id=subnet.id)
             print(f"Attached subnet {subnet.name} to router {router.name}")
 
+            # Refresh router to verify external link
+            router = conn_token.network.get_router(router.id)
+            if router.external_gateway_info:
+                print(f"Connected to external network: {external_network_name}")
+            else:
+                print("⚠️ External gateway not set.")
+
             return router
 
         except Exception as e:
             print(f"Failed to create router {router_name}: {e}")
+            return None
+
+    def create_openstack_vm(
+        conn_token,
+        flavor_name,
+        image_name,
+        private_network_name,
+        external_network_id,
+        vm_name,
+    ):
+        try:
+            # Find the resources
+            flavor = conn_token.compute.find_flavor(flavor_name)
+            image = conn_token.compute.find_image(image_name)
+            network = conn_token.network.find_network(private_network_name)
+
+            if not (flavor and image and network):
+                raise ValueError("One or more resources not found.")
+
+            # Create the VM
+            vm = conn_token.compute.create_server(
+                name=vm_name,
+                image_id=image.id,
+                flavor_id=flavor.id,
+                networks=[{"uuid": network.id}],
+            )
+
+            # Wait for it to become ACTIVE
+            vm = conn_token.compute.wait_for_server(vm)
+
+            # Find external net
+            ext_net = conn_token.network.get_network(external_network_id)
+            if not ext_net:
+                raise ValueError(f"External network '{external_network_id}' not found")
+
+            # Create floating IP and assign it to a port
+            floating_ip = conn_token.network.create_ip(floating_network_id=ext_net.id)
+
+            ports = list(conn_token.network.ports(device_id=vm.id))
+            if not ports:
+                raise ValueError(f"No network ports found for VM {vm_name}")
+
+            conn_token.network.update_ip(floating_ip, port_id=ports[0].id)
+            print(
+                f"Associated floating IP {floating_ip.floating_ip_address} to VM {vm_name}"
+            )
+
+            return vm
+
+        except Exception as e:
+            print(f"Failed to create VM {vm_name}: {e}")
             return None
