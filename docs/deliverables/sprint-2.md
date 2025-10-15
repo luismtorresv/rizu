@@ -801,8 +801,6 @@ garanticen la calidad y el buen funcionamiento de la aplicación. -->
 <!-- Todas las funcionalidades entregadas deben estar cubiertas por al menos
 una prueba automática. -->
 
-## Automated Testing Strategy
-
 The automated testing strategy ensures that all delivered functionalities in the
 Rizu web console are validated for correctness, internal consistency, and user
 flow reliability. The current scope of automated testing focuses exclusively on
