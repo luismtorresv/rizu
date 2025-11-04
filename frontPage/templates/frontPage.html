@@ -2,113 +2,212 @@
 {% load static %}
 
 {% block title %}Private Cloud Management Platform{% endblock %}
-{% block body_class %}page-dashboard{% endblock %}
+{% block body_class %}page-landing{% endblock %}
+
+{% block header %}
+<nav class="navbar navbar-expand-lg navbar-light bg-white rz-nav shadow-sm sticky-top">
+  <div class="container">
+    <a class="navbar-brand d-flex align-items-center gap-2" href="#">
+      <img src="{% static 'images/rizu.png' %}" alt="Rizu Logo" class="rz-logo">
+      <span class="fw-semibold">Rizu</span>
+    </a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#rzNav"
+      aria-controls="rzNav" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="rzNav">
+      <ul class="navbar-nav ms-auto align-items-lg-center gap-lg-3">
+        <li class="nav-item"><a class="nav-link" href="#features">Features</a></li>
+        <li class="nav-item"><a class="nav-link" href="#product">Product</a></li>
+        <li class="nav-item"><a class="nav-link" href="#mission">Mission</a></li>
+        <li class="nav-item"><a class="nav-link" href="#support">Support</a></li>
+
+        {% if user.is_authenticated %}
+          <li class="nav-item d-none d-lg-block">
+            <form method="POST" action="{% url 'logout' %}">
+              {% csrf_token %}
+              <button type="submit" class="btn btn-outline-dark rz-btn-outline ms-lg-2">
+                <i class="fa-solid fa-arrow-right-from-bracket me-2" aria-hidden="true"></i>Sign out
+              </button>
+            </form>
+          </li>
+        {% else %}
+            <a href="{% url 'register' %}" class="btn btn-primary rz-btn">
+              <i class="fa-solid fa-user-plus me-2" aria-hidden="true"></i>Create Account
+            </a>
+            <a href="{% url 'login' %}" class="btn btn-outline-dark rz-btn rz-btn-outline">
+              <i class="fa-solid fa-right-to-bracket me-2" aria-hidden="true"></i>Sign In
+            </a>
+        {% endif %}
+      </ul>
+    </div>
+  </div>
+</nav>
+{% endblock %}
 
 {% block content %}
-<div class="dashboard-main-container">
-  <div class="sidebar">
-    <h3 class="sidebar-title">
-      <img src="{% static 'images/rizusinfondo.png' %}" alt="Rizu Logo" class="sidebar-logo">
-      <span class="sidebar-brand-text">Rizu</span>
-    </h3>
-    <hr class="sidebar-divider">
+<!-- Hero Section -->
+<section class="rz-hero">
+  <div class="container py-lg-5">
+    <div class="row align-items-center g-4">
+      <div class="col-lg-6">
+        <h1 class="display-5 fw-bold text-black">On-premise private cloud, <span>made simple</span>.</h1>
+        <p class="lead mt-3 text-muted">
+          Rizu simplifies cloud infrastructure management so developers and teams can set up and run private clouds on-premise—without the licensing costs or complexity of traditional platforms.
+        </p>
 
-    {% if user.is_authenticated %}
-      <div class="sidebar-details">
-        <h4 class="sidebar-details-title">User Details</h4>
-        <p class="sidebar-detail-item"><strong>Username:</strong> {{ user.username }}</p>
-        {% if user_role == "project_manager" %}
-          <p class="sidebar-detail-item"><strong>Access:</strong> Project Manager</p>
-        {% elif user_role == "member" %}
-          <p class="sidebar-detail-item"><strong>Access:</strong> Standard Member</p>
-        {% endif %}
-      </div>
-      <div class="sidebar-footer">
-        <form method="POST" action="{% url 'logout' %}">
-          {% csrf_token %}
-          <button type="submit" class="btn-signout">Sign out</button>
-        </form>
-      </div>
-    {% else %}
-      <div class="sidebar-details">
-        <h4 class="sidebar-details-title">Welcome to Rizu</h4>
-        <p class="sidebar-detail-item">Please sign in to access your cloud resources</p>
-      </div>
-      <div class="sidebar-footer">
-        <a href="{% url 'login' %}" class="btn-signout" style="text-decoration: none; display: block; text-align: center;">Sign In</a>
-      </div>
-    {% endif %}
-  </div>
-
-  <div class="dashboard-content">
-    <div class="dashboard-header">
-      <h1>Welcome to Rizu</h1>
-    </div>
-
-    <div class="project-card">
-      <div class="project-card-header">
-        <h4 class="project-card-title">
-          <i class="fa-solid fa-cloud project-icon"></i>
-          Cloud Management Platform
-          <small class="project-description">
-            An alternative dashboard to OpenStack's Horizon targeted at developers with little to no cloud computing experience
-          </small>
-        </h4>
-      </div>
-
-      <div class="project-card-body">
-        <div class="welcome-content">
-          <h5 class="resource-section-title">
-            <i class="fa-solid fa-info-circle resource-icon resource-icon-instances"></i>About Rizu
-          </h5>
-          <p class="welcome-description">
-            Rizu simplifies cloud infrastructure management, making it easy for developers to set up and manage private clouds on-premise.
-            Our intuitive interface removes the complexity typically associated with cloud computing platforms.
-          </p>
-
-          {% if not user.is_authenticated %}
-            <h5 class="resource-section-title">
-              <i class="fa-solid fa-user-plus resource-icon resource-icon-networks"></i>Get Started
-            </h5>
-            <p class="welcome-description">
-              Create an account or sign in to start managing your cloud resources.
-            </p>
+        <div class="d-flex flex-wrap gap-2 mt-4">
+          {% if user.is_authenticated %}
+            <a href="{% url 'dashboard' %}" class="btn btn-primary btn-lg rz-btn">
+              <i class="fa-solid fa-rocket me-2" aria-hidden="true"></i>Go to Dashboard
+            </a>
           {% else %}
-            <h5 class="resource-section-title">
-              <i class="fa-solid fa-rocket resource-icon resource-icon-networks"></i>Ready to Go!
-            </h5>
-            <p class="welcome-description">
-              You're all set! Navigate to your dashboard to start creating and managing your cloud resources.
-            </p>
+            <a href="{% url 'register' %}" class="btn btn-primary btn-lg rz-btn">
+              <i class="fa-solid fa-rocket fa-lg me-2" aria-hidden="true"></i>Get Started
+            </a>
           {% endif %}
+        </div>
+
+        <div class="d-flex align-items-center gap-3 mt-4 text-muted small">
+          <i class="fa-solid fa-shield-halved" aria-hidden="true"></i>
+          On-premise · Full autonomy · Academic-friendly
+        </div>
+      </div>
+
+      <div class="col-lg-6 text-center">
+        <div class="rz-hero-card shadow-sm rounded-4 p-4">
+          <img src="{% static 'images/rizusinfondo.png' %}" class="img-fluid rz-hero-illustration" alt="Rizu product illustration"/>
+          <div class="mt-3 small text-muted">
+            Alternative dashboard to OpenStack's Horizon — designed for developers with little to no cloud experience.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Features / Value Proposition -->
+<section id="features" class="py-5 bg-white">
+  <div class="container">
+    <div class="text-center mb-4">
+      <h2 class="fw-semibold">Why Rizu</h2>
+      <p class="text-muted">Cost-effective, intuitive, and built for learning and experimentation.</p>
+    </div>
+    <div class="row g-4">
+      <div class="col-md-6 col-lg-4">
+        <div class="card rz-card h-100">
+          <div class="card-body">
+            <i class="fa-solid fa-wand-magic-sparkles rz-icon" aria-hidden="true"></i>
+            <h5 class="card-title mt-3">Simplicity first</h5>
+            <p class="card-text text-muted">A streamlined dashboard that hides complexity so you can focus on building, not wiring.</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-6 col-lg-4">
+        <div class="card rz-card h-100">
+          <div class="card-body">
+            <i class="fa-solid fa-scale-balanced rz-icon" aria-hidden="true"></i>
+            <h5 class="card-title mt-3">Affordable by design</h5>
+            <p class="card-text text-muted">Avoid heavy licensing fees from big public clouds and expensive proprietary stacks.</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-6 col-lg-4">
+        <div class="card rz-card h-100">
+          <div class="card-body">
+            <i class="fa-solid fa-universal-access rz-icon" aria-hidden="true"></i>
+            <h5 class="card-title mt-3">Accessibility</h5>
+            <p class="card-text text-muted">Lower barriers to entry with transparent, manageable infrastructure on your own servers.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Product & Services -->
+<section id="product" class="py-5 rz-section-alt">
+  <div class="container">
+    <div class="row g-4 align-items-center">
+      <div class="col-lg-6">
+        <h2 class="fw-semibold">Products & Services</h2>
+        <p class="text-muted">We offer a single product: <strong>Rizu</strong>. Alongside development, we provide <strong>installation</strong>, <strong>support</strong>, and <strong>maintenance</strong> for organizations.</p>
+        <ul class="rz-list">
+          <li><i class="fa-solid fa-check" aria-hidden="true"></i> On-premise private cloud</li>
+          <li><i class="fa-solid fa-check" aria-hidden="true"></i> Intuitive dashboard for newcomers</li>
+          <li><i class="fa-solid fa-check" aria-hidden="true"></i> Educational/academic friendly</li>
+        </ul>
+      </div>
+      <div class="col-lg-6">
+        <div class="rz-feature-card shadow-sm rounded-4 p-4">
+          <h5 class="mb-2">Made for learning and doing</h5>
+          <p class="text-muted mb-0">Spin up environments quickly, teach cloud concepts practically, and give teams autonomy over their infrastructure.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Mission & Vision -->
+<section id="mission" class="py-5 bg-white">
+  <div class="container">
+  <div class="container">
+    <div class="text-center mb-4">
+      <h2 class="fw-semibold">Values</h2>
+      <p class="text-muted">Accessibility and simplicity are at the core of Rizu.</p>
+    </div>
+    <div class="row g-4">
+      <div class="col-lg-6">
+        <div class="card rz-card h-100">
+          <div class="card-body">
+            <i class="fa-solid fa-heart rz-icon" aria-hidden="true"></i>
+            <h5 class="card-title mt-3">Mission</h5>
+            <p class="card-text text-muted">Support individuals, small businesses, and educational institutions with an intuitive, affordable, and accessible on-premise private cloud platform.</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-6">
+        <div class="card rz-card h-100">
+          <div class="card-body">
+            <i class="fa-solid fa-binoculars rz-icon" aria-hidden="true"></i>
+            <h5 class="card-title mt-3">Vision</h5>
+            <p class="card-text text-muted">Become the leading on-premise private cloud platform enabling innovation and learning with full technological autonomy.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- Support & Maintenance -->
+<section id="support" class="py-5 bg-white">
+  <div class="container">
+    <div class="row g-4 align-items-center">
+      <div class="col-lg-7">
+        <h2 class="fw-semibold">Installation, Support & Maintenance</h2>
+        <p class="text-muted">We deploy and configure Rizu, and keep your platform running smoothly so your teams can focus on building.</p>
+      </div>
+      <div class="col-lg-5">
+        <div class="rz-support-card shadow-sm rounded-4 p-4">
+          <div class="d-flex align-items-center gap-3">
+            <i class="fa-solid fa-headset fa-lg" aria-hidden="true"></i>
+            <div>
+              <div class="fw-semibold">We’ve got your back</div>
+              <div class="small text-muted">From first install.</div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
 
-    {% if user.is_authenticated %}
-      <div class="dashboard-actions">
-        <a href="{% url 'dashboard' %}" class="btn-dashboard-action btn-create-project">
-          <i class="fa-solid fa-tachometer-alt action-icon"></i>Go to Dashboard
-        </a>
-        <a href="{% url 'join_projects' %}" class="btn-dashboard-action btn-create-project">
-          <i class="fa-solid fa-tachometer-alt action-icon"></i>Join Project
-        </a>
-        {% if user_role == "project_manager" %}
-          <a href="{% url 'create_project' %}" class="btn-dashboard-action btn-create-project">
-            <i class="fa-solid fa-tachometer-alt action-icon"></i>Create Project
-          </a>
-        {% endif %}
-      </div>
-    {% else %}
-      <div class="dashboard-actions">
-        <a href="{% url 'register' %}" class="btn-dashboard-action btn-create-project">
-          <i class="fa-solid fa-user-plus action-icon"></i>Create Account
-        </a>
-        <a href="{% url 'login' %}" class="btn-dashboard-action btn-create-network">
-          <i class="fa-solid fa-sign-in-alt action-icon"></i>Sign In
-        </a>
-      </div>
-    {% endif %}
+{% endblock %}
+
+{% block footer %}
+<footer class="rz-footer py-4 border-top">
+  <div class="container d-flex flex-column flex-md-row justify-content-between align-items-center gap-2">
+    <div class="small text-muted">© {{ now|date:"Y" }} Rizu. All rights reserved.</div>
   </div>
-</div>
+</footer>
 {% endblock %}

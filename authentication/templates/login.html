@@ -2,98 +2,127 @@
 {% load static %}
 
 {% block title %}Login{% endblock %}
-{% block body_class %}page-dashboard{% endblock %}
+{% block body_class %}page-auth{% endblock %}
 
-{% block header %}{% endblock %}
+{% block header %}
+<nav class="navbar navbar-expand-lg navbar-light bg-white rz-nav shadow-sm sticky-top">
+  <div class="container">
+    <a class="navbar-brand d-flex align-items-center gap-2" href="{% url 'front_page_index' %}">
+      <img src="{% static 'images/rizu.png' %}" alt="Rizu Logo" class="rz-logo">
+      <span class="fw-semibold">Rizu</span>
+    </a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#rzNav"
+      aria-controls="rzNav" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
 
-{% block content %}
-<div class="dashboard-main-container">
-    <div class="sidebar">
-      <h3 class="sidebar-title">
-        <img src="{% static 'images/rizusinfondo.png' %}" alt="Rizu Logo" class="sidebar-logo">
-        <span class="sidebar-brand-text">Rizu</span>
-      </h3>
-      <hr class="sidebar-divider">
-
-      <div class="sidebar-details">
-        <h4 class="sidebar-details-title">Welcome Back</h4>
-        <p class="sidebar-detail-item">Sign in to access your cloud management dashboard</p>
-      </div>
-
-      <div class="sidebar-footer">
-        <a href="{% url 'front_page_index' %}" class="btn-signout" style="text-decoration: none; display: block; text-align: center;">
-          <i class="fa-solid fa-home" style="margin-right: 0.5rem;"></i>Home
-        </a>
-      </div>
-    </div>
-
-    <div class="dashboard-content">
-      <div class="dashboard-header">
-        <h1>Sign In</h1>
-      </div>
-
-      <div class="project-card">
-        <div class="project-card-header">
-          <h4 class="project-card-title">
-            <i class="fa-solid fa-sign-in-alt project-icon"></i>
-            Login to Your Account
-          </h4>
-        </div>
-
-        <div class="project-card-body">
-          {% if messages %}
-            <div class="auth-messages">
-              {% for message in messages %}
-                <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags }}{% endif %} alert-dismissible fade show" role="alert">
-                  {{ message }}
-                  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                </div>
-              {% endfor %}
-            </div>
-          {% endif %}
-
-          <form method="post" class="auth-form">
-            {% csrf_token %}
-
-            <div class="form-section">
-              {% for field in form %}
-                <div class="mb-3">
-                  <label for="{{ field.id_for_label }}" class="form-label">
-                    {% if field.name == 'username' %}
-                      <i class="fa-solid fa-user fa-icon"></i>
-                    {% elif field.name == 'password' %}
-                      <i class="fa-solid fa-lock fa-icon"></i>
-                    {% endif %}
-                    {{ field.label }}
-                  </label>
-                  {{ field }}
-                  {% if field.errors %}
-                    <div class="text-danger mt-1">
-                      {% for error in field.errors %}
-                        <small>{{ error }}</small>
-                      {% endfor %}
-                    </div>
-                  {% endif %}
-                  {% if field.help_text %}
-                    <small class="form-text text-muted">{{ field.help_text }}</small>
-                  {% endif %}
-                </div>
-              {% endfor %}
-            </div>
-
-            <div class="auth-actions">
-              <button type="submit" class="btn-dashboard-action btn-create-project">
-                <i class="fa-solid fa-sign-in-alt action-icon"></i>Sign In
-              </button>
-
-              <div class="auth-link">
-                <p>Don't have an account? <a href="{% url 'register' %}">Create one here</a></p>
-              </div>
-            </div>
-          </form>
-        </div>
-      </div>
-
+    <div class="collapse navbar-collapse" id="rzNav">
+      <ul class="navbar-nav ms-auto align-items-lg-center gap-lg-3">
+        <li class="nav-item"><a class="nav-link" href="{% url 'front_page_index' %}">Home</a></li>
+        <li class="nav-item">
+          <a href="{% url 'register' %}" class="btn btn-primary rz-btn">
+            <i class="fa-solid fa-user-plus me-2" aria-hidden="true"></i>Create Account
+          </a>
+        </li>
+      </ul>
     </div>
   </div>
+</nav>
+{% endblock %}
+
+{% block content %}
+<div class="auth-container">
+  <!-- Sidebar -->
+  <div class="auth-sidebar">
+
+    <div class="auth-sidebar-content">
+      <h2 class="auth-sidebar-title">Welcome Back to Rizu</h2>
+      <p class="auth-sidebar-description">
+        Sign in to access your cloud management dashboard and continue managing your infrastructure with ease.
+      </p>
+      
+      <ul class="auth-sidebar-features">
+        <li>
+          <i class="fa-solid fa-check"></i>
+          <span>Manage your cloud resources</span>
+        </li>
+        <li>
+          <i class="fa-solid fa-check"></i>
+          <span>Monitor projects in real-time</span>
+        </li>
+        <li>
+          <i class="fa-solid fa-check"></i>
+          <span>Collaborate with your team</span>
+        </li>
+        <li>
+          <i class="fa-solid fa-check"></i>
+          <span>Secure and reliable access</span>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <div class="auth-main">
+    <div class="auth-form-container">
+      <div class="auth-form-header">
+        <div class="auth-form-icon">
+          <i class="fa-solid fa-sign-in-alt"></i>
+        </div>
+        <h1 class="auth-form-title">Sign In</h1>
+        <p class="auth-form-subtitle">Enter your credentials to access your account</p>
+      </div>
+
+      {% if messages %}
+        <div class="auth-messages">
+          {% for message in messages %}
+            <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags }}{% endif %} alert-dismissible fade show" role="alert">
+              {{ message }}
+              <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+          {% endfor %}
+        </div>
+      {% endif %}
+
+      <form method="post" class="auth-form">
+        {% csrf_token %}
+
+        {% for field in form %}
+          <div class="mb-3">
+            <label for="{{ field.id_for_label }}" class="form-label">
+              {% if field.name == 'username' %}
+                <i class="fa-solid fa-user fa-icon"></i>
+              {% elif field.name == 'password' %}
+                <i class="fa-solid fa-lock fa-icon"></i>
+              {% endif %}
+              {{ field.label }}
+            </label>
+            {{ field }}
+            {% if field.errors %}
+              <div class="text-danger mt-1">
+                {% for error in field.errors %}
+                  <small>{{ error }}</small>
+                {% endfor %}
+              </div>
+            {% endif %}
+            {% if field.help_text %}
+              <small class="form-text text-muted">{{ field.help_text }}</small>
+            {% endif %}
+          </div>
+        {% endfor %}
+
+        <div class="auth-actions">
+          <button type="submit" class="auth-btn-submit">
+            <i class="fa-solid fa-sign-in-alt"></i>
+            <span>Sign In</span>
+          </button>
+
+          <div class="auth-link">
+            <p>Don't have an account? <a href="{% url 'register' %}">Create one here</a></p>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
 {% endblock %}

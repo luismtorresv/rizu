@@ -1,135 +1,270 @@
 {% extends "base.html" %}
 {% load static %}
 
-{% block title %}Dashboard{% endblock %}
-{% block body_class %}page-dashboard{% endblock %}
+{% block title %}Dashboard {% endblock %}
+{% block body_class %}page-dashboard-new{% endblock %}
 
-{% block header %}{% endblock %}
+{% block header %}
+<header class="rz-dashboard-header fixed-top">
+    <div class="container-fluid d-flex justify-content-between align-items-center h-100 px-3">
+        
+        <!-- Left Side: Logo + Dashboard Text -->
+        <div class="d-flex align-items-center">
+            <a href="{% url 'front_page_index' %}" class="d-flex align-items-center text-decoration-none me-4">
+                <img src="{% static 'images/rizusinfondo.png' %}" alt="Rizu Logo" style="height: 30px; width: auto;" class="me-2">
+                <span class="text-white fw-bold fs-5">Rizu</span>
+            </a>
+        </div>
+
+        <!-- Right Side: Project Selector + Actions + User -->
+        <div class="d-flex align-items-center gap-2">
+            
+            <!-- Project Selector -->
+            <form method="get" class="me-2">
+                <div class="input-group">
+                    <span class="input-group-text bg-white border-light">
+                        <i class="fas fa-share-alt text-dark"></i>
+                    </span>
+                    <select name="project_id" class="form-select bg-white border-light" onchange="this.form.submit()" aria-label="Project Selector" style="min-width: 200px;">
+                        <option value="" {% if not selected_project %}selected{% endif %}>
+                            Select a Project...
+                        </option>
+                        {% for project in projects %}
+                            <option value="{{ project.id }}" {% if selected_project and project.id == selected_project.id %}selected{% endif %}>
+                                {{ project.name }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                    <a href="#" class="input-group-text bg-white border-light" title="View documentation and guides" style="cursor: pointer; text-decoration: none;">
+                        <i class="fas fa-info-circle text-dark"></i>
+                    </a>
+                </div>
+            </form>
+
+            <!-- Join Projects Button -->
+            <a href="{% url 'join_projects' %}" class="btn btn-sm btn-outline-light d-none d-md-flex align-items-center" title="Join a Project">
+                <i class="fas fa-user-friends me-1"></i>
+                <span>Join Projects</span>
+            </a>
+
+            <!-- Create Project Button -->
+            {% if user_info.user_role == "project_manager" %}
+                <a href="{% url 'create_project' %}" class="btn btn-sm btn-outline-light d-none d-md-flex align-items-center" title="Create New Project">
+                    <i class="fas fa-plus-circle me-1"></i>
+                    <span>Create Project</span>
+                </a>
+            {% endif %}
+
+            <!-- User Profile -->
+            <a href="{% url 'user_profile' %}" class="btn btn-sm btn-outline-light d-flex align-items-center" title="User Profile">
+                <i class="fas fa-user-circle me-1"></i>
+                <span>{{ user.username|default:"name" }}</span>
+            </a>
+
+        </div>
+    </div>
+</header>
+{% endblock %}
 
 {% block content %}
-<div class="dashboard-main-container">
-    <div class="sidebar">
-      <h3 class="sidebar-title">
-        <img src="{% static 'images/rizusinfondo.png' %}" alt="Rizu Logo" class="sidebar-logo">
-        <span class="sidebar-brand-text">Rizu</span>
-      </h3>
-      <hr class="sidebar-divider">
-      <div class="sidebar-details">
-        <h4 class="sidebar-details-title">Details</h4>
-        <p class="sidebar-detail-item"><strong>Project ID:</strong> {{ user_info.project_id }}</p>
-        <p class="sidebar-detail-item"><strong>Status:</strong> {{ user_info.status }}</p>
-        <p class="sidebar-detail-item"><strong>Instances:</strong> {{ user_info.instances }}</p>
-        <p class="sidebar-detail-item"><strong>Volumes:</strong> {{ user_info.volumes }}</p>
-        <p class="sidebar-detail-item"><strong>Networks:</strong> {{ user_info.networks }}</p>
-        <p class="sidebar-detail-item"><strong>Role:</strong> {{ user_info.user_role }}</p>
-      </div>
-      <div class="sidebar-footer">
-        <a href="{% url 'front_page_index' %}">
-          <button type="button" class="btn-signout">Back</button>
-        </a>
-        <a href="{% url 'user_profile' %}">
-          <button type="button" class="btn-signout">Profile</button>
-        </a>
-        <form method="POST" action="{% url 'logout' %}">
-          {% csrf_token %}
-          <button type="submit" class="btn-signout">Sign out</button>
-        </form>
-      </div>
-    </div>
-
-    <div class="dashboard-content">
-      <div class="dashboard-header">
-        <h1>Dashboard</h1>
-        <form method="get">
-          <select name="project_id" class="project-selector" onchange="this.form.submit()">
-            <option value="" {% if not selected_project %}selected{% endif %}>
-              Select a project...
-            </option>
-            {% for project in projects %}
-              {% if selected_project and project.id == selected_project.id %}
-                <option value="{{ project.id }}" selected>{{ project.name }}</option>
-              {% else %}
-                <option value="{{ project.id }}">{{ project.name }}</option>
-              {% endif %}
-            {% endfor %}
-          </select>
-        </form>
-      </div>
-
-      {% if selected_project %}
-      <div class="project-card">
-        <div class="project-card-header">
-          <h4 class="project-card-title">
-            <i class="fa-solid fa-diagram-project project-icon"></i>
-            {{ selected_project.name }}
-            <small class="project-description">{{ selected_project.description }}</small>
-          </h4>
+<div class="dashboard-wrapper">
+    <div class="rz-sidebar-nav-dark">
+        
+        {% if selected_project %}
+        <hr class="rz-sidebar-divider-dark">
+        
+        <div class="rz-user-role-box">
+            <i class="fas fa-user-tag me-2"></i>
+            You are a: 
+            <span class="rz-user-role-badge rz-role-{{ user_info.user_role|lower }}">
+                {{ user_info.user_role|default:"member"|cut:"_"|title }}
+            </span>
         </div>
-        <div class="project-card-body">
-          <h5 class="resource-section-title">
-            <i class="fa-solid fa-server resource-icon resource-icon-instances"></i>Instances
-          </h5>
-          <ul class="resource-list">
-            {% for vm in selected_project.resources.instances %}
-              <li class="resource-item">
-                <span>{{ vm.name }}</span>
-                <span class="resource-status-badge">{{ vm.status }}</span>
-              </li>
-            {% empty %}
-              <li class="resource-item-empty">No instances yet</li>
-            {% endfor %}
-          </ul>
+        <hr class="rz-sidebar-divider-dark">
 
-          <h5 class="resource-section-title">
-            <i class="fa-solid fa-route resource-icon resource-icon-routers"></i>Routers
-          </h5>
-          <ul class="resource-list">
-            {% for router in selected_project.resources.routers %}
-              <li class="resource-item">
-                <span>{{ router.name }}</span>
-                <span class="resource-id">ID: {{ router.id }}</span>
-              </li>
-            {% empty %}
-              <li class="resource-item-empty">No routers yet</li>
-            {% endfor %}
-          </ul>
-
-          <h5 class="resource-section-title">
-            <i class="fa-solid fa-network-wired resource-icon resource-icon-networks"></i>Networks
-          </h5>
-          <ul class="resource-list">
-            {% for net in selected_project.resources.networks %}
-              <li class="resource-item">
-                <span>{{ net.name }}</span>
-                <span class="resource-id">ID: {{ net.id }}</span>
-              </li>
-            {% empty %}
-              <li class="resource-item-empty">No networks yet</li>
-            {% endfor %}
-          </ul>
+        <ul class="rz-sidebar-menu">
+            <li class="rz-sidebar-heading">PROJECT OVERVIEW</li>
+            <li><a href="{% url 'dashboard' %}" class="rz-sidebar-link active" aria-current="page"><i class="fas fa-chart-line me-2"></i>Dashboard Summary</a></li>
+            
+            <li class="rz-sidebar-heading">USER ACTIONS</li>
+            <li><a href="{% url 'create_vm' %}" class="rz-sidebar-link"><i class="fas fa-plus-square me-2"></i>Create New VM</a></li>
+            
+            {% if user_info.user_role == "project_manager" %}
+                <li class="rz-sidebar-heading">MANAGEMENT TOOLS</li>
+                <li><a href="{% url 'create_network' %}" class="rz-sidebar-link"><i class="fas fa-sitemap me-2"></i>Create Network</a></li>
+                <li><a href="{% url 'create_router' %}" class="rz-sidebar-link"><i class="fas fa-route me-2"></i>Create Router</a></li>
+                <li><a href="{% url 'terraform' %}" class="rz-sidebar-link"><i class="fas fa-code-branch me-2"></i>Terraform</a></li>
+            {% endif %}
+            
+        </ul>
+        {% else %}
+        <div class="rz-sidebar-empty-state">
+            <i class="fas fa-info-circle fa-3x mb-3" style="opacity: 0.5;"></i>
+            <p class="small mb-0">Select a project to see available actions</p>
         </div>
-      </div>
-      <div class="dashboard-actions">
-        {% if user_info.user_role == "project_manager" %}
-          <a href="{% url 'create_network' %}" class="btn-dashboard-action btn-create-network">
-            <i class="fa-solid fa-network-wired action-icon"></i>Create Network
-          </a>
-          <a href="{% url 'create_router' %}" class="btn-dashboard-action btn-create-router">
-            <i class="fa-solid fa-route action-icon"></i>Create Router
-          </a>
-          <a href="{% url 'terraform' %}" class="btn-dashboard-action btn-create-project">
-            <i class="fa-solid fa-hammer action-icon"></i> Use Terraform
-          </a>
         {% endif %}
-        <a href="{% url 'create_vm' %}" class="btn-dashboard-action btn-create-network">
-            <i class="fa-solid fa-network-wired action-icon"></i>Create VMs
-        </a>
-      </div>
-      {% else %}
-      <div class="no-project-alert">
-        <p>Welcome to the dashboard! Select a project to get started.</p>
-      </div>
-      {% endif %}
+
+        <div class="rz-sidebar-footer-dark">
+            <form method="POST" action="{% url 'logout' %}" class="mt-2">
+                {% csrf_token %}
+                <button type="submit" class="btn rz-btn-logout-dark w-100" aria-label="Sign out of Rizu">
+                    <i class="fas fa-sign-out-alt me-2"></i> Sign out
+                </button>
+            </form>
+        </div>
     </div>
-  </div>
+
+    <div class="rz-main-content-area">
+        <div class="container-fluid py-4">
+            
+            {% if not selected_project %}
+                <div class="rz-welcome-container">
+                    <div class="rz-welcome-card">
+                        <h2 class="rz-welcome-title">Welcome to Rizu Dashboard!</h2>
+                        <p class="rz-welcome-subtitle">Your cloud infrastructure management platform</p>
+                        
+                        <div class="rz-welcome-steps">
+                            <div class="rz-step-item">
+                                <div class="rz-step-number">1</div>
+                                <div class="rz-step-content">
+                                    <h4>Select a Project</h4>
+                                    <p>Choose a project from the dropdown menu above to get started</p>
+                                </div>
+                            </div>
+                            <div class="rz-step-item">
+                                <div class="rz-step-number">2</div>
+                                <div class="rz-step-content">
+                                    <h4>Manage Resources</h4>
+                                    <p>Create and manage VMs, networks, and routers for your project</p>
+                                </div>
+                            </div>
+                            <div class="rz-step-item">
+                                <div class="rz-step-number">3</div>
+                                <div class="rz-step-content">
+                                    <h4>Monitor</h4>
+                                    <p>Track your infrastructure.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="rz-welcome-actions">
+                            <a href="{% url 'join_projects' %}" class="btn btn-primary btn-lg rz-btn">
+                                <i class="fas fa-users me-2"></i>Join Existing Project
+                            </a>
+                            {% if user_info.user_role == "project_manager" %}
+                                <a href="{% url 'create_project' %}" class="btn btn-outline-primary btn-lg rz-btn-outline">
+                                    <i class="fas fa-plus-circle me-2"></i>Create New Project
+                                </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            {% else %}
+
+            <div class="rz-project-summary-card mb-4">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h2 class="h3 fw-bold rz-text-black mb-0"><i class="fas fa-project-diagram rz-text-primary me-2"></i> {{ selected_project.name }}</h2>
+                    <span class="badge rz-badge-status-active">{{ user_info.status|default:"Active" }}</span>
+                </div>
+                <p class="rz-text-muted">{{ selected_project.description }}</p>
+            </div>
+
+            <div class="row g-4 mb-3">
+                <div class="col-md-4">
+                    <div class="rz-metric-card rz-metric-card-black">
+                        <i class="fas fa-server rz-metric-icon" style="background: linear-gradient(135deg, #212529 0%, #495057 100%); box-shadow: 0 8px 16px rgba(33, 37, 41, 0.25); color: white;"></i>
+                        <div>
+                            <p class="rz-metric-label">Total Instances</p>
+                            <h3 class="rz-metric-value">{{ user_info.instances|default:"0" }}</h3>
+                            
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="rz-metric-card rz-metric-card-primary">
+                        <i class="fas fa-network-wired rz-metric-icon" style="background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%); box-shadow: 0 8px 16px rgba(59, 130, 246, 0.25); color: white;"></i>
+                        <div>
+                            <p class="rz-metric-label">Networks Configured</p>
+                            <h3 class="rz-metric-value">{{ user_info.networks|default:"0" }}</h3>
+                      
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="rz-metric-card rz-metric-card-accent">
+                        <i class="fas fa-route rz-metric-icon" style="background: linear-gradient(135deg, #ffc107 0%, #ff9800 100%); box-shadow: 0 8px 16px rgba(255, 193, 7, 0.25); color: white;"></i>
+                        <div>
+                            <p class="rz-metric-label">Total Routers</p>
+                            <h3 class="rz-metric-value">{{ user_info.routers|default:"0" }}</h3>
+                          
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row g-4">
+                
+                <div class="col-lg-6">
+                    <div class="rz-detail-card h-100">
+                        <h4 class="rz-detail-card-title"><i class="fas fa-server me-2"></i> Cloud Instances (VMs)</h4>
+                        <ul class="list-unstyled rz-resource-list-detailed">
+                            {% for vm in selected_project.resources.instances %}
+                                <li class="rz-resource-item-detailed">
+                                    <div class="rz-instance-info">
+                                        <span class="rz-resource-name">{{ vm.name }}</span>
+                                        <span class="rz-resource-meta">IP: {{ vm.addresses|default:"N/A" }}</span>
+                                    </div>
+                                    <div class="rz-instance-actions">
+                                        <span class="badge rz-badge-status-{{ vm.status|lower }}">{{ vm.status }}</span>
+                                    </div>
+                                </li>
+                            {% empty %}
+                                <li class="rz-resource-item-empty">No instances have been created yet.</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="col-lg-6">
+                    <div class="row g-4 h-100">
+                        <div class="col-12">
+                            <div class="rz-detail-card">
+                                <h4 class="rz-detail-card-title"><i class="fas fa-route me-2"></i> Routers</h4>
+                                <ul class="list-unstyled rz-resource-list-simple">
+                                    {% for router in selected_project.resources.routers %}
+                                        <li>
+                                            <i class="fas fa-circle me-2 rz-status-{{ router.status|default:"up" }}"></i>
+                                            <span class="rz-resource-name-simple">{{ router.name }}</span>
+                                            <span class="rz-resource-id-simple d-none d-sm-inline-block">ID: {{ router.id|slice:":8" }}</span>
+                                        </li>
+                                    {% empty %}
+                                        <li class="rz-resource-item-empty">No routers configured.</li>
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="col-12">
+                            <div class="rz-detail-card">
+                                <h4 class="rz-detail-card-title"><i class="fas fa-network-wired me-2"></i> Networks</h4>
+                                <ul class="list-unstyled rz-resource-list-simple">
+                                    {% for net in selected_project.resources.networks %}
+                                        <li>
+                                            <span class="rz-resource-name-simple">{{ net.name }}</span>
+                                            <span class="rz-resource-id-simple">CIDR: {{ net.cidr|default:"N/A" }}</span>
+                                        </li>
+                                    {% empty %}
+                                        <li class="rz-resource-item-empty">No networks defined.</li>
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {% endif %}
+        </div>
+    </div>
+</div>
 {% endblock %}
