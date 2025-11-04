@@ -18,11 +18,34 @@ jobs:
               uses: actions/setup-python@v5
               with:
                   python-version: 3.x
+<<<<<<< HEAD
                   cache: 'pip'
 
             - name: Install dependencies
               run: |
                   pip install -r requirements.txt
+=======
+
+            - name: Restore cached virtualenv
+              uses: actions/cache/restore@v4
+              with:
+                  key: venv-${{ runner.os }}-${{ steps.setup_python.outputs.python-version }}-${{ hashFiles('requirements.txt') }}
+                  path: .venv
+
+            - name: Install dependencies
+              run: |
+                  python -m venv .venv
+                  source .venv/bin/activate
+                  python -m pip install -r requirements.txt
+                  echo "$VIRTUAL_ENV/bin" >> $GITHUB_PATH
+                  echo "VIRTUAL_ENV=$VIRTUAL_ENV" >> $GITHUB_ENV
+
+            - name: Save cached virtualenv
+              uses: actions/cache/save@v4
+              with:
+                  key: venv-${{ runner.os }}-${{ steps.setup_python.outputs.python-version }}-${{ hashFiles('requirements.txt') }}
+                  path: .venv
+>>>>>>> 2098693 (Auto create network and router when creating project)
 
             - name: Run tests
               run: |
