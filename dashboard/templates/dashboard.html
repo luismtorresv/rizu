@@ -110,7 +110,6 @@
         </div>
       </div>
       <div class="dashboard-actions">
-        <p>DEBUG: user_info.user_project_role = "{{ user_info.user_role }}"</p>
         {% if user_info.user_role == "project_manager" %}
           <a href="{% url 'create_network' %}" class="btn-dashboard-action btn-create-network">
             <i class="fa-solid fa-network-wired action-icon"></i>Create Network
