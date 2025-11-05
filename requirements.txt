@@ -1,4 +1,8 @@
-Django==5.2.7
-openstacksdk==4.7.0
+asgiref==3.8.1
 black==25.9.0
+Django==5.2.7
+gunicorn==23.0.0
+openstacksdk==4.7.0
+psycopg2-binary==2.9.10
 python-terraform>=0.10.1
+sqlparse==0.5.2
