@@ -69,14 +69,12 @@ class OpenStackBuilders:
     ):
         try:
             # Connect directly with project scope
-            print("hola1")
             network = conn_token.network.create_network(
                 name=network_name,
                 project_id=project_id,
                 is_router_external=is_external,
                 admin_state_up=True,
             )
-            print("hola2")
 
             # Assign a default CIDR if none provided
             if not cidr:
