@@ -1,89 +1,170 @@
 {% extends "base.html" %}
 {% load static %}
 
-{% block title %}Join a project{% endblock %}
-{% block body_class %}page-dashboard{% endblock %}
+{% block title %}Join a Project{% endblock %}
+{% block body_class %}page-dashboard-new{% endblock %}
 
-{% block header %}{% endblock %}
-
-{% block content %}
-<div class="dashboard-main-container">
-
-    <div class="sidebar">
-      <h3 class="sidebar-title">
-        <img src="{% static 'images/rizusinfondo.png' %}" alt="Rizu Logo" class="sidebar-logo">
-        <span class="sidebar-brand-text">Rizu</span>
-      </h3>
-      <hr class="sidebar-divider">
-      <div class="sidebar-details">
-        <h4 class="sidebar-details-title">User Details</h4>
-        <p class="sidebar-detail-item"><strong>Username:</strong> {{ username|default:"Guest" }}</p>
-        {% if request.user.is_authenticated %}
-          <p class="sidebar-detail-item"><strong>Email:</strong> {{ request.user.email|default:"-" }}</p>
-          <p class="sidebar-detail-item"><strong>Role:</strong> {{ request.user.role|default:"-" }}</p>
-          <p class="sidebar-detail-item"><strong>Projects:</strong> {{ projects|length }}</p>
-        {% endif %}
-      </div>
-      <div class="sidebar-footer">
-        <a href="{% url 'front_page_index' %}"><button type="button" class="btn-signout">Back</button></a>
-        {% if request.user.is_authenticated %}
-          <form method="POST" action="{% url 'logout' %}">
-            {% csrf_token %}
-            <button type="submit" class="btn-signout">Sign out</button>
-          </form>
-        {% endif %}
-      </div>
-    </div>
-
-    <main class="dashboard-content">
-      <div class="jp-header-bar">
-        <div>
-          <h1> Join a project</h1>
-          <p class="text-muted m-0">Pick a project to browse its details.</p>
+{% block header %}
+<header class="rz-dashboard-header fixed-top">
+    <div class="container-fluid d-flex justify-content-between align-items-center h-100 px-3">
+        
+        <!-- Left Side: Logo + App Text -->
+        <div class="d-flex align-items-center">
+            <a href="{% url 'front_page_index' %}" class="d-flex align-items-center text-decoration-none me-4">
+                <img src="{% static 'images/rizusinfondo.png' %}" alt="Rizu Logo" style="height: 30px; width: auto;" class="me-2">
+                <span class="text-white fw-bold fs-5">Rizu</span>
+            </a>
         </div>
 
-        <form method="get" class="jp-form-inline-gap">
-          <div class="jp-search position-relative">
-            <span class="jp-search-icon"><i class="fa-solid fa-magnifying-glass"></i></span>
-            <input type="search" name="q" value="{{ request.GET.q }}" placeholder="Search projects..." class="jp-search-input" aria-label="Search projects">
-          </div>
-        </form>
-      </div>
+        <!-- Right Side: Actions + User -->
+        <div class="d-flex align-items-center gap-2">
+            
+            <!-- Back to Dashboard Button -->
+            <a href="{% url 'dashboard' %}" class="btn btn-sm btn-outline-light d-none d-md-flex align-items-center" title="Back to Dashboard">
+                <i class="fas fa-chart-line me-1"></i>
+                <span>Dashboard</span>
+            </a>
 
-      <section class="jp-grid" aria-live="polite">
-        {% if projects %}
-          {% for p in projects %}
-            <article class="jp-card">
-              <div class="jp-avatar" aria-hidden="true">{{ p.initials }}</div>
+            <!-- User Profile -->
+            <a href="{% url 'user_profile' %}" class="btn btn-sm btn-outline-light d-flex align-items-center" title="User Profile">
+                <i class="fas fa-user-circle me-1"></i>
+                <span>{{ request.user.username|default:"Guest" }}</span>
+            </a>
 
-              <div class="jp-body">
-                <h3 class="jp-name">{{ p.name }}</h3>
-                <p class="jp-desc">{{ p.description|default:"No description" }}</p>
-                <div class="jp-chips">
-                  <span class="jp-chip">Private Cloud</span>
-                  <span class="jp-badge jp-badge-available">Available</span>
+        </div>
+    </div>
+</header>
+{% endblock %}
+
+{% block content %}
+<div class="dashboard-wrapper">
+    <div class="rz-sidebar-nav-dark">
+        
+        <hr class="rz-sidebar-divider-dark">
+        
+        <div class="rz-user-role-box">
+            <i class="fas fa-user-tag me-2"></i>
+            User Details
+        </div>
+        
+        <hr class="rz-sidebar-divider-dark">
+
+        <ul class="rz-sidebar-menu">
+            <li class="rz-sidebar-heading">YOUR INFO</li>
+            <li class="rz-sidebar-link" style="cursor: default; background: transparent;">
+                <i class="fas fa-user me-2"></i>
+                <span style="font-size: 0.85rem;">{{ request.user.username|default:"Guest" }}</span>
+            </li>
+            {% if request.user.is_authenticated %}
+            <li class="rz-sidebar-link" style="cursor: default; background: transparent;">
+                <i class="fas fa-envelope me-2"></i>
+                <span style="font-size: 0.85rem;">{{ request.user.email|default:"-" }}</span>
+            </li>
+            <li class="rz-sidebar-link" style="cursor: default; background: transparent;">
+                <i class="fas fa-id-badge me-2"></i>
+                <span style="font-size: 0.85rem;">{{ request.user.role|default:"-" }}</span>
+            </li>
+            {% endif %}
+            
+            <li class="rz-sidebar-heading mt-3">NAVIGATION</li>
+            <li><a href="{% url 'front_page_index' %}" class="rz-sidebar-link"><i class="fas fa-home me-2"></i>Home</a></li>
+            <li><a href="{% url 'dashboard' %}" class="rz-sidebar-link"><i class="fas fa-chart-line me-2"></i>Dashboard</a></li>
+        </ul>
+
+        <div class="rz-sidebar-footer-dark">
+            {% if request.user.is_authenticated %}
+            <form method="POST" action="{% url 'logout' %}" class="mt-2">
+                {% csrf_token %}
+                <button type="submit" class="btn rz-btn-logout-dark w-100" aria-label="Sign out of Rizu">
+                    <i class="fas fa-sign-out-alt me-2"></i> Sign out
+                </button>
+            </form>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="rz-main-content-area">
+        <div class="container-fluid py-4">
+            
+            <!-- Page Header -->
+            <div class="rz-project-summary-card mb-4">
+                <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+                    <div>
+                        <h2 class="h3 fw-bold rz-text-black mb-2">
+                            <i class="fas fa-users rz-text-primary me-2"></i> Join a Project
+                        </h2>
+                        <p class="rz-text-muted mb-0">Browse available projects and join the ones you're interested in.</p>
+                    </div>
+                    
+                    <!-- Search Form -->
+                    <form method="get" class="d-flex">
+                        <div class="input-group" style="max-width: 300px;">
+                            <span class="input-group-text bg-white border-light">
+                                <i class="fa-solid fa-magnifying-glass text-muted"></i>
+                            </span>
+                            <input type="search" name="q" value="{{ request.GET.q }}" 
+                                   placeholder="Search projects..." 
+                                   class="form-control border-light" 
+                                   aria-label="Search projects">
+                        </div>
+                    </form>
                 </div>
-              </div>
+            </div>
 
-              <div class="jp-actions">
-                <a class="jp-btn" href="{% url 'project_detail' p.id %}">View</a>
-                {% if p.joined %}
-                  <button class="jp-btn" type="button" disabled>Join</button>
+            <!-- Projects Grid -->
+            <section class="jp-grid-modern" aria-live="polite">
+                {% if projects %}
+                  {% for p in projects %}
+                    <article class="rz-detail-card jp-project-card">
+                        <div class="jp-card-header">
+                            <div class="jp-avatar-modern" aria-hidden="true">{{ p.initials }}</div>
+                            <div class="flex-grow-1">
+                                <h3 class="jp-name-modern">{{ p.name }}</h3>
+                                <p class="jp-desc-modern">{{ p.description|default:"No description provided" }}</p>
+                            </div>
+                        </div>
+
+                        <div class="jp-card-body">
+                            <div class="jp-chips-modern">
+                                <span class="badge bg-primary bg-opacity-10 text-primary border-0">
+                                    <i class="fas fa-cloud me-1"></i>Private Cloud
+                                </span>
+                                <span class="badge bg-success bg-opacity-10 text-success border-0">
+                                    <i class="fas fa-check-circle me-1"></i>Available
+                                </span>
+                            </div>
+                        </div>
+
+                        <div class="jp-card-footer">
+                            <a class="btn btn-sm btn-outline-primary rz-btn-outline" href="{% url 'project_detail' p.id %}">
+                                <i class="fas fa-eye me-1"></i>View Details
+                            </a>
+                            {% if p.joined %}
+                                <button class="btn btn-sm btn-secondary" type="button" disabled>
+                                    <i class="fas fa-check me-1"></i>Joined
+                                </button>
+                            {% else %}
+                                <form method="post" style="display:inline;">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="project_name" value="{{ p.name }}">
+                                    <button class="btn btn-sm btn-primary rz-btn" type="submit">
+                                        <i class="fas fa-user-plus me-1"></i>Join Project
+                                    </button>
+                                </form>
+                            {% endif %}
+                        </div>
+                    </article>
+                  {% endfor %}
                 {% else %}
-                  <form method="post" style="display:inline;">
-                    {% csrf_token %}
-                    <input type="hidden" name="project_name" value="{{ p.name }}">
-                    <button class="jp-btn-primary" type="submit">Join</button>
-                  </form>
+                  <div class="rz-welcome-card text-center py-5">
+                      <i class="fas fa-inbox fa-3x text-muted mb-3" style="opacity: 0.3;"></i>
+                      <h4 class="text-muted">No projects found</h4>
+                      <p class="text-muted small mb-0">Try adjusting your search or check back later.</p>
+                  </div>
                 {% endif %}
-              </div>
-            </article>
-          {% endfor %}
-        {% else %}
-          <div class="jp-empty">No projects found.</div>
-        {% endif %}
-      </section>
+            </section>
 
-    </main>
-  </div>
+        </div>
+    </div>
+</div>
 {% endblock %}

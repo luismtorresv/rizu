@@ -2,64 +2,155 @@
 {% load static %}
 
 {% block title %}Run Terraform{% endblock %}
-{% block body_class %}page-create{% endblock %}
+{% block body_class %}page-dashboard-new{% endblock %}
 
-{% block header %}{% endblock %}
+{% block header %}
+<header class="rz-dashboard-header fixed-top">
+    <div class="container-fluid d-flex justify-content-between align-items-center h-100 px-3">
+        
+        <!-- Left Side: Logo + App Text -->
+        <div class="d-flex align-items-center">
+            <a href="{% url 'front_page_index' %}" class="d-flex align-items-center text-decoration-none me-4">
+                <img src="{% static 'images/rizusinfondo.png' %}" alt="Rizu Logo" style="height: 30px; width: auto;" class="me-2">
+                <span class="text-white fw-bold fs-5">Rizu</span>
+            </a>
+        </div>
 
-{% block content %}
+        <!-- Right Side: Actions + User -->
+        <div class="d-flex align-items-center gap-2">
+            
+            <!-- Back to Dashboard Button -->
+            <a href="{% url 'dashboard' %}" class="btn btn-sm btn-outline-light d-none d-md-flex align-items-center" title="Back to Dashboard">
+                <i class="fas fa-chart-line me-1"></i>
+                <span>Dashboard</span>
+            </a>
 
-    <div class="box-form">
-        <div class="container-form">
-
-            <!-- Header -->
-            <div class="header-bar_vm">
-                <h2 class="main-title_vm">Run your<br> Terraform code</h2>
-                <div class="logo-section">
-                    <img src="{% static 'images/rizusinfondo.png' %}" alt="Rizu Logo" class="logo-img">
-                    <span class="logo-text">Rizu</span>
-                </div>
-            </div>
-
-            <!-- Main Form -->
-            <form id="terraform-form" method="POST">
-                {% csrf_token %}
-
-                <div class="form-section">
-                    <h3 class="form-section__title">
-                        <i class="fa-solid fa-terminal fa-icon"></i> Terraform Code
-                    </h3>
-
-                    <div class="form-group mb-3">
-                        <label for="terraform_code" class="form-label">main.tf File</label>
-                        <textarea
-                            id="terraform_code"
-                            name="terraform_code"
-                            class="form-control form-control-sm"
-                            rows="12"
-                            placeholder="Write or paste your Terraform code here..."
-                            required></textarea>
-                    </div>
-                </div>
-
-                <!-- Buttons -->
-                <div class="d-flex justify-content-between align-items-center mt-3">
-                    <a href="#" class="btn btn-return-dash">Cancel</a>
-                    <button type="submit" class="btn btn-create-project">
-                        <i class="fa-solid fa-play me-2"></i>Run Terraform
-                    </button>
-                </div>
-            </form>
-
-            <!-- Results -->
-            {% if output %}
-            <div class="mt-5">
-                <h4 class="form-section__title">
-                    <i class="fa-solid fa-circle-info fa-icon"></i> Execution Result
-                </h4>
-                <pre class="mt-3 bg-light p-3 border rounded" style="white-space: pre-wrap;">{{ output }}</pre>
-            </div>
-            {% endif %}
+            <!-- User Profile -->
+            <a href="{% url 'user_profile' %}" class="btn btn-sm btn-outline-light d-flex align-items-center" title="User Profile">
+                <i class="fas fa-user-circle me-1"></i>
+                <span>{{ request.user.username|default:"Guest" }}</span>
+            </a>
 
         </div>
     </div>
+</header>
+{% endblock %}
+
+{% block content %}
+<div class="dashboard-wrapper">
+    <div class="rz-sidebar-nav-dark">
+        
+        <hr class="rz-sidebar-divider-dark">
+        
+        <div class="tf-sidebar-info">
+            <div class="tf-icon-wrapper">
+                <i class="fas fa-code-branch"></i>
+            </div>
+            <h5 class="tf-sidebar-title">Terraform</h5>
+            <p class="tf-sidebar-subtitle">Infrastructure as Code</p>
+        </div>
+        
+        <hr class="rz-sidebar-divider-dark">
+
+        <ul class="rz-sidebar-menu">
+            <li class="rz-sidebar-heading">QUICK ACTIONS</li>
+            <li><a href="{% url 'dashboard' %}" class="rz-sidebar-link"><i class="fas fa-chart-line me-2"></i>Dashboard</a></li>
+            <li><a href="{% url 'terraform' %}" class="rz-sidebar-link active" aria-current="page"><i class="fas fa-code-branch me-2"></i>Terraform</a></li>
+        </ul>
+
+        <div class="rz-sidebar-footer-dark">
+            <form method="POST" action="{% url 'logout' %}">
+                {% csrf_token %}
+                <button type="submit" class="btn rz-btn-logout-dark w-100" aria-label="Sign out of Rizu">
+                    <i class="fas fa-sign-out-alt me-2"></i> Sign out
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <div class="rz-main-content-area">
+        <div class="container-fluid py-4">
+
+            <!-- Terraform Form -->
+            <div class="row justify-content-center">
+                <div class="col-xl-10 col-lg-11">
+                    <div class="tf-form-card rz-detail-card">
+                        
+                        <!-- Form Header -->
+                        <div class="tf-form-header">
+                            <div>
+                                <h2 class="tf-form-title">Run Terraform Code</h2>
+                                <p class="tf-form-subtitle">Deploy your infrastructure as code</p>
+                            </div>
+                        </div>
+
+                        <form id="terraform-form" method="POST">
+                            {% csrf_token %}
+
+                            <!-- Code Section -->
+                            <div class="tf-section">
+                                <div class="tf-section-header">
+                                    <div class="tf-section-icon">
+                                        <i class="fa-solid fa-terminal"></i>
+                                    </div>
+                                    <h4 class="tf-section-title">Terraform Configuration</h4>
+                                </div>
+                                
+                                <div>
+                                    <label for="terraform_code" class="form-label tf-label">
+                                        <i class="fas fa-file-code me-2"></i>main.tf File
+                                        <span class="text-danger">*</span>
+                                    </label>
+                                    <textarea
+                                        id="terraform_code"
+                                        name="terraform_code"
+                                        class="form-control tf-textarea"
+                                        rows="16"
+                                        placeholder="# Write or paste your Terraform code here...
+# Example:
+# resource &quot;aws_instance&quot; &quot;example&quot; {
+#   ami           = &quot;ami-0c55b159cbfafe1f0&quot;
+#   instance_type = &quot;t2.micro&quot;
+# }"
+                                        required></textarea>
+                                    <small class="tf-help-text">
+                                        <i class="fas fa-info-circle me-1"></i>
+                                        Write your Terraform configuration code. This will be executed in your infrastructure.
+                                    </small>
+                                </div>
+                            </div>
+
+                            <!-- Action Buttons -->
+                            <div class="tf-form-actions">
+                                <a href="{% url 'dashboard' %}" class="btn btn-outline-secondary tf-btn-cancel">
+                                    <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
+                                </a>
+                                <button type="submit" class="btn btn-primary rz-btn tf-btn-submit">
+                                    <i class="fa-solid fa-play me-2"></i>Run Terraform
+                                </button>
+                            </div>
+
+                        </form>
+                    </div>
+
+                    <!-- Results Section -->
+                    {% if output %}
+                    <div class="tf-results-card rz-detail-card mt-4">
+                        <div class="tf-results-header">
+                            <div class="tf-results-icon">
+                                <i class="fas fa-circle-info"></i>
+                            </div>
+                            <h4 class="tf-results-title">Execution Result</h4>
+                        </div>
+                        <div class="tf-output-wrapper">
+                            <pre class="tf-output">{{ output }}</pre>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
 {% endblock %}

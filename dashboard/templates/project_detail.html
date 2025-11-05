@@ -2,89 +2,197 @@
 {% load static %}
 
 {% block title %}{{ project.name }} • Details{% endblock %}
-{% block body_class %}page-dashboard{% endblock %}
+{% block body_class %}page-dashboard-new{% endblock %}
 
-{% block header %}{% endblock %}
+{% block header %}
+<header class="rz-dashboard-header fixed-top">
+    <div class="container-fluid d-flex justify-content-between align-items-center h-100 px-3">
+        
+        <!-- Left Side: Logo + App Text -->
+        <div class="d-flex align-items-center">
+            <a href="{% url 'front_page_index' %}" class="d-flex align-items-center text-decoration-none me-4">
+                <img src="{% static 'images/rizusinfondo.png' %}" alt="Rizu Logo" style="height: 30px; width: auto;" class="me-2">
+                <span class="text-white fw-bold fs-5">Rizu</span>
+            </a>
+        </div>
+
+        <!-- Right Side: Actions + User -->
+        <div class="d-flex align-items-center gap-2">
+            
+            <!-- Back to Dashboard Button -->
+            <a href="{% url 'dashboard' %}" class="btn btn-sm btn-outline-light d-none d-md-flex align-items-center" title="Back to Dashboard">
+                <i class="fas fa-chart-line me-1"></i>
+                <span>Dashboard</span>
+            </a>
+
+            <!-- User Profile -->
+            <a href="{% url 'user_profile' %}" class="btn btn-sm btn-outline-light d-flex align-items-center" title="User Profile">
+                <i class="fas fa-user-circle me-1"></i>
+                <span>{{ request.user.username|default:"Guest" }}</span>
+            </a>
+
+        </div>
+    </div>
+</header>
+{% endblock %}
 
 {% block content %}
-<div class="dashboard-main-container">
-    <div class="sidebar">
-      <h3 class="sidebar-title">
-        <img src="{% static 'images/rizusinfondo.png' %}" alt="Rizu Logo" class="sidebar-logo">
-        <span class="sidebar-brand-text">Rizu</span>
-      </h3>
-      <hr class="sidebar-divider">
-      <div class="sidebar-details">
-        <h4 class="sidebar-details-title">Project</h4>
-        <p class="sidebar-detail-item"><strong>ID:</strong> {{ project.id }}</p>
-        <p class="sidebar-detail-item"><strong>Name:</strong> {{ project.name }}</p>
-      </div>
-      <div class="sidebar-footer">
-        <button type="button" class="btn-signout">Sign out</button>
-      </div>
+<div class="dashboard-wrapper">
+    <div class="rz-sidebar-nav-dark">
+        
+        <hr class="rz-sidebar-divider-dark">
+        
+        <div class="pd-sidebar-info">
+            <div class="pd-icon-wrapper">
+                <i class="fas fa-diagram-project"></i>
+            </div>
+            <h5 class="pd-sidebar-title">{{ project.name }}</h5>
+            <p class="pd-sidebar-subtitle">Project Details</p>
+            <div class="pd-sidebar-meta">
+                <p class="pd-meta-item">
+                    <span class="pd-meta-label"><i class="fas fa-hashtag"></i> ID:</span>
+                    <span class="pd-meta-value">{{ project.id }}</span>
+                </p>
+            </div>
+        </div>
+        
+        <hr class="rz-sidebar-divider-dark">
+
+        <ul class="rz-sidebar-menu">
+            <li class="rz-sidebar-heading">QUICK ACTIONS</li>
+            <li><a href="{% url 'dashboard' %}" class="rz-sidebar-link"><i class="fas fa-chart-line me-2"></i>Dashboard</a></li>
+            <li><a href="{% url 'join_projects' %}" class="rz-sidebar-link"><i class="fas fa-folder-open me-2"></i>Projects</a></li>
+        </ul>
+
+        <div class="rz-sidebar-footer-dark">
+            <form method="POST" action="{% url 'logout' %}">
+                {% csrf_token %}
+                <button type="submit" class="btn rz-btn-logout-dark w-100" aria-label="Sign out of Rizu">
+                    <i class="fas fa-sign-out-alt me-2"></i> Sign out
+                </button>
+            </form>
+        </div>
     </div>
 
-    <main class="dashboard-content">
-      <div class="dashboard-header">
-        <h1>{{ project.name }}</h1>
-        <a class="btn-dashboard-action btn-create-project" href="{% url 'join_projects' %}">&larr; Back to projects</a>
-      </div>
+    <div class="rz-main-content-area">
+        <div class="container-fluid py-4">
 
-      {% if project.description %}
-        <div class="alert alert-info">{{ project.description }}</div>
-      {% endif %}
+            <!-- Page Header -->
+            <div class="pd-page-header mb-4">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="pd-header-icon">
+                        <i class="fas fa-diagram-project"></i>
+                    </div>
+                    <div>
+                        <h2 class="pd-page-title">{{ project.name }}</h2>
+                        <p class="pd-page-subtitle">{{ project.description|default:"Project resources overview" }}</p>
+                    </div>
+                </div>
+                <a href="{% url 'join_projects' %}" class="btn btn-outline-secondary">
+                    <i class="fas fa-arrow-left me-2"></i>Back to Projects
+                </a>
+            </div>
 
-      <div class="project-card">
-        <div class="project-card-header">
-          <h4 class="project-card-title">
-            <i class="fa-solid fa-diagram-project project-icon"></i>
-            Resources
-          </h4>
+            {% if False %}
+            <div class="alert alert-info pd-alert-info mb-4">
+                <i class="fas fa-info-circle me-2"></i>{{ project.description }}
+            </div>
+            {% endif %}
+
+            <!-- Resources Card -->
+            <div class="row">
+                <div class="col-12">
+                    <div class="pd-resources-card rz-detail-card">
+                        
+
+                        <div class="pd-card-body">
+                            
+                            <!-- Instances Section -->
+                            <div class="pd-resource-section">
+                                <h5 class="pd-resource-section-title">
+                                    <div class="pd-resource-icon pd-icon-instances">
+                                        <i class="fa-solid fa-server"></i>
+                                    </div>
+                                    <span>Virtual Machines</span>
+                                </h5>
+                                <ul class="pd-resource-list">
+                                    {% for vm in resources.instances %}
+                                    <li class="pd-resource-item">
+                                        <div class="pd-resource-info">
+                                            <i class="fas fa-server pd-item-icon"></i>
+                                            <span class="pd-resource-name">{{ vm.name|default:vm.id }}</span>
+                                        </div>
+                                        <span class="pd-status-badge pd-status-{{ vm.status|lower }}">
+                                            {{ vm.status|default:"N/A" }}
+                                        </span>
+                                    </li>
+                                    {% empty %}
+                                    <li class="pd-resource-item-empty">
+                                        <i class="fas fa-inbox"></i>
+                                        <span>No instances found</span>
+                                    </li>
+                                    {% endfor %}
+                                </ul>
+                            </div>
+
+                            <!-- Routers Section -->
+                            <div class="pd-resource-section">
+                                <h5 class="pd-resource-section-title">
+                                    <div class="pd-resource-icon pd-icon-routers">
+                                        <i class="fa-solid fa-route"></i>
+                                    </div>
+                                    <span>Routers</span>
+                                </h5>
+                                <ul class="pd-resource-list">
+                                    {% for r in resources.routers %}
+                                    <li class="pd-resource-item">
+                                        <div class="pd-resource-info">
+                                            <i class="fas fa-route pd-item-icon"></i>
+                                            <span class="pd-resource-name">{{ r.name|default:r.id }}</span>
+                                        </div>
+                                        <span class="pd-resource-id">ID: {{ r.id|slice:":8" }}...</span>
+                                    </li>
+                                    {% empty %}
+                                    <li class="pd-resource-item-empty">
+                                        <i class="fas fa-inbox"></i>
+                                        <span>No routers found</span>
+                                    </li>
+                                    {% endfor %}
+                                </ul>
+                            </div>
+
+                            <!-- Networks Section -->
+                            <div class="pd-resource-section">
+                                <h5 class="pd-resource-section-title">
+                                    <div class="pd-resource-icon pd-icon-networks">
+                                        <i class="fa-solid fa-network-wired"></i>
+                                    </div>
+                                    <span>Networks</span>
+                                </h5>
+                                <ul class="pd-resource-list">
+                                    {% for n in resources.networks %}
+                                    <li class="pd-resource-item">
+                                        <div class="pd-resource-info">
+                                            <i class="fas fa-network-wired pd-item-icon"></i>
+                                            <span class="pd-resource-name">{{ n.name|default:n.id }}</span>
+                                        </div>
+                                        <span class="pd-resource-id">ID: {{ n.id|slice:":8" }}...</span>
+                                    </li>
+                                    {% empty %}
+                                    <li class="pd-resource-item-empty">
+                                        <i class="fas fa-inbox"></i>
+                                        <span>No networks found</span>
+                                    </li>
+                                    {% endfor %}
+                                </ul>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+
         </div>
-        <div class="project-card-body">
-          <h5 class="resource-section-title">
-            <i class="fa-solid fa-server resource-icon resource-icon-instances"></i>Instances
-          </h5>
-          <ul class="resource-list">
-            {% for vm in resources.instances %}
-              <li class="resource-item">
-                <span>{{ vm.name|default:vm.id }}</span>
-                <span class="resource-status-badge">{{ vm.status|default:"N/A" }}</span>
-              </li>
-            {% empty %}
-              <li class="resource-item-empty">No instances found</li>
-            {% endfor %}
-          </ul>
-
-          <h5 class="resource-section-title">
-            <i class="fa-solid fa-route resource-icon resource-icon-routers"></i>Routers
-          </h5>
-          <ul class="resource-list">
-            {% for r in resources.routers %}
-              <li class="resource-item">
-                <span>{{ r.name|default:r.id }}</span>
-                <span class="resource-id">ID: {{ r.id }}</span>
-              </li>
-            {% empty %}
-              <li class="resource-item-empty">No routers found</li>
-            {% endfor %}
-          </ul>
-
-          <h5 class="resource-section-title">
-            <i class="fa-solid fa-network-wired resource-icon resource-icon-networks"></i>Networks
-          </h5>
-          <ul class="resource-list">
-            {% for n in resources.networks %}
-              <li class="resource-item">
-                <span>{{ n.name|default:n.id }}</span>
-                <span class="resource-id">ID: {{ n.id }}</span>
-              </li>
-            {% empty %}
-              <li class="resource-item-empty">No networks found</li>
-            {% endfor %}
-          </ul>
-        </div>
-      </div>
-    </main>
-  </div>
+    </div>
+</div>
 {% endblock %}

@@ -2,58 +2,152 @@
 {% load static %}
 
 {% block title %}Create Router{% endblock %}
-{% block body_class %}{% endblock %}
-{% block header %}{% endblock %}
+{% block body_class %}page-dashboard-new{% endblock %}
+
+{% block header %}
+<header class="rz-dashboard-header fixed-top">
+    <div class="container-fluid d-flex justify-content-between align-items-center h-100 px-3">
+        
+        <!-- Left Side: Logo + App Text -->
+        <div class="d-flex align-items-center">
+            <a href="{% url 'front_page_index' %}" class="d-flex align-items-center text-decoration-none me-4">
+                <img src="{% static 'images/rizusinfondo.png' %}" alt="Rizu Logo" style="height: 30px; width: auto;" class="me-2">
+                <span class="text-white fw-bold fs-5">Rizu</span>
+            </a>
+        </div>
+
+        <!-- Right Side: Actions + User -->
+        <div class="d-flex align-items-center gap-2">
+            
+            <!-- Back to Dashboard Button -->
+            <a href="{% url 'dashboard' %}" class="btn btn-sm btn-outline-light d-none d-md-flex align-items-center" title="Back to Dashboard">
+                <i class="fas fa-chart-line me-1"></i>
+                <span>Dashboard</span>
+            </a>
+
+            <!-- User Profile -->
+            <a href="{% url 'user_profile' %}" class="btn btn-sm btn-outline-light d-flex align-items-center" title="User Profile">
+                <i class="fas fa-user-circle me-1"></i>
+                <span>{{ request.user.username|default:"Guest" }}</span>
+            </a>
+
+        </div>
+    </div>
+</header>
+{% endblock %}
 
 {% block content %}
-<div class="container py-5">
-  <h1 class="mb-4">Create Router</h1>
-
-  <form method="post">
-    {% csrf_token %}
-
-    <!-- Router name -->
-    <div class="mb-3">
-      <label for="router_name" class="form-label">Router Name</label>
-      <input
-        type="text"
-        id="router_name"
-        name="router_name"
-        class="form-control"
-        placeholder="Enter router name"
-        required
-      >
-    </div>
-
-    <!-- External network -->
-    <div class="mb-3">
-      <label for="external_network_name" class="form-label">
-        External Network (optional)
-      </label>
-
-      {% if external_networks %}
-        <select
-          id="external_network_name"
-          name="external_network_name"
-          class="form-select"
-        >
-          <option value="">-- Select External Network --</option>
-          {% for net in external_networks %}
-            <option value="{{ net.name }}">{{ net.name }}</option>
-          {% endfor %}
-        </select>
-      {% else %}
-        <div class="alert alert-warning" role="alert">
-          No external networks available for selection.
+<div class="dashboard-wrapper">
+    <div class="rz-sidebar-nav-dark">
+        
+        <hr class="rz-sidebar-divider-dark">
+        
+        <div class="rtr-sidebar-info">
+            <div class="rtr-icon-wrapper">
+                <i class="fas fa-route"></i>
+            </div>
+            <h5 class="rtr-sidebar-title">New Router</h5>
+            <p class="rtr-sidebar-subtitle">Configure your network router</p>
         </div>
-      {% endif %}
+        
+        <hr class="rz-sidebar-divider-dark">
+
+        <ul class="rz-sidebar-menu">
+            <li class="rz-sidebar-heading">QUICK ACTIONS</li>
+            <li><a href="{% url 'dashboard' %}" class="rz-sidebar-link"><i class="fas fa-chart-line me-2"></i>Dashboard</a></li>
+            <li><a href="{% url 'create_router' %}" class="rz-sidebar-link active" aria-current="page"><i class="fas fa-plus-circle me-2"></i>Create Router</a></li>
+        </ul>
+
+        <div class="rz-sidebar-footer-dark">
+            <form method="POST" action="{% url 'logout' %}">
+                {% csrf_token %}
+                <button type="submit" class="btn rz-btn-logout-dark w-100" aria-label="Sign out of Rizu">
+                    <i class="fas fa-sign-out-alt me-2"></i> Sign out
+                </button>
+            </form>
+        </div>
     </div>
 
-    <!-- Buttons -->
-    <div class="d-flex gap-2">
-      <button type="submit" class="btn btn-primary">Create</button>
-      <a href="{% url 'dashboard' %}" class="btn btn-secondary">Cancel</a>
+    <div class="rz-main-content-area">
+        <div class="container-fluid py-4">
+
+            <!-- Router Form -->
+            <div class="row justify-content-center">
+                <div class="col-xl-8 col-lg-9">
+                    <div class="rtr-form-card rz-detail-card">
+                        
+                        <!-- Form Header -->
+                        <div class="rtr-form-header">
+                            <div>
+                                <h2 class="rtr-form-title">Create Router</h2>
+                                <p class="rtr-form-subtitle">Configure your network routing</p>
+                            </div>
+                        </div>
+
+                        <form id="rtr-form" method="POST">
+                            {% csrf_token %}
+
+                            <!-- General Section -->
+                            <div class="rtr-section">
+                                <div class="rtr-section-header">
+                                    <div class="rtr-section-icon">
+                                        <i class="fa-solid fa-route"></i>
+                                    </div>
+                                    <h4 class="rtr-section-title">Router Configuration</h4>
+                                </div>
+                                
+                                <div>
+                                    <label for="router_name" class="form-label rtr-label">
+                                        <i class="fas fa-tag me-2"></i>Router Name
+                                        <span class="text-danger">*</span>
+                                    </label>
+                                    <input type="text" 
+                                           name="router_name" 
+                                           id="router_name" 
+                                           class="form-control rtr-input" 
+                                           placeholder="Enter router name"
+                                           required>
+                                </div>
+
+                                <div class="mt-3">
+                                    <label for="external_network_name" class="form-label rtr-label">
+                                        <i class="fas fa-globe me-2"></i>External Network (Optional)
+                                    </label>
+                                    
+                                    {% if external_networks %}
+                                        <select name="external_network_name" 
+                                                id="external_network_name" 
+                                                class="form-select rtr-input">
+                                            <option value="">-- Select External Network --</option>
+                                            {% for net in external_networks %}
+                                                <option value="{{ net.name }}">{{ net.name }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    {% else %}
+                                        <div class="alert alert-warning mt-2" role="alert">
+                                            <i class="fas fa-exclamation-triangle me-2"></i>
+                                            No external networks available for selection.
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+
+                            <!-- Action Buttons -->
+                            <div class="rtr-form-actions">
+                                <a href="{% url 'dashboard' %}" class="btn btn-outline-secondary rtr-btn-cancel">
+                                    <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
+                                </a>
+                                <button type="submit" class="btn btn-primary rz-btn rtr-btn-submit">
+                                    <i class="fa-solid fa-plus-circle me-2"></i>Create Router
+                                </button>
+                            </div>
+
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+        </div>
     </div>
-  </form>
 </div>
 {% endblock %}

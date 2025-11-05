@@ -2,41 +2,168 @@
 {% load static %}
 
 {% block title %}Create Network{% endblock %}
-{% block body_class %}{% endblock %}
+{% block body_class %}page-dashboard-new{% endblock %}
 
-{% block header %}{% endblock %}
+{% block header %}
+<header class="rz-dashboard-header fixed-top">
+    <div class="container-fluid d-flex justify-content-between align-items-center h-100 px-3">
+        
+        <!-- Left Side: Logo + App Text -->
+        <div class="d-flex align-items-center">
+            <a href="{% url 'front_page_index' %}" class="d-flex align-items-center text-decoration-none me-4">
+                <img src="{% static 'images/rizusinfondo.png' %}" alt="Rizu Logo" style="height: 30px; width: auto;" class="me-2">
+                <span class="text-white fw-bold fs-5">Rizu</span>
+            </a>
+        </div>
+
+        <!-- Right Side: Actions + User -->
+        <div class="d-flex align-items-center gap-2">
+            
+            <!-- Back to Dashboard Button -->
+            <a href="{% url 'dashboard' %}" class="btn btn-sm btn-outline-light d-none d-md-flex align-items-center" title="Back to Dashboard">
+                <i class="fas fa-chart-line me-1"></i>
+                <span>Dashboard</span>
+            </a>
+
+            <!-- User Profile -->
+            <a href="{% url 'user_profile' %}" class="btn btn-sm btn-outline-light d-flex align-items-center" title="User Profile">
+                <i class="fas fa-user-circle me-1"></i>
+                <span>{{ request.user.username|default:"Guest" }}</span>
+            </a>
+
+        </div>
+    </div>
+</header>
+{% endblock %}
 
 {% block content %}
-<div class="container py-5">
-  <h1>Create Network</h1>
-  <form method="post">
-    {% csrf_token %}
+<div class="dashboard-wrapper">
+    <div class="rz-sidebar-nav-dark">
+        
+        <hr class="rz-sidebar-divider-dark">
+        
+        <div class="net-sidebar-info">
+            <div class="net-icon-wrapper">
+                <i class="fas fa-network-wired"></i>
+            </div>
+            <h5 class="net-sidebar-title">New Network</h5>
+            <p class="net-sidebar-subtitle">Configure your network infrastructure</p>
+        </div>
+        
+        <hr class="rz-sidebar-divider-dark">
 
-    <div class="mb-3">
-      <label for="network_name" class="form-label">Network Name</label>
-      <input type="text" id="network_name" name="network_name" class="form-control" required>
+        <ul class="rz-sidebar-menu">
+            <li class="rz-sidebar-heading">QUICK ACTIONS</li>
+            <li><a href="{% url 'dashboard' %}" class="rz-sidebar-link"><i class="fas fa-chart-line me-2"></i>Dashboard</a></li>
+            <li><a href="{% url 'create_network' %}" class="rz-sidebar-link active" aria-current="page"><i class="fas fa-plus-circle me-2"></i>Create Network</a></li>
+        </ul>
+
+        <div class="rz-sidebar-footer-dark">
+            <form method="POST" action="{% url 'logout' %}">
+                {% csrf_token %}
+                <button type="submit" class="btn rz-btn-logout-dark w-100" aria-label="Sign out of Rizu">
+                    <i class="fas fa-sign-out-alt me-2"></i> Sign out
+                </button>
+            </form>
+        </div>
     </div>
 
-    <div class="mb-3">
-      <label for="cidr" class="form-label">CIDR (optional)</label>
-      <input type="text" id="cidr" name="cidr" class="form-control" placeholder="e.g. 10.0.0.0/24">
-    </div>
+    <div class="rz-main-content-area">
+        <div class="container-fluid py-4">
 
-    <div class="mb-3">
-      <label for="gateway_ip" class="form-label">Gateway IP (optional)</label>
-      <input type="text" id="gateway_ip" name="gateway_ip" class="form-control" placeholder="Leave empty for default">
-    </div>
-    <!-- hidden default (always sent first) -->
-    <input type="hidden" name="is_external" value="false">
+            <!-- Network Form -->
+            <div class="row justify-content-center">
+                <div class="col-xl-8 col-lg-9">
+                    <div class="net-form-card rz-detail-card">
+                        
+                        <!-- Form Header -->
+                        <div class="net-form-header">
+                            <div>
+                                <h2 class="net-form-title">Create Network</h2>
+                                <p class="net-form-subtitle">Configure your network infrastructure</p>
+                            </div>
+                        </div>
 
-    <!-- checkbox overrides hidden if checked -->
-    <div class="form-check mb-3">
-      <input class="form-check-input" type="checkbox" id="is_external" name="is_external" value="true">
-      <label class="form-check-label" for="is_external">External Network</label>
-    </div>
+                        <form id="net-form" method="POST">
+                            {% csrf_token %}
 
-    <button type="submit" class="btn btn-primary">Create</button>
-    <a href="{% url 'dashboard' %}" class="btn btn-secondary">Cancel</a>
-  </form>
+                            <!-- General Section -->
+                            <div class="net-section">
+                                <div class="net-section-header">
+                                    <div class="net-section-icon">
+                                        <i class="fa-solid fa-network-wired"></i>
+                                    </div>
+                                    <h4 class="net-section-title">Network Configuration</h4>
+                                </div>
+                                
+                                <div>
+                                    <label for="network_name" class="form-label net-label">
+                                        <i class="fas fa-tag me-2"></i>Network Name
+                                        <span class="text-danger">*</span>
+                                    </label>
+                                    <input type="text" 
+                                           name="network_name" 
+                                           id="network_name" 
+                                           class="form-control net-input" 
+                                           placeholder="e.g., private-network-01"
+                                           required>
+                                </div>
+
+                                <div class="row g-3 mt-2">
+                                    <div class="col-md-6">
+                                        <label for="cidr" class="form-label net-label">
+                                            <i class="fas fa-project-diagram me-2"></i>CIDR (Optional)
+                                        </label>
+                                        <input type="text" 
+                                               name="cidr" 
+                                               id="cidr" 
+                                               class="form-control net-input" 
+                                               placeholder="e.g. 10.0.0.0/24">
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <label for="gateway_ip" class="form-label net-label">
+                                            <i class="fas fa-route me-2"></i>Gateway IP (Optional)
+                                        </label>
+                                        <input type="text" 
+                                               name="gateway_ip" 
+                                               id="gateway_ip" 
+                                               class="form-control net-input" 
+                                               placeholder="Leave empty for default">
+                                    </div>
+                                </div>
+
+                                <div class="mt-3">
+                                    <input type="hidden" name="is_external" value="false">
+                                    <div class="form-check">
+                                        <input class="form-check-input net-checkbox" 
+                                               type="checkbox" 
+                                               id="is_external" 
+                                               name="is_external" 
+                                               value="true">
+                                        <label class="form-check-label net-label" for="is_external">
+                                            <i class="fas fa-globe me-2"></i>External Network
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Action Buttons -->
+                            <div class="net-form-actions">
+                                <a href="{% url 'dashboard' %}" class="btn btn-outline-secondary net-btn-cancel">
+                                    <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
+                                </a>
+                                <button type="submit" class="btn btn-primary rz-btn net-btn-submit">
+                                    <i class="fa-solid fa-plus-circle me-2"></i>Create Network
+                                </button>
+                            </div>
+
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
 </div>
 {% endblock %}
