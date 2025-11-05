@@ -15,16 +15,16 @@ def _format_instance_ips(addresses_dict):
     """
     if not addresses_dict or not isinstance(addresses_dict, dict):
         return "N/A"
-    
+
     ips = []
     for network_name, address_list in addresses_dict.items():
         if isinstance(address_list, list):
             for addr_info in address_list:
-                if isinstance(addr_info, dict) and 'addr' in addr_info:
-                    ip = addr_info['addr']
-                    ip_type = addr_info.get('OS-EXT-IPS:type', 'unknown')
+                if isinstance(addr_info, dict) and "addr" in addr_info:
+                    ip = addr_info["addr"]
+                    ip_type = addr_info.get("OS-EXT-IPS:type", "unknown")
                     ips.append(f"{ip} ({ip_type})")
-    
+
     return ", ".join(ips) if ips else "N/A"
 
 
@@ -96,7 +96,7 @@ def dashboard(request):
             instances_raw = [vm.to_dict() for vm in project_conn.compute.servers()]
             # Format IP addresses for better display
             for instance in instances_raw:
-                instance['addresses'] = _format_instance_ips(instance.get('addresses'))
+                instance["addresses"] = _format_instance_ips(instance.get("addresses"))
             resources["instances"] = instances_raw
         except Exception as e:
             print(f"Error listing instances: {e}")
