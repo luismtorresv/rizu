@@ -31,7 +31,6 @@ def _format_instance_ips(addresses_dict):
 def dashboard(request):
     project_id = request.GET.get("project_id")
     user = request.user
-    print(user.openstack_password)
 
     # Admin/system connection (has full visibility
     try:
