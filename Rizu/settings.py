@@ -27,8 +27,11 @@ SECRET_KEY = "django-insecure-29g^lowne!on%rdw&&uzxz3=99f$&#_4qdb4qddhtg_(rqw0je
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["*"]
-
+ALLOWED_HOSTS = ["localhost", "rizu.dis.eafit.edu.co"]
+CSRF_TRUSTED_ORIGINS = ["https://rizu.dis.eafit.edu.co"]
+CSRF_ALLOWED_ORIGINS = ["https://rizu.dis.eafit.edu.co"]
+CORS_ORIGINS_WHITELIST = ["https://rizu.dis.eafit.edu.co"]
+CORS_ALLOWED_ORIGINS = ["https://rizu.dis.eafit.edu.co"]
 
 # Application definition
 
