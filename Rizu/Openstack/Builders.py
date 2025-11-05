@@ -231,3 +231,65 @@ class OpenStackBuilders:
         except Exception as e:
             print(f"Failed to create VM {vm_name}: {e}")
             return None
+
+    @staticmethod
+    def create_openstack_volume(
+        conn_token, volume_name, size_gb, vm_id=None, description=None
+    ):
+        """
+        Create a Cinder volume and optionally attach it to a VM.
+
+        Args:
+            conn_token: OpenStack connection object
+            volume_name: Name for the new volume
+            size_gb: Size of the volume in GB
+            vm_id: Optional VM ID to attach the volume to
+            description: Optional description for the volume
+
+        Returns:
+            volume object if successful, None otherwise
+        """
+        try:
+            # Create the volume
+            volume = conn_token.block_storage.create_volume(
+                name=volume_name,
+                size=size_gb,
+                description=description or f"Block storage volume - {volume_name}",
+            )
+
+            # Wait for volume to become available
+            volume = conn_token.block_storage.wait_for_status(
+                volume, status="available", wait=120  # Wait up to 2 minutes
+            )
+
+            print(f"Created volume {volume_name} with ID {volume.id}")
+
+            # If VM ID is provided, attach the volume
+            if vm_id:
+                try:
+                    # Get the VM to ensure it exists and is active
+                    vm = conn_token.compute.get_server(vm_id)
+                    if not vm:
+                        raise ValueError(f"VM with ID {vm_id} not found")
+
+                    if vm.status != "ACTIVE":
+                        print(
+                            f"Warning: VM {vm.name} is not ACTIVE (status: {vm.status})"
+                        )
+
+                    # Attach the volume to the VM
+                    attachment = conn_token.compute.create_volume_attachment(
+                        server=vm, volume_id=volume.id
+                    )
+
+                    print(f"Attached volume {volume_name} to VM {vm.name}")
+
+                except Exception as attach_error:
+                    print(f"Volume created but failed to attach to VM: {attach_error}")
+                    # Return the volume even if attachment fails
+
+            return volume
+
+        except Exception as e:
+            print(f"Failed to create volume {volume_name}: {e}")
+            return None

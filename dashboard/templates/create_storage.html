@@ -1,0 +1,204 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Create Storage{% endblock %}
+{% block body_class %}page-dashboard-new{% endblock %}
+
+{% block header %}
+<header class="rz-dashboard-header fixed-top">
+    <div class="container-fluid d-flex justify-content-between align-items-center h-100 px-3">
+        
+        <!-- Left Side: Logo + App Text -->
+        <div class="d-flex align-items-center">
+            <a href="{% url 'front_page_index' %}" class="d-flex align-items-center text-decoration-none me-4">
+                <img src="{% static 'images/rizusinfondo.png' %}" alt="Rizu Logo" style="height: 30px; width: auto;" class="me-2">
+                <span class="text-white fw-bold fs-5">Rizu</span>
+            </a>
+        </div>
+
+        <!-- Right Side: Actions + User -->
+        <div class="d-flex align-items-center gap-2">
+            
+            <!-- Back to Dashboard Button -->
+            <a href="{% url 'dashboard' %}" class="btn btn-sm btn-outline-light d-none d-md-flex align-items-center" title="Back to Dashboard">
+                <i class="fas fa-chart-line me-1"></i>
+                <span>Dashboard</span>
+            </a>
+
+            <!-- User Profile -->
+            <a href="{% url 'user_profile' %}" class="btn btn-sm btn-outline-light d-flex align-items-center" title="User Profile">
+                <i class="fas fa-user-circle me-1"></i>
+                <span>{{ request.user.username|default:"Guest" }}</span>
+            </a>
+
+        </div>
+    </div>
+</header>
+{% endblock %}
+
+{% block content %}
+<div class="dashboard-wrapper">
+    <div class="rz-sidebar-nav-dark">
+        
+        <hr class="rz-sidebar-divider-dark">
+        
+        <div class="vm-sidebar-info">
+            <div class="vm-icon-wrapper">
+                <i class="fas fa-hdd"></i>
+            </div>
+            <h5 class="vm-sidebar-title">New Storage Volume</h5>
+            <p class="vm-sidebar-subtitle">Configure block storage</p>
+        </div>
+        
+        <hr class="rz-sidebar-divider-dark">
+
+        <ul class="rz-sidebar-menu">
+            <li class="rz-sidebar-heading">QUICK ACTIONS</li>
+            <li><a href="{% url 'dashboard' %}" class="rz-sidebar-link"><i class="fas fa-chart-line me-2"></i>Dashboard</a></li>
+            <li><a href="{% url 'create_storage' %}" class="rz-sidebar-link active" aria-current="page"><i class="fas fa-hdd me-2"></i>Create Storage</a></li>
+        </ul>
+
+        <div class="rz-sidebar-footer-dark">
+            <form method="POST" action="{% url 'logout' %}">
+                {% csrf_token %}
+                <button type="submit" class="btn rz-btn-logout-dark w-100" aria-label="Sign out of Rizu">
+                    <i class="fas fa-sign-out-alt me-2"></i> Sign out
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <div class="rz-main-content-area">
+        <div class="container-fluid py-4">
+
+            <!-- Storage Form -->
+            <div class="row justify-content-center">
+                <div class="col-xl-9 col-lg-10">
+                    <div class="vm-form-card rz-detail-card">
+                        
+                        <!-- Form Header -->
+                        <div class="vm-form-header">
+                            <div>
+                                <h2 class="vm-form-title">Create Block Storage</h2>
+                                <p class="vm-form-subtitle">Configure and deploy persistent storage</p>
+                            </div>
+                        </div>
+
+                        <form id="storage-form" method="POST" action="{% url 'create_storage' %}">
+                            {% csrf_token %}
+
+                            <!-- General Section -->
+                            <div class="vm-section">
+                                <div class="vm-section-header">
+                                    <div class="vm-section-icon">
+                                        <i class="fa-solid fa-hdd"></i>
+                                    </div>
+                                    <h4 class="vm-section-title">General Information</h4>
+                                </div>
+                                <div class="row g-3">
+                                    <div class="col-12">
+                                        <label for="volume_name" class="form-label vm-label">
+                                            Volume Name
+                                            <span class="text-danger">*</span>
+                                        </label>
+                                        <input type="text" 
+                                               name="volume_name" 
+                                               id="volume_name" 
+                                               class="form-control vm-input" 
+                                               placeholder="e.g., web-server-storage"
+                                               required>
+                                    </div>
+                                    <div class="col-12">
+                                        <label for="description" class="form-label vm-label">Description</label>
+                                        <textarea name="description" 
+                                                  id="description" 
+                                                  class="form-control vm-input" 
+                                                  rows="3" 
+                                                  placeholder="Optional description for this volume"></textarea>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Storage Configuration Section -->
+                            <div class="vm-section">
+                                <div class="vm-section-header">
+                                    <div class="vm-section-icon" style="background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%);">
+                                        <i class="fa-solid fa-database"></i>
+                                    </div>
+                                    <h4 class="vm-section-title">Storage Configuration</h4>
+                                </div>
+                                <div>
+                                    <label for="size_gb" class="form-label vm-label">
+                                        Size (GB)
+                                        <span class="text-danger">*</span>
+                                    </label>
+                                    <input type="number" 
+                                           name="size_gb" 
+                                           id="size_gb" 
+                                           class="form-control vm-input" 
+                                           min="1" 
+                                           max="1000" 
+                                           value="10" 
+                                           placeholder="10"
+                                           required>
+                                    <div class="form-text">Enter the size in gigabytes (1-1000 GB)</div>
+                                </div>
+                            </div>
+
+                            <!-- VM Assignment Section -->
+                            <div class="vm-section">
+                                <div class="vm-section-header">
+                                    <div class="vm-section-icon" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%);">
+                                        <i class="fa-solid fa-server"></i>
+                                    </div>
+                                    <h4 class="vm-section-title">VM Assignment</h4>
+                                </div>
+                                <div>
+                                    <label for="vm_id" class="form-label vm-label">Attach to VM (Optional)</label>
+                                    <select name="vm_id" 
+                                            id="vm_id" 
+                                            class="form-select vm-input">
+                                        <option value="">-- Select a VM to attach (Optional) --</option>
+                                        {% for vm in vms %}
+                                            <option value="{{ vm.id }}">
+                                                {{ vm.name }} 
+                                                {% if vm.status == 'ACTIVE' %}
+                                                    (Active)
+                                                {% else %}
+                                                    ({{ vm.status }})
+                                                {% endif %}
+                                            </option>
+                                        {% endfor %}
+                                    </select>
+                                    <div class="form-text">
+                                        You can leave this empty to create an unattached volume, or attach it to a VM later.
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Info Section -->
+                            <div class="alert alert-info vm-info-alert">
+                                <i class="fa-solid fa-info-circle me-2"></i>
+                                <strong>Note:</strong> Block storage volumes provide persistent storage for your VMs. 
+                                You can attach/detach them as needed, and the data will persist even when the VM is deleted.
+                            </div>
+
+                            <!-- Form Actions -->
+                            <div class="vm-form-actions">
+                                <a href="{% url 'dashboard' %}" class="btn btn-secondary vm-btn-cancel">
+                                    <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
+                                </a>
+                                <button type="submit" class="btn btn-primary vm-btn-create">
+                                    <i class="fa-solid fa-plus me-2"></i>Create Storage Volume
+                                </button>
+                            </div>
+
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

@@ -18,4 +18,5 @@ urlpatterns = [
     ),
     path("terraform/", views.terraform_view, name="terraform"),
     path("user/profile/", views.user_profile, name="user_profile"),
+    path("storage/create/", views.create_storage, name="create_storage"),
 ]

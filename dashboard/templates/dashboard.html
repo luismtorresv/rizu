@@ -88,11 +88,11 @@
             
             <li class="rz-sidebar-heading">USER ACTIONS</li>
             <li><a href="{% url 'create_vm' %}" class="rz-sidebar-link"><i class="fas fa-plus-square me-2"></i>Create New VM</a></li>
-            
             {% if user_info.user_role == "project_manager" %}
                 <li class="rz-sidebar-heading">MANAGEMENT TOOLS</li>
                 <li><a href="{% url 'create_network' %}" class="rz-sidebar-link"><i class="fas fa-sitemap me-2"></i>Create Network</a></li>
                 <li><a href="{% url 'create_router' %}" class="rz-sidebar-link"><i class="fas fa-route me-2"></i>Create Router</a></li>
+                <li><a href="{% url 'create_storage' %}" class="rz-sidebar-link"><i class="fas fa-hdd me-2"></i>Create Block Storage</a></li>
                 <li><a href="{% url 'terraform' %}" class="rz-sidebar-link"><i class="fas fa-code-branch me-2"></i>Terraform</a></li>
             {% endif %}
             

@@ -670,3 +670,85 @@ def user_profile(request):
             "projects": projects,  # List all projects
         },
     )
+
+
+def create_storage(request):
+    """
+    View to create Cinder block storage volumes and optionally attach them to VMs.
+    """
+    project_id = request.session.get("project_id")
+
+    try:
+        conn = OpenStackUtils.get_connection(request=request, project_id=project_id)
+    except Exception as e:
+        print(f"Error connecting to OpenStack: {e}")
+        messages.error(request, "Failed to connect to OpenStack.")
+        return redirect("dashboard")
+
+    if request.method == "POST":
+        volume_name = request.POST.get("volume_name")
+        size_gb = request.POST.get("size_gb")
+        vm_id = request.POST.get("vm_id")  # Optional
+        description = request.POST.get("description")  # Optional
+
+        # Validation
+        if not volume_name or not size_gb:
+            messages.error(request, "Volume name and size are required.")
+            return redirect("create_storage")
+
+        try:
+            size_gb = int(size_gb)
+            if size_gb < 1 or size_gb > 1000:
+                messages.error(request, "Volume size must be between 1 and 1000 GB.")
+                return redirect("create_storage")
+        except ValueError:
+            messages.error(request, "Invalid size value.")
+            return redirect("create_storage")
+
+        # Create the volume using the builder
+        volume = OpenStackBuilders.create_openstack_volume(
+            conn_token=conn,
+            volume_name=volume_name,
+            size_gb=size_gb,
+            vm_id=vm_id if vm_id else None,
+            description=description,
+        )
+
+        if volume:
+            if vm_id:
+                try:
+                    vm = conn.compute.get_server(vm_id)
+                    messages.success(
+                        request,
+                        f"Volume '{volume_name}' ({size_gb} GB) created and attached to VM '{vm.name}' successfully.",
+                    )
+                except:
+                    messages.success(
+                        request,
+                        f"Volume '{volume_name}' ({size_gb} GB) created successfully.",
+                    )
+            else:
+                messages.success(
+                    request,
+                    f"Volume '{volume_name}' ({size_gb} GB) created successfully.",
+                )
+        else:
+            messages.error(request, "Failed to create storage volume.")
+
+        return redirect("dashboard")
+
+    # GET request → gather available VMs for attachment
+    try:
+        # Get all VMs in the current project
+        vms = list(conn.compute.servers())
+        # Sort VMs by name and status (ACTIVE first)
+        vms.sort(key=lambda vm: (vm.status != "ACTIVE", vm.name))
+    except Exception as e:
+        print(f"Error fetching VMs: {e}")
+        vms = []
+
+    context = {
+        "vms": vms,
+    }
+
+    return render(request, "create_storage.html", context)
