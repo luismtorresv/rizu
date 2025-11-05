@@ -3,17 +3,10 @@ from django.contrib import messages
 from django.http import HttpResponse
 from Rizu.Openstack.Utils import OpenStackUtils
 from Rizu.Openstack.Builders import OpenStackBuilders
-<<<<<<< HEAD
-
-import subprocess
-from pathlib import Path
-import re
-=======
 import subprocess
 from pathlib import Path
 import re, ipaddress
 
->>>>>>> 2098693 (Auto create network and router when creating project)
 
 
 def dashboard(request):
@@ -213,21 +206,14 @@ def create_project(request):
     if request.method == "POST":
         project_name = request.POST.get("name")
         description = request.POST.get("description")
-<<<<<<< HEAD
-=======
         cidr = request.POST.get("cidr")  # Optional: allow user to specify
         gateway_ip = request.POST.get("gateway_ip")  # Optional: allow user to specify
->>>>>>> 2098693 (Auto create network and router when creating project)
 
         # Ensure these fields exist
         if not project_name:
             return HttpResponse("Project name is required.", status=400)
 
-<<<<<<< HEAD
-        user = request.user  # puedes cambiarlo luego según autenticación real
-=======
         user = request.user
->>>>>>> 2098693 (Auto create network and router when creating project)
         user_role = user.role
 
         try:
@@ -235,28 +221,7 @@ def create_project(request):
         except Exception as e:
             print(f"Could not connect to OpenStack, Error: {e}")
             return HttpResponse("Error connecting to OpenStack", status=500)
-<<<<<<< HEAD
 
-        response = OpenStackBuilders.create_openstack_project(
-            conn,
-            project_name,
-            description,
-            user,
-            user_role,
-        )
-
-        # Muestras respuesta o rediriges al dashboard
-        if not response:
-            return HttpResponse("Error creating project", status=500)
-
-        return redirect("dashboard")
-
-    # Si es GET, solo renderizas el formulario
-    return render(request, "create_project.html")
-
-
-=======
-        
         # Call the helper function to create project with network and router
         project, error = create_project_with_network_and_router(
             conn, project_name, description, user, user_role, cidr, gateway_ip
@@ -278,7 +243,6 @@ def create_project(request):
 
 
 
->>>>>>> 2098693 (Auto create network and router when creating project)
 def create_network(request):
     if request.method == "POST":
         name = request.POST.get("network_name")
@@ -351,8 +315,6 @@ def create_router(request):
     return render(request, "create_router.html", context)
 
 
-<<<<<<< HEAD
-=======
 
 def create_project_with_network_and_router(conn, project_name, description, user, user_role, cidr=None, gateway_ip=None):
 
@@ -372,12 +334,12 @@ def create_project_with_network_and_router(conn, project_name, description, user
     project = conn.identity.find_project(project_name)
     if not project:
         return None, "Project created but could not retrieve it"
-    
+
     project_id = project.id
 
     # Create project-scoped connection
     try:
-        conn_proj = OpenStackUtils.get_connection(project_id=project_id) 
+        conn_proj = OpenStackUtils.get_connection(project_id=project_id)
     except Exception as e:
         return None, f"Error connecting to project: {e}"
 
@@ -403,12 +365,12 @@ def create_project_with_network_and_router(conn, project_name, description, user
                 break
         else:
             return None, "Could not find a unique CIDR"
-    
+
     if not gateway_ip:
         # Derive gateway from CIDR (first usable IP in subnet)
         network_obj = ipaddress.ip_network(cidr)
         gateway_ip = str(network_obj.network_address + 1)
-    
+
     is_external = False
 
     net = OpenStackBuilders.create_openstack_network(
@@ -437,10 +399,10 @@ def create_project_with_network_and_router(conn, project_name, description, user
         for ext_net in conn_proj.network.networks()
         if getattr(ext_net, "is_router_external", False)
     ]
-    
+
     if not external_networks:
         return None, "No external network found"
-    
+
     external_net = external_networks[0]  # Use the first available external network
 
     # Create the router
@@ -460,7 +422,6 @@ def create_project_with_network_and_router(conn, project_name, description, user
 
 
 
->>>>>>> 2098693 (Auto create network and router when creating project)
 # -------- JOIN PROJECTS AND PROJECT DETAIL VIEWS (no terminado..)--------
 def _initials(name: str) -> str:
     if not name:
@@ -686,7 +647,3 @@ def user_profile(request):
             "projects": projects,  # List all projects
         },
     )
-<<<<<<< HEAD
-=======
-
->>>>>>> 2098693 (Auto create network and router when creating project)
