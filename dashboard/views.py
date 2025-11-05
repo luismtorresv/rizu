@@ -8,7 +8,6 @@ from pathlib import Path
 import re, ipaddress
 
 
-
 def dashboard(request):
     project_id = request.GET.get("project_id")
     user = request.user
@@ -231,7 +230,7 @@ def create_project(request):
             # Captura y reporta cualquier error (incluyendo el de proyecto duplicado si lo hay)
             return HttpResponse(error, status=500)
 
-        project_id = project.id if hasattr(project, 'id') else project.get('id')
+        project_id = project.id if hasattr(project, "id") else project.get("id")
 
         # Store project_id in session if needed for later use
         request.session["project_id"] = project_id
@@ -240,7 +239,6 @@ def create_project(request):
 
     # If GET, render the form (add cidr and gateway_ip fields to the template)
     return render(request, "create_project.html")
-
 
 
 def create_network(request):
@@ -315,8 +313,9 @@ def create_router(request):
     return render(request, "create_router.html", context)
 
 
-
-def create_project_with_network_and_router(conn, project_name, description, user, user_role, cidr=None, gateway_ip=None):
+def create_project_with_network_and_router(
+    conn, project_name, description, user, user_role, cidr=None, gateway_ip=None
+):
 
     # Create the project
     response = OpenStackBuilders.create_openstack_project(
@@ -354,7 +353,7 @@ def create_project_with_network_and_router(conn, project_name, description, user
         existing_cidrs = []
         try:
             for net in conn_proj.network.networks():
-                if hasattr(net, 'cidr') and net.cidr:
+                if hasattr(net, "cidr") and net.cidr:
                     existing_cidrs.append(ipaddress.ip_network(net.cidr))
         except Exception:
             pass  # If fetching fails, proceed with generation
@@ -416,10 +415,7 @@ def create_project_with_network_and_router(conn, project_name, description, user
     if not router:
         return None, "Error creating router"
 
-
     return project, None  # Return the project object, no error
-
-
 
 
 # -------- JOIN PROJECTS AND PROJECT DETAIL VIEWS (no terminado..)--------
