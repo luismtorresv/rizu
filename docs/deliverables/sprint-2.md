@@ -66,27 +66,7 @@ ambiguity regarding where to start managing cloud resources.
  Do users understand how to locate and access a specific
 project from the dashboard?
 
-### Test 3: Network and Router Creation
-
-**Task:**
- Create a network and attach a router using the provided interface.
-
-**Hypothesis:**
- The configuration flow for network and router creation follows a
-logical sequence and requires minimal technical prior knowledge.
-
-**Metrics:**
-
-- Task completion time
-- Number of retries/errors
-- Success rate (%)
-- User confidence rating (1–5)
-
-**Research Question:**
- Can users successfully configure networking components
-without prior OpenStack experience?
-
-### Test 4: Virtual Machine Deployment
+### Test 3: Virtual Machine Deployment
 
 **Task:**
  Launch a new virtual machine (instance) within a selected project and
@@ -107,7 +87,7 @@ misconfiguration through validation and defaults.
  Do users understand how to deploy a VM and verify its
 status after creation?
 
-### Test 5: Overall Workflow Comprehension
+### Test 4: Overall Workflow Comprehension
 
 **Task:**
  Perform a complete end-to-end flow: login → select project → create
