@@ -12,6 +12,17 @@ icon: "material/bee"
 >
 > —Joseph Heller, _Catch-22_
 
+## In a nutshell
+
+During this sprint we:
+
+* Improved the aesthetics of the user interface
+* Added block storage capabilities (think AWS EBS)
+* Deployed the application (almost) using a Dockerfile
+* Wrote a user manual to help onboard new users
+* Conducted usability tests to determine UX quality
+* Simplified the overall project setup workflow
+
 <!----------------------------------------------------------------------------->
 
 ## Usability Tests Results
