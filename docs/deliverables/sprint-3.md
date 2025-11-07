@@ -36,14 +36,19 @@ During this sprint we:
 >
 > –Edward Tufte, Information Design Guru
 
+!!! tip
+
+     You can see the raw data collected by Paula in the dedicated
+     [Usability Tests Results page](usability-tests-results.md)
+     :material-page-next-outline:.
+
 ### Context
 
-Our UI/UX leader ~~forcibly~~ recruited four (4) fellow students to complete the
+Our UI/UX leader ~~forcibly~~ recruited seven (7) fellow students to complete the
 tests outlined during the previous sprint.[^1]
 
-[^1]: I also recruited a friend to help us out with this but we, eh… had
-    _technical issues_ during the test and so we removed this outlier data
-    point.
+[^1]: During the presentation, we mentioned just four (4) people. It just so
+    happens that we did more tests after the presentation was over.
 
 Most of them, young software engineers with little to no experience with cloud
 service provider consoles, were able to complete core tasks successfully[^2] and
