@@ -62,12 +62,12 @@ and dissemination of results.
      All values are expressed in Colombian pesos (COP).
 
 <table border="1" cellspacing="0" cellpadding="6" style="border-collapse:collapse; width:100%;">
-  <tr style="background-color:#f2f2f2;">
+  <tr>
     <th rowspan="2">Items</th>
     <th colspan="2">Sources</th>
     <th rowspan="2">Total</th>
   </tr>
-  <tr style="background-color:#f9f9f9;">
+  <tr>
     <th>Own (Our Team)</th>
     <th>Other Sources</th>
   </tr>
@@ -125,7 +125,7 @@ and dissemination of results.
     <td>$200,000.00 (Collaboration Grant)</td>
     <td>$600,000.00</td>
   </tr>
-  <tr style="font-weight:bold; background-color:#f2f2f2;">
+  <tr style="font-weight:bold">
     <td>Total</td>
     <td>$12,000,000.00</td>
     <td>$4,100,000.00</td>
@@ -155,10 +155,10 @@ tables present the estimated monthly and per-client costs for maintaining the
 project.
 
 <table border="1" cellspacing="0" cellpadding="6" style="border-collapse:collapse; width:100%;">
-  <tr style="background-color:#f2f2f2; font-weight:bold; text-align:center;">
+  <tr>
     <td colspan="2">Fixed Costs</td>
   </tr>
-  <tr style="background-color:#f9f9f9;">
+  <tr>
     <th>Category</th>
     <th>Monthly Expense (COP)</th>
   </tr>
@@ -186,17 +186,17 @@ project.
     <td>Administrative and Communication Expenses</td>
     <td>$200,000.00</td>
   </tr>
-  <tr style="font-weight:bold; background-color:#f2f2f2;">
+  <tr style="font-weight:bold;">
     <td>Total Fixed Costs</td>
     <td>$4,600,000.00</td>
   </tr>
 </table>
 
 <table border="1" cellspacing="0" cellpadding="6" style="border-collapse:collapse; width:100%; margin-top:16px;">
-  <tr style="background-color:#f2f2f2; font-weight:bold; text-align:center;">
+  <tr>
     <td colspan="2">Variable Costs</td>
   </tr>
-  <tr style="background-color:#f9f9f9;">
+  <tr>
     <th>Category</th>
     <th>Cost per Client or Deployment (COP)</th>
   </tr>
@@ -220,7 +220,7 @@ project.
     <td>Payment Processing and Transaction Fees</td>
     <td>$20,000.00</td>
   </tr>
-  <tr style="font-weight:bold; background-color:#f2f2f2;">
+  <tr style="font-weight:bold;">
     <td>Total Estimated Variable Cost (per client)</td>
     <td>$320,000.00</td>
   </tr>
@@ -249,7 +249,7 @@ partnerships.
   cellpadding="6"
   style="border-collapse: collapse; width: 100%"
 >
-  <tr style="background-color: #f9f9f9">
+  <tr>
     <th>Product or Service</th>
     <th>Estimated Price per Client or Deployment (COP)</th>
   </tr>
@@ -285,7 +285,7 @@ partnerships.
   cellpadding="6"
   style="border-collapse: collapse; width: 100%"
 >
-  <tr style="background-color: #f9f9f9">
+  <tr>
     <th>Month</th>
     <th>Estimated<br>Clients<br>or Sales</th>
     <th>Income</th>
@@ -303,7 +303,7 @@ partnerships.
   <tr><td>Month 10</td><td>15</td><td>$2,700,000.00</td><td>$5,000,000.00</td></tr>
   <tr><td>Month 11</td><td>18</td><td>$3,240,000.00</td><td>$5,000,000.00</td></tr>
   <tr><td>Month 12</td><td>20</td><td>$3,600,000.00</td><td>$5,000,000.00</td></tr>
-  <tr style="font-weight: bold; background-color: #f2f2f2">
+  <tr style="font-weight: bold;">
     <td>Total Year 1</td><td>113</td><td>$20,340,000.00</td><td>$59,520,000.00</td>
   </tr>
 </table>
@@ -316,7 +316,7 @@ partnerships.
   cellpadding="6"
   style="border-collapse: collapse; width: 100%"
 >
-  <tr style="background-color: #f9f9f9">
+  <tr>
     <th>Month</th>
     <th>Estimated<br>Clients<br>or Sales</th>
     <th>Income</th>
@@ -334,7 +334,7 @@ partnerships.
   <tr><td>Month 22</td><td>40</td><td>$7,200,000.00</td><td>$5,800,000.00</td></tr>
   <tr><td>Month 23</td><td>43</td><td>$7,740,000.00</td><td>$5,900,000.00</td></tr>
   <tr><td>Month 24</td><td>46</td><td>$8,280,000.00</td><td>$6,000,000.00</td></tr>
-  <tr style="font-weight: bold; background-color: #f2f2f2">
+  <tr style="font-weight: bold;">
     <td>Total Year 2</td><td>399</td><td>$72,720,000.00</td><td>$67,100,000.00</td>
   </tr>
 </table>
@@ -347,7 +347,7 @@ partnerships.
   cellpadding="6"
   style="border-collapse: collapse; width: 100%"
 >
-  <tr style="background-color: #f9f9f9">
+  <tr>
     <th>Month</th>
     <th>Estimated<br>Clients<br>or Sales</th>
     <th>Income</th>
@@ -365,7 +365,7 @@ partnerships.
   <tr><td>Month 34</td><td>66</td><td>$11,880,000.00</td><td>$6,400,000.00</td></tr>
   <tr><td>Month 35</td><td>68</td><td>$12,240,000.00</td><td>$6,500,000.00</td></tr>
   <tr><td>Month 36</td><td>70</td><td>$12,600,000.00</td><td>$6,500,000.00</td></tr>
-  <tr style="font-weight: bold; background-color: #f2f2f2">
+  <tr style="font-weight: bold;">
     <td>Total Year 3</td><td>708</td><td>$128,440,000.00</td><td>$75,000,000.00</td>
   </tr>
 </table>
@@ -378,7 +378,7 @@ partnerships.
   cellpadding="6"
   style="border-collapse: collapse; width: 100%"
 >
-  <tr style="background-color: #f9f9f9">
+  <tr>
     <th>Year</th>
     <th>Total Clients/Sales</th>
     <th>Total Income (COP)</th>
