@@ -95,12 +95,16 @@ hypothetical user of the platform, we could enhance it by working on:
 
 [^3]: RTFM. Short for "Read The Fine Manual".
 
+<!----------------------------------------------------------------------------->
+
 ## User Manual
 
 > “_[reading from the manual]_ The instructions to fit in, have everybody like
 > you, and always be happy!”
 >
 > —Emmet Brickowoski, _The LEGO® Movie_
+
+<!----------------------------------------------------------------------------->
 
 ## Application Deployment
 
