@@ -104,6 +104,34 @@ hypothetical user of the platform, we could enhance it by working on:
 >
 > —Emmet Brickowoski, _The LEGO® Movie_
 
+The User Manual aims to provide a simple, yet effective way to use our
+application’s functions and features. Through a verbal step-by-step, the manual
+guides the user through the process of interacting with the different systems
+(Authorization, VPC creation, Resource provisioning, etc.), as well as providing
+screenshots to help users orient themselves inside the application. It also
+includes a Frequently Asked Questions (FAQ) section that helps users solve
+common issues.
+
+<figure markdown="span">
+  ![Table of contents.](assets/sprint-3/user-manual-toc.png){ width="400" }
+  <figcaption>Table of contents.</figcaption>
+</figure>
+
+<figure markdown="span">
+  ![Sample.](assets/sprint-3/user-manual-sample.png){ width="400" }
+  <figcaption>Sample of the user manual.</figcaption>
+</figure>
+
+<figure markdown="span">
+  ![Frequently Asked Questions](assets/sprint-3/user-manual-faq.png){ width="400" }
+  <figcaption>Frequently Asked Questions.</figcaption>
+</figure>
+
+!!! info
+
+    Get the [user manual](<assets/sprint-3/Rizu — User Manual.pdf>)
+    :material-file-pdf-box:.
+
 <!----------------------------------------------------------------------------->
 
 ## Application Deployment
