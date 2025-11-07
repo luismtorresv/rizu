@@ -23,6 +23,11 @@ During this sprint we:
 * Conducted usability tests to determine UX quality
 * Simplified the overall project setup workflow
 
+!!! question "Where's the rest of the business plan?"
+
+    We decided to merge those sections related to the business plan from last
+    sprint and the new ones in a new document called [Business Plan](business-plan.md).
+
 <!----------------------------------------------------------------------------->
 
 ## Usability Tests Results
