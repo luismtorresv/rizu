@@ -142,3 +142,116 @@ common issues.
 ## Application Deployment
 
 > “Live, from New York, it's Saturday Night!”
+
+### Problems
+
+As I mentioned during the presentation, I wanted to use Docker to deploy our
+application on the university DCA's VM, but it wasn't possible. The Kolla
+Ansible deployment version of OpenStack appears to have configured the Docker
+daemon, in such a way that prevents us from running other containers.
+
+This is the offending file:
+
+```json title="/etc/docker/daemon.json"
+{
+   "bridge": "none",
+   "ip-forward": "false",
+   "iptables": "false",
+   "log-opts": {
+      "max-file": "5",
+      "max-size": "50m"
+   }
+}
+```
+
+I searched for a solution online, but changing the `bridge` key [could have
+removed all container
+networks](https://forums.docker.com/t/docker-does-not-create-bridge-network-by-default/134413/9):
+
+> suggestion to remove the docker network configuration after(!) stopping the
+> docker service: `rm -rf /var/lib/docker/network` (warning: as a result all
+> container networks will be gone!)
+
+So no, I didn't want to break production one day before the sprint ended.
+
+### Okay, so tell me what you actually did
+
+I ran most of the commands from this Dockerfile but manually:
+
+```docker title="Dockerfile"
+# Stage 1: Base build stage
+FROM python:3.13-slim AS builder
+
+# Create the app directory
+RUN mkdir /app
+
+# Set the working directory
+WORKDIR /app
+
+# Set environment variables to optimize Python
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1
+
+# Upgrade pip and install dependencies
+RUN pip install --upgrade pip
+
+# Copy the requirements file first (better caching)
+COPY requirements.txt /app/
+
+# Install Python dependencies
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Stage 2: Production stage
+FROM python:3.13-slim
+
+RUN useradd -m -r appuser && \
+   mkdir /app && \
+   chown -R appuser /app
+
+# Copy the Python dependencies from the builder stage
+COPY --from=builder /usr/local/lib/python3.13/site-packages/ /usr/local/lib/python3.13/site-packages/
+COPY --from=builder /usr/local/bin/ /usr/local/bin/
+
+# Set the working directory
+WORKDIR /app
+
+# Copy application code
+COPY --chown=appuser:appuser . .
+
+# Set environment variables to optimize Python
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1
+
+# Switch to non-root user
+USER appuser
+
+# Expose the application port
+EXPOSE 8000
+
+# Start the application using Gunicorn
+CMD ["gunicorn", "--bind", "0.0.0.0:8000", "--workers", "3", "Rizu.wsgi:application"]
+```
+
+And then I set up a Bash function in our `$HOME/.rizurc` file that invokes
+gunicorn:
+
+```
+$ tail ~/.rizurc
+[ . . . ]
+
+deploy() {
+        cd /home/userdca/rizu && gunicorn --bind 0.0.0.0:42000 --workers 3 Rizu.wsgi:application
+}
+```
+
+It's a manual deployment with some command automation.
+
+When you bind it to port 42000, the application can be accessed at
+`rizu.dis.eafit.edu.co`. We are running it on demand, so it's surely
+inaccessible by the time you are reading this.
+
+!!! note
+
+    What could be improved? We could try [Podman](https://podman.io) to deploy
+    a containerized version of our application that doesn't interfere with the
+    Docker network configurations.
