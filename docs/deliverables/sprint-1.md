@@ -301,8 +301,6 @@ page.
 
 ### Test Cases
 
-#### Test Cases
-
 For this project, we developed 3 major user stories that represented the main
 selling points of this first sprint. Those being: Networking, project creation,
 and dashboard feedback. Here are the 3 links to the respective user stories. In
