@@ -1,8 +1,7 @@
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.http import HttpResponse
-from Rizu.Openstack.Utils import OpenStackUtils
-from Rizu.Openstack.Builders import OpenStackBuilders
+from Rizu.Openstack.Interface import openstack
 import subprocess
 from pathlib import Path
 import re, ipaddress
@@ -29,12 +28,15 @@ def _format_instance_ips(addresses_dict):
 
 
 def dashboard(request):
+    if not request.user.is_authenticated:
+        return redirect("login")
+
     project_id = request.GET.get("project_id")
     user = request.user
 
     # Admin/system connection (has full visibility
     try:
-        conn = OpenStackUtils.get_connection(system=True)
+        conn = openstack.Utils.get_connection(system=True)
     except Exception as e:
         print(f"Error Connecting to OpenStack deployment: {e}")
         return HttpResponse("Error connecting to OpenStack", status=500)
@@ -74,7 +76,7 @@ def dashboard(request):
     if project_id:
         # There's no try catch statement here because if it couldn't connect before it would never reach this point
 
-        project_conn = OpenStackUtils.get_connection(
+        project_conn = openstack.Utils.get_connection(
             request=request, project_id=project_id
         )
         request.session["project_id"] = project_id
@@ -86,8 +88,8 @@ def dashboard(request):
 
     if selected_project_obj:
         # Find the OpenStack user by username
-        user_project_role = OpenStackUtils.get_user_primary_role(
-            openstack_user, selected_project_obj.id, project_conn
+        user_project_role = openstack.Utils.get_user_primary_role(
+            openstack_user, project_id, conn
         )
 
         # Instances
@@ -166,7 +168,7 @@ def create_vm(request):
     project_id = request.session.get("project_id")
 
     try:
-        conn = OpenStackUtils.get_connection(request=request, project_id=project_id)
+        conn = openstack.Utils.get_connection(request=request, project_id=project_id)
     except Exception as e:
         print(f"Error connecting to OpenStack: {e}")
         messages.error(request, "Failed to connect to OpenStack.")
@@ -179,7 +181,7 @@ def create_vm(request):
         external_network_id = request.POST.get("external_network_id")
         image_id = request.POST.get("image_id")
 
-        response = OpenStackBuilders.create_openstack_vm(
+        response = openstack.Builders.create_openstack_vm(
             conn_token=conn,
             flavor_name=flavor_id,
             image_name=image_id,
@@ -225,6 +227,9 @@ def create_vm(request):
 
 
 def create_project(request):
+    if not request.user.is_authenticated:
+        return redirect("login")
+
     if request.user.role != "project_manager":
         return HttpResponse("You are not allowed to create projects.")
 
@@ -242,7 +247,7 @@ def create_project(request):
         user_role = user.role
 
         try:
-            conn = OpenStackUtils.get_connection(system=True)
+            conn = openstack.Utils.get_connection(system=True)
         except Exception as e:
             print(f"Could not connect to OpenStack, Error: {e}")
             return HttpResponse("Error connecting to OpenStack", status=500)
@@ -275,13 +280,15 @@ def create_network(request):
         is_external = request.POST.get("is_external")  # checkbox in form
         project_id = request.session.get("project_id")
         try:
-            conn = OpenStackUtils.get_connection(request=request, project_id=project_id)
+            conn = openstack.Utils.get_connection(
+                request=request, project_id=project_id
+            )
         except Exception as e:
             print(f"Could not connect to OpenStack, Error: {e}")
             messages.error(request, "Error connecting to OpenStack")
             return redirect("dashboard")
 
-        net = OpenStackBuilders.create_openstack_network(
+        net = openstack.Builders.create_openstack_network(
             conn,
             name,
             project_id,
@@ -305,7 +312,7 @@ def create_router(request):
     project_id = request.session.get("project_id")
 
     try:
-        conn = OpenStackUtils.get_connection(request=request, project_id=project_id)
+        conn = openstack.Utils.get_connection(request=request, project_id=project_id)
     except Exception as e:
         print(f"Could not connect to OpenStack, Error: {e}")
         return HttpResponse("Error connecting to OpenStack", status=500)
@@ -314,7 +321,7 @@ def create_router(request):
         name = request.POST.get("router_name")
         external_net = request.POST.get("external_network_name")
 
-        router = OpenStackBuilders.create_openstack_router(
+        router = openstack.Builders.create_openstack_router(
             conn,
             name,
             project_id,
@@ -344,7 +351,7 @@ def create_project_with_network_and_router(
 ):
 
     # Create the project
-    response = OpenStackBuilders.create_openstack_project(
+    response = openstack.Builders.create_openstack_project(
         conn,
         project_name,
         description,
@@ -364,7 +371,7 @@ def create_project_with_network_and_router(
 
     # Create project-scoped connection
     try:
-        conn_proj = OpenStackUtils.get_connection(project_id=project_id)
+        conn_proj = openstack.Utils.get_connection(project_id=project_id)
     except Exception as e:
         return None, f"Error connecting to project: {e}"
 
@@ -398,7 +405,7 @@ def create_project_with_network_and_router(
 
     is_external = False
 
-    net = OpenStackBuilders.create_openstack_network(
+    net = openstack.Builders.create_openstack_network(
         conn_proj,
         network_name,
         project_id,
@@ -431,7 +438,7 @@ def create_project_with_network_and_router(
     external_net = external_networks[0]  # Use the first available external network
 
     # Create the router
-    router = OpenStackBuilders.create_openstack_router(
+    router = openstack.Builders.create_openstack_router(
         conn_proj,
         router_name,
         project_id,
@@ -454,7 +461,7 @@ def _initials(name: str) -> str:
 
 def join_projects_view(request):
     try:
-        sys_conn = OpenStackUtils.get_connection(system=True)
+        sys_conn = openstack.Utils.get_connection(system=True)
     except Exception as e:
         print(f"Could not connect to OpenStack, Error: {e}")
         return HttpResponse("Error connecting to OpenStack", status=500)
@@ -484,7 +491,7 @@ def join_projects_view(request):
             user_name = request.user.username
             role = "member"
 
-            OpenStackUtils.assign_openstack_role(
+            openstack.Utils.assign_openstack_role(
                 project_name=project_name,
                 username=user_name,
                 role=role,
@@ -536,7 +543,7 @@ def join_projects_view(request):
 
 def project_detail_view(request, project_id: str):
     try:
-        conn = OpenStackUtils.get_connection(system=True)
+        conn = openstack.Utils.get_connection(system=True)
     except Exception as e:
         print(f"Could not connect to OpenStack, Error: {e}")
         return HttpResponse("Error connecting to OpenStack", status=500)
@@ -617,7 +624,7 @@ def user_profile(request):
         return redirect("front_page_index")
 
     try:
-        sys_conn = OpenStackUtils.get_connection(system=True)
+        sys_conn = openstack.Utils.get_connection(system=True)
     except Exception as e:
         print(f"Could not connect to OpenStack for profile: {e}")
         sys_conn = None
@@ -678,7 +685,7 @@ def create_storage(request):
     project_id = request.session.get("project_id")
 
     try:
-        conn = OpenStackUtils.get_connection(request=request, project_id=project_id)
+        conn = openstack.Utils.get_connection(request=request, project_id=project_id)
     except Exception as e:
         print(f"Error connecting to OpenStack: {e}")
         messages.error(request, "Failed to connect to OpenStack.")
@@ -705,7 +712,7 @@ def create_storage(request):
             return redirect("create_storage")
 
         # Create the volume using the builder
-        volume = OpenStackBuilders.create_openstack_volume(
+        volume = openstack.Builders.create_openstack_volume(
             conn_token=conn,
             volume_name=volume_name,
             size_gb=size_gb,
