@@ -163,3 +163,15 @@ hide the instruction block and display the list of projects.
 
 *  Anyone can join projects; suggestion for private projects with access
    control.
+
+## Personal Opinion
+
+> “You can observe a lot by watching.”
+>
+> — Yogi Berra, American professional baseball catcher
+
+Running these sessions reminded us that usability tests are less about
+validating finished ideas and more about discovering blind spots early. Hearing
+participants stumble over roles, menus, and terminology gave us insights that no
+review had surfaced. Each test means an opportunity for clearer flows and a
+product that matches user expectations.
