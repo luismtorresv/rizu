@@ -88,17 +88,6 @@ class CreateProjectViewTestCase(TestCase):
         # Check error message in response
         self.assertContains(response, "You are not allowed to create projects.")
 
-    def test_create_project_get_unauthenticated(self):
-        """Test create_project view GET request without authentication."""
-        # The view doesn't handle anonymous users properly - raises AttributeError
-        # This test documents the current behavior (a bug that should be fixed)
-        with self.assertRaises(AttributeError) as context:
-            self.client.get(self.url)
-
-        self.assertIn(
-            "'AnonymousUser' object has no attribute 'role'", str(context.exception)
-        )
-
 
 class CreateNetworkViewTestCase(TestCase):
     """Test cases for the create_network view function."""

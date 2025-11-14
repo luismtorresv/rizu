@@ -6,7 +6,14 @@ import sys
 
 def main():
     """Run administrative tasks."""
-    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "Rizu.settings")
+    command = sys.argv[1] if len(sys.argv) > 1 else ""
+    if command == "test":
+        test_settings = os.environ.get(
+            "DJANGO_TEST_SETTINGS_MODULE", "Rizu.test_settings"
+        )
+        os.environ["DJANGO_SETTINGS_MODULE"] = test_settings
+    else:
+        os.environ.setdefault("DJANGO_SETTINGS_MODULE", "Rizu.settings")
     try:
         from django.core.management import execute_from_command_line
     except ImportError as exc:

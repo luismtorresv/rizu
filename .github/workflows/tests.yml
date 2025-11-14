@@ -26,4 +26,4 @@ jobs:
 
             - name: Run tests
               run: |
-                  python manage.py test --parallel --verbosity=2 --keepdb
+                  python manage.py test --settings=Rizu.test_settings --parallel --verbosity=2 --keepdb
