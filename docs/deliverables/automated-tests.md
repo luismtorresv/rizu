@@ -159,6 +159,9 @@ loops fast enough to run in every CI cycle.
 
 ## Personal Opinion
 
-Pairing the mock interface with Django’s test client felt similar to our
-functional-test practice: the scripts kept us honest, and replaying them as a
-team highlighted errors early on. Automation is still faster than manual passes.
+Working on these tests felt like finally seeing behind the curtain. At first we
+thought “automation” was just a fancy checkbox, but once we scripted the flows
+and saw them pass without touching the VPN, it clicked: testing is basically
+future-us saying thanks for not breaking everything. It was messy, we had to
+improvise with mocks, yet the moment the CI run finished in green we knew we
+weren’t guessing anymore—we were actually sure.
