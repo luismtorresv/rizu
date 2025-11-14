@@ -3,26 +3,20 @@ title: "Automated Tests"
 icon: "material/bird"
 ---
 
-There was 1 major hiccup when it came to developing End-To-End tests for Rizu: the use of
-the university’s own VPN service. Since we wanted to prove that our virtual private cloud
-dashboard could be deployed on premise, we requested a VM hosted within the campus
-server rack. However, we needed to use a VPN for every connection, halting any attempts at
-developing the usual GitHub Action tests that these sorts of applications require.
-
-Therefore we were given 3 paths to choose from:
+There was one major hiccup when developing end-to-end tests for Rizu: every
+OpenStack call required the university VPN. To deploy the dashboard on-prem, we
+requested a campus VM, but that meant GitHub Actions could not reach the
+cluster. We considered three paths:
 
 1. Create an interface that separates the OpenStack-related functions with mock
-functions that serve only to return an HTTP Code.
+   implementations that return deterministic responses.
+2. Develop tests in another VPC provider such as Azure, AWS, or GCP, where the
+   environments are publicly accessible.
+3. Forgo feature/E2E tests altogether.
 
-2. Develop tests in another VPC provider such as Azure, AWS or GCP, since their
-environments are not closed off by a VPN.
-
-3. Forgo feature/E2E tests.
-
-We initially chose the second option, but due to the VM’s instability inside Azure/AWS, we
-failed to develop the tests. So, we gave option one a chance, and developed an interface
-that replaces the ‘Builder’ and ‘Util’ functions with mocks.
-
+Option two failed because the cloud VM proved unstable, due to configurations
+mismatch, so we invested in option one and shipped a switchable interface that
+replaces the original builder/util helpers with mocks whenever tests run.
 
 ```python title="Rizu/Openstack/Interface.py"
 """
@@ -45,7 +39,6 @@ def get_openstack_utils():
     if getattr(settings, "OPENSTACK_MOCK_MODE", False):
         from Rizu.Openstack.MockUtils import MockOpenStackUtils
 
-        print("🧪 Using Mock OpenStack Utils")
         return MockOpenStackUtils
     else:
         from Rizu.Openstack.Utils import OpenStackUtils
@@ -61,7 +54,6 @@ def get_openstack_builders():
     if getattr(settings, "OPENSTACK_MOCK_MODE", False):
         from Rizu.Openstack.MockBuilders import MockOpenStackBuilders
 
-        print("🧪 Using Mock OpenStack Builders")
         return MockOpenStackBuilders
     else:
         from Rizu.Openstack.Builders import OpenStackBuilders
@@ -79,18 +71,15 @@ def get_mock_config() -> dict:
     return getattr(settings, "MOCK_OPENSTACK_CONFIG", {})
 ```
 
+After swapping our views to consume the interface, we leaned on Django’s test
+runner to script fourteen HTTP journeys that validate both page rendering and
+the mocked OpenStack operations:
 
-We also had to modify our views in Django to coincide with the new interface, and we made
-sure to use Django’s own testing commands and files to facilitate testing.
-In the end, we managed to develop 14 End-To-End tests that checked the responses of each
-of our views, as well as successful executions of our OpenStack connections (using HTTP
-codes as metrics):
-
-- Loading into the front page
-- User Registration form and processing
-- Login Form and Authentication
+- Loading the front page
+- User registration form and processing
+- Login form and authentication
 - Dashboard access and rendering
-- Create project as a project manager
+- Project creation as a project manager
 - VM creation form and rendering
 - Network creation access
 - Router creation access
@@ -101,8 +90,8 @@ codes as metrics):
 - Dashboard with project selection
 - Logout functionality
 
-After running the tests numerous times, we committed them to the repo and created a
-GitHub Action so that the End-To-End tests will always run on every Push and PR.
+Once the suite stabilized, we added it to CI so every push and PR exercises the
+stack in mock mode.
 
 ```yaml title=".github/workflows/e2e-tests.yml"
 name: End-to-End Tests
@@ -140,31 +129,36 @@ jobs:
 
 ## Automated Testing Strategy
 
-Rizu’s CI job runs `pytest` + `pytest-django` with `--ds=Rizu.test_settings`,
-which flips `OPENSTACK_MOCK_MODE` on and routes every builder/utils call through
-`Rizu.Openstack.Interface`. That switch means our tests can test authentication,
-dashboard, and resource flows without needing the VPN access or real
+Rizu’s CI job runs `pytest` and `pytest-django` with
+`--settings=Rizu.test_settings`, which flips `OPENSTACK_MOCK_MODE` on and routes
+every builder/utils call through `Rizu.Openstack.Interface`. That switch lets us
+verify authentication, dashboard, and resource flows without VPN access or real
 credentials.
 
 ## Legacy Unit Coverage
 
-Early coverage focused on `authentication/tests.py` and `dashboard/tests.py`,
-asserting template wiring, role gates, and helper correctness. They were
-intentionally simple yet ensured forms validated input, views rendered, and
-unauthenticated paths failed loudly—preventing regressions while the UI was
-still volatile.
+Early coverage lived in `authentication/tests.py` and `dashboard/tests.py`,
+asserting template wiring, role gates, and helper correctness. They ensured
+forms validated input, views rendered, and unauthenticated paths failed
+loudly—preventing regressions while the UI was still volatile.
 
 ## End-to-End HTTP Runs
 
-The new `runserver/tests.py` suite spins a Django test client to walk the entire
-stack: register → login → dashboard → project/network/VM/storage forms →
-profile/logout.
-
-Because the mock interface mimics OpenStack builders/utilities, each request
-exercises the same code paths as production, giving us deterministic 200/302/500
-assertions and surfacing routing or permission slips immediately.
+The newer `runserver/tests.py` suite spins a Django test client to walk the
+entire stack—register → login → dashboard → project/network/VM/storage forms →
+profile/logout. Because the mock interface mirrors the OpenStack
+builders/utilities, each request exercises the same code paths as production,
+yielding deterministic 200/302/500 assertions and surfacing routing or
+permission slips immediately.
 
 ## Results
 
 All HTTP journeys pass, and the faux OpenStack telemetry confirmed no unexpected
-calls escaped to the real cloud.
+calls escaped to the real cloud. The mock-first approach also keeps feedback
+loops fast enough to run in every CI cycle.
+
+## Personal Opinion
+
+Pairing the mock interface with Django’s test client felt similar to our
+functional-test practice: the scripts kept us honest, and replaying them as a
+team highlighted errors early on. Automation is still faster than manual passes.
